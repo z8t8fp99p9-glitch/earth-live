@@ -1,0 +1,19 @@
+{
+  "name": "EARTH // LIVE \u2014 Planetary Viewer",
+  "short_name": "EARTH LIVE",
+  "description": "An independent planetary viewer with public earthquake data.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060a12",
+  "theme_color": "#060a12",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
