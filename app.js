@@ -50,7 +50,23 @@
   const controls = world.controls();
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
   controls.enableDamping = true; controls.dampingFactor = 0.08;
-  world.onGlobeReady(() => { loading.style.display = 'none'; });
+  // Keep close zoom within the useful resolution of the bundled globe texture.
+  // This avoids magnifying pixels excessively on mobile while preserving normal pinch zoom.
+  controls.minDistance = 128;
+  controls.maxDistance = 900;
+  world.onGlobeReady(() => {
+    // The existing topology bump map provides a subtle terrain impression without
+    // adding terrain meshes or per-frame height calculations. Tune it gently if
+    // this globe.gl version exposes its material accessor.
+    try {
+      const material = world.globeMaterial();
+      if (material && 'bumpScale' in material) {
+        material.bumpScale = 0.16;
+        material.needsUpdate = true;
+      }
+    } catch (_) { /* Keep the default material if the library API differs. */ }
+    loading.style.display = 'none';
+  });
   function renderPoints() {
     let points = [];
     if (showQuakes) points = points.concat(quakes);
