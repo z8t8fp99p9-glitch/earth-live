@@ -1,4 +1,4 @@
-const CACHE_NAME = 'earth-live-shell-v5c-safe-skin-fallback';
+const CACHE_NAME = 'earth-live-shell-v5d-nasa-blue-marble';
 const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install', event => {
   // Do not make install depend on the optional generated texture being present.

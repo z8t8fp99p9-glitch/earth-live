@@ -28,7 +28,7 @@
   // Start with the known-working Earth texture. The custom skin is an optional upgrade,
   // never a dependency for rendering the globe.
   const fallbackEarthTexture = 'https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg';
-  const customEarthTexture = './earth-relief-skin.jpg';
+  const customEarthTexture = 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography-bathymetry/january/world.topo.bathy.200401.3x5400x2700.jpg';
   const world = Globe()(el)
     .globeImageUrl(fallbackEarthTexture)
     .bumpImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png')
@@ -78,6 +78,8 @@
   // Preflight the local texture before asking Globe.gl to use it. If the image is
   // missing/corrupt, keep the known-working Earth rather than blocking initialization.
   const skinProbe = new Image();
+  // Require CORS-enabled image loading before passing the official NASA texture to WebGL.
+  skinProbe.crossOrigin = 'anonymous';
   skinProbe.onload = () => {
     if (skinProbe.naturalWidth >= 1024 && skinProbe.naturalHeight >= 512) {
       customSkinLoaded = true;
@@ -87,7 +89,7 @@
     }
   };
   skinProbe.onerror = () => console.warn('Custom Earth skin failed to load; keeping fallback texture.');
-  skinProbe.src = customEarthTexture + '?v=1';
+  skinProbe.src = customEarthTexture;
   window.setTimeout(() => { if (!globeReady) { loading.textContent = 'EARTH VIEW IS TAKING LONGER THAN EXPECTED · CHECK CONNECTION'; } }, 12000);
   function renderPoints() {
     let points = [];
