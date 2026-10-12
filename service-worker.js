@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v9-cinematic-pulse';
+const CACHE = 'earth-live-main-shell-v10-always-on-pulse';
 const SHELL = ['./', './index.html', './style.css', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
