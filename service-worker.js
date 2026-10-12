@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v11-continuous-quake-render';
+const CACHE = 'earth-live-main-shell-v12-staggered-quake-rings';
 const SHELL = ['./', './index.html', './style.css', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
