@@ -1,46 +1,44 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#060a12">
-<meta name="description" content="EARTH // LIVE — satellite-imagery globe with live public earthquake data.">
-<title>EARTH // LIVE</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.132.0/Build/Cesium/Widgets/widgets.css">
-<style>
-:root{color-scheme:dark;--bg:#060a12;--panel:rgba(7,14,26,.9);--line:rgba(119,183,223,.25);--cyan:#6be7ff;--muted:#9aacc1;--white:#eef7ff;--green:#9dffd3}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--white);overscroll-behavior:none}
-#globe{position:absolute;inset:0}.cesium-viewer,.cesium-viewer-cesiumWidgetContainer,.cesium-widget{width:100%;height:100%}
-.cesium-viewer-bottom{left:8px!important;right:8px!important;bottom:0!important}.cesium-widget-credits{font-size:9px!important}
-.top{position:absolute;z-index:5;top:calc(env(safe-area-inset-top,0px) + 12px);left:12px;right:12px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none}
-.brand,.status{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(18px);border-radius:14px;padding:10px 12px;box-shadow:0 10px 35px #0005}
-.brand{pointer-events:auto}.eyebrow{font-size:9px;letter-spacing:.22em;color:var(--cyan);font-weight:800}.brand h1{margin:4px 0 0;font-size:16px;letter-spacing:.12em}.brand p{margin:4px 0 0;font-size:9px;color:var(--muted)}
-.status{font-size:9px;color:var(--green);letter-spacing:.08em;white-space:nowrap}
-.note{position:absolute;top:calc(env(safe-area-inset-top,0px) + 88px);left:50%;transform:translateX(-50%);z-index:4;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#07101ddd;color:var(--muted);font-size:9px;white-space:nowrap;pointer-events:none}
-.panel{position:absolute;z-index:5;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(22px);padding:13px;box-shadow:0 15px 45px #0008}
-.row{display:flex;align-items:center;justify-content:space-between;gap:8px}.section{font-size:10px;font-weight:800;letter-spacing:.17em;color:var(--muted)}.count{font-size:11px;color:var(--cyan);font-variant-numeric:tabular-nums}
-.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}
-button{font:inherit;color:inherit;background:#111d2e;border:1px solid #253a51;border-radius:11px;padding:10px 6px;min-height:42px;font-size:10px;cursor:pointer;touch-action:manipulation}
-button.active{border-color:#49cbe9;background:rgba(40,147,180,.2);box-shadow:inset 0 0 0 1px #49cbe944;color:#b9f5ff}button:disabled{opacity:.55}
-.bottomline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;color:var(--muted);font-size:9px;line-height:1.4}#refresh{padding:7px 10px;min-height:32px;white-space:nowrap}
-.footer{margin-top:8px;text-align:center;color:#71869d;font-size:8px;letter-spacing:.04em;line-height:1.5}
-#detail{position:absolute;z-index:6;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 126px);display:none;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;backdrop-filter:blur(18px);font-size:12px;line-height:1.45;box-shadow:0 12px 35px #0006}
-#detail strong{display:block;color:var(--cyan);margin-bottom:5px;letter-spacing:.05em}#detail a{display:inline-block;color:var(--cyan);margin-top:9px;font-size:11px}
-#loading{position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:var(--cyan);font-size:10px;letter-spacing:.2em;pointer-events:none;text-align:center;padding:24px;background:#060a1288}
-@media(min-width:700px){.panel{left:22px;right:auto;bottom:22px;width:370px}.top{left:22px;right:22px}.note{top:104px}#detail{left:auto;right:22px;top:92px;width:310px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>EARTH // LIVE LITE</title>
+  <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css" />
+  <link rel="stylesheet" href="./style.css" />
+  <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
 </head>
 <body>
-<div id="globe" aria-label="Interactive satellite globe"></div>
-<div id="loading">INITIALIZING SATELLITE GLOBE…</div>
-<div class="top"><div class="brand"><div class="eyebrow">OPEN PLANETARY VIEWER</div><h1>EARTH <span style="color:var(--cyan)">// LIVE</span></h1><p>SATELLITE IMAGERY · BUILD 0.6 TEST · PUBLIC DATA</p></div><div class="status">● STARTING</div></div>
-<div class="note">DRAG TO ROTATE · PINCH TO ZOOM · TAP AN EVENT FOR DETAILS</div>
-<div id="detail"><strong id="detailTitle">EARTH EVENT</strong><div id="detailText" style="white-space:pre-line"></div><a id="detailLink" href="#" target="_blank" rel="noopener noreferrer">Open official USGS event ↗</a></div>
-<section class="panel"><div class="row"><span class="section">INTELLIGENCE LAYERS</span><span class="count" id="eventCount">CONNECTING…</span></div>
-<div class="layers"><button class="active" id="quakeBtn" aria-pressed="true">〰 Earthquakes</button><button id="citiesBtn" aria-pressed="false">◎ Major cities</button><button id="orbitBtn" aria-pressed="false">◉ Auto orbit</button></div>
-<div class="bottomline"><span id="updated" aria-live="polite">Connecting to USGS public feed…</span><button id="refresh">↻ Refresh</button></div>
-<div class="footer">CYAN · SMALLER &nbsp; AMBER · MODERATE &nbsp; RED · STRONGER<br>RINGS ARE VISUAL MARKERS, NOT IMPACT RADII<br>EXPLORATORY PUBLIC DATA · NOT FOR EMERGENCY OR NAVIGATION USE</div></section>
-<script src="https://cdn.jsdelivr.net/npm/cesium@1.132.0/Build/Cesium/Cesium.js"></script>
-<script src="./app.js"></script>
-<script>if("serviceWorker"in navigator&&location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));}</script>
-</body></html>
+  <main id="app">
+    <div id="globe" aria-label="Interactive Earth globe"></div>
+    <div class="top-brand glass" aria-label="Earth Live Lite">
+      <span class="brand-dot"></span><span>EARTH <b>//</b> LIVE <small>LITE</small></span>
+    </div>
+    <div id="status" class="status glass" aria-live="polite">Preparing Earth…</div>
+    <div class="bottom-ui">
+      <div class="quality glass" role="group" aria-label="Map quality">
+        <button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button>
+        <button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button>
+      </div>
+      <button class="icon-btn glass" id="lightingBtn" aria-label="Toggle day and night lighting" title="Day / night"><span id="lightingIcon">☼</span></button>
+      <button class="icon-btn glass" id="layersBtn" aria-label="Open map layers" title="Layers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
+    </div>
+    <section id="layersPanel" class="layers-panel glass" aria-label="Map layers" hidden>
+      <div class="panel-head"><div><span class="eyebrow">MAP OVERLAYS</span><h2>Layers</h2></div><button id="closeLayers" class="close-btn" aria-label="Close layers">×</button></div>
+      <label class="layer-row"><span class="layer-icon quake">◉</span><span class="layer-copy"><strong>Earthquakes</strong><small>USGS · past 7 days</small></span><input type="checkbox" id="quakeToggle"><i class="switch"></i></label>
+      <div id="quakeCount" class="quake-count" hidden>Loading earthquake data…</div>
+      <div class="layer-row disabled"><span class="layer-icon weather">☁</span><span class="layer-copy"><strong>Live weather</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
+      <div class="layer-row disabled"><span class="layer-icon camera">◎</span><span class="layer-copy"><strong>Live cameras</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
+      <p class="panel-foot">Map imagery: Esri World Imagery. Earthquake data: USGS.</p>
+    </section>
+    <div class="gesture-hint" id="gestureHint">Drag to rotate · Pinch to zoom · Two fingers to tilt</div>
+    <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
+  </main>
+  <script src="./app.js"></script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}</script>
+</body>
+</html>
