@@ -1,55 +1,53 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#05070b" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#05070b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>EARTH // LIVE LITE</title>
-  <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css" />
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="./style.css">
   <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
 </head>
 <body>
-  <main id="app">
-    <div id="globe" aria-label="Interactive Earth globe"></div>
-    <div class="top-brand glass" aria-label="Earth Live Lite">
-      <span class="brand-dot"></span><span>EARTH <b>//</b> LIVE <small>LITE</small></span>
+<main id="app">
+  <div id="globe" aria-label="Interactive Earth globe"></div>
+  <div class="top-brand glass"><span class="brand-dot"></span><span>EARTH <b>//</b> LIVE <small>LITE</small></span></div>
+  <div id="status" class="status glass" aria-live="polite">Preparing Earth…</div>
+  <div class="bottom-ui">
+    <div class="quality glass" role="group" aria-label="Map quality">
+      <button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button>
+      <button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button>
     </div>
-    <div id="status" class="status glass" aria-live="polite">Preparing Earth…</div>
-    <div class="bottom-ui">
-      <div class="quality glass" role="group" aria-label="Map quality">
-        <button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button>
-        <button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button>
-      </div>
-      <button class="icon-btn glass" id="lightingBtn" aria-label="Toggle day and night lighting" title="Day / night"><span id="lightingIcon">☼</span></button>
-      <button class="icon-btn glass" id="layersBtn" aria-label="Open map layers" title="Layers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
+    <button class="icon-btn glass" id="lightingBtn" aria-label="Toggle real-time solar shading" title="Solar shading"><span id="lightingIcon">☼</span></button>
+    <button class="icon-btn glass" id="layersBtn" aria-label="Open map layers" title="Layers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
+  </div>
+  <section id="layersPanel" class="layers-panel glass" aria-label="Map layers" hidden>
+    <div class="panel-head"><div><span class="eyebrow">MAP OVERLAYS</span><h2>Layers</h2></div><button id="closeLayers" class="close-btn" aria-label="Close layers">×</button></div>
+    <label class="layer-row"><span class="layer-icon quake">◉</span><span class="layer-copy"><strong>Earthquakes</strong><small>USGS · past 24 hours</small></span><input type="checkbox" id="quakeToggle"><i class="switch"></i></label>
+    <div id="quakeCount" class="quake-count" hidden>Loading earthquake data…</div>
+    <div class="layer-row disabled"><span class="layer-icon weather">☁</span><span class="layer-copy"><strong>Live weather</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
+    <div class="layer-row disabled"><span class="layer-icon camera">◎</span><span class="layer-copy"><strong>Live cameras</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
+    <p class="panel-foot">Map imagery: Esri World Imagery. Earthquake data: USGS.</p>
+  </section>
+  <div class="gesture-hint" id="gestureHint">Drag to rotate · Pinch to zoom · Two fingers to tilt</div>
+  <section id="quakeDetails" class="quake-details glass" aria-live="polite" hidden>
+    <button id="closeQuakeDetails" class="close-btn quake-close" aria-label="Close earthquake details">×</button>
+    <div class="quake-detail-eyebrow">EARTHQUAKE EVENT</div>
+    <div class="quake-detail-title"><span id="detailMagnitude">M—</span><strong id="detailPlace">Select an event</strong></div>
+    <div class="quake-detail-grid">
+      <div><small>DEPTH</small><strong id="detailDepth">—</strong></div>
+      <div><small>TIME</small><strong id="detailTime">—</strong></div>
+      <div><small>COORDINATES</small><strong id="detailCoords">—</strong></div>
     </div>
-    <section id="layersPanel" class="layers-panel glass" aria-label="Map layers" hidden>
-      <div class="panel-head"><div><span class="eyebrow">MAP OVERLAYS</span><h2>Layers</h2></div><button id="closeLayers" class="close-btn" aria-label="Close layers">×</button></div>
-      <label class="layer-row"><span class="layer-icon quake">◉</span><span class="layer-copy"><strong>Earthquakes</strong><small>USGS · past 7 days</small></span><input type="checkbox" id="quakeToggle"><i class="switch"></i></label>
-      <div id="quakeCount" class="quake-count" hidden>Loading earthquake data…</div>
-      <div class="layer-row disabled"><span class="layer-icon weather">☁</span><span class="layer-copy"><strong>Live weather</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
-      <div class="layer-row disabled"><span class="layer-icon camera">◎</span><span class="layer-copy"><strong>Live cameras</strong><small>Coming in a future update</small></span><span class="soon">SOON</span></div>
-      <p class="panel-foot">Map imagery: Esri World Imagery. Earthquake data: USGS.</p>
-    </section>
-    <div class="gesture-hint" id="gestureHint">Drag to rotate · Pinch to zoom · Two fingers to tilt</div>
-    <section id="quakeDetails" class="quake-details glass" aria-live="polite" hidden>
-      <button id="closeQuakeDetails" class="close-btn quake-close" aria-label="Close earthquake details">×</button>
-      <div class="quake-detail-eyebrow">EARTHQUAKE EVENT</div>
-      <div class="quake-detail-title"><span id="detailMagnitude">M—</span><strong id="detailPlace">Select an event</strong></div>
-      <div class="quake-detail-grid">
-        <div><small>DEPTH</small><strong id="detailDepth">—</strong></div>
-        <div><small>TIME</small><strong id="detailTime">—</strong></div>
-        <div><small>COORDINATES</small><strong id="detailCoords">—</strong></div>
-      </div>
-      <a id="detailLink" href="https://earthquake.usgs.gov/" target="_blank" rel="noopener noreferrer">View full USGS event ↗</a>
-    </section>
-    <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
-  </main>
-  <script src="./app.js"></script>
-  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}</script>
+    <a id="detailLink" href="https://earthquake.usgs.gov/" target="_blank" rel="noopener noreferrer">View full USGS event ↗</a>
+  </section>
+  <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
+</main>
+<script src="./app.js"></script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}</script>
 </body>
 </html>
