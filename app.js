@@ -25,11 +25,11 @@ function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
 function installTouchGestures(){const canvas=viewer.canvas;canvas.style.touchAction='none';const points=ts=>Array.from(ts,t=>({x:t.clientX,y:t.clientY}));const metrics=ts=>{const p=points(ts),a=p[0],b=p[1];return{x:(a.x+b.x)/2,y:(a.y+b.y)/2,d:Math.hypot(b.x-a.x,b.y-a.y),a:Math.atan2(b.y-a.y,b.x-a.x)};};
 viewer.scene.screenSpaceCameraController.enableInputs=false;
 canvas.addEventListener('touchstart',e=>{if(e.target.closest&&e.target.closest('button,a,input'))return;e.preventDefault();if(e.touches.length===1){const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY};}else if(e.touches.length===2){touchState={mode:2,...metrics(e.touches)};}else touchState=null;},{passive:false,capture:true});
-canvas.addEventListener('touchmove',e=>{if(!touchState)return;e.preventDefault();const cam=viewer.camera;try{if(e.touches.length===1&&touchState.mode===1){const p=e.touches[0],dx=p.clientX-touchState.x,dy=p.clientY-touchState.y;cam.rotateRight(dx*.0045);cam.rotateUp(-dy*.0038);touchState={mode:1,x:p.clientX,y:p.clientY};}
+canvas.addEventListener('touchmove',e=>{if(!touchState)return;e.preventDefault();const cam=viewer.camera;try{if(e.touches.length===1&&touchState.mode===1){const p=e.touches[0],dx=p.clientX-touchState.x,dy=p.clientY-touchState.y;cam.rotateRight(-dx*.0045);cam.rotateUp(-dy*.0038);touchState={mode:1,x:p.clientX,y:p.clientY};}
 else if(e.touches.length===2&&touchState.mode===2){const m=metrics(e.touches),dx=m.x-touchState.x,dy=m.y-touchState.y,dd=m.d-touchState.d;let da=m.a-touchState.a;while(da>Math.PI)da-=Math.PI*2;while(da< -Math.PI)da+=Math.PI*2;
-if(Math.abs(dx)>.15)cam.rotateRight(dx*.0032);
+if(Math.abs(dx)>.15)cam.rotateRight(-dx*.0032);
 if(Math.abs(dy)>.15){const pitch=clamp(cam.pitch-dy*.003,-Math.PI/2+.035,-.10);cam.setView({orientation:{heading:cam.heading,pitch,roll:cam.roll}});}
-if(Math.abs(dd)>.15){const h=cam.positionCartographic.height,amount=clamp(Math.abs(dd)*Math.max(3000,h*.008),1000,450000);if(dd<0)cam.zoomIn(amount);else cam.zoomOut(amount);}
+if(Math.abs(dd)>.15){const h=cam.positionCartographic.height,amount=clamp(Math.abs(dd)*Math.max(3000,h*.008),1000,450000);if(dd>0)cam.zoomIn(amount);else cam.zoomOut(amount);}
 if(Math.abs(da)>.003)cam.twistRight(-da);
 touchState={mode:2,...m};}viewer.scene.requestRender();}catch(err){console.debug('Touch gesture limit',err);}},{passive:false,capture:true});
 const end=e=>{if(e.touches.length===0)touchState=null;else if(e.touches.length===1){const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY};}else if(e.touches.length===2)touchState={mode:2,...metrics(e.touches)};};canvas.addEventListener('touchend',end,{passive:true,capture:true});canvas.addEventListener('touchcancel',end,{passive:true,capture:true});
