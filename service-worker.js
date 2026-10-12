@@ -1,7 +1,7 @@
-const CACHE_NAME = 'earth-live-shell-v5d-nasa-blue-marble';
+const CACHE_NAME = 'earth-live-shell-aligned-relief-v1';
 const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install', event => {
-  // Do not make install depend on the optional generated texture being present.
+  // Keep large texture assets out of install precache to avoid mobile quota failures.
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {

@@ -25,15 +25,11 @@
     {name:'Dubai',lat:25.2048,lng:55.2708,description:'United Arab Emirates · major city'}
   ];
   let quakes = [], showQuakes = true, showCities = false, orbital = true, refreshTimer;
-  // Start with the known-working Earth texture. The custom skin is an optional upgrade,
-  // never a dependency for rendering the globe.
-  const fallbackEarthTexture = 'https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg';
-  const customEarthTexture = 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography-bathymetry/january/world.topo.bathy.200401.3x5400x2700.jpg';
   const world = Globe()(el)
-    .globeImageUrl(fallbackEarthTexture)
-    .bumpImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png')
+    .globeImageUrl('./earth-relief-skin.jpg')
+    .bumpImageUrl('./earth-relief-bump.jpg')
     .backgroundImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/night-sky.png')
-    .showAtmosphere(true).atmosphereColor('#48baff').atmosphereAltitude(0.16)
+    .showAtmosphere(true).atmosphereColor('#4aa6ff').atmosphereAltitude(0.18)
     .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude('alt')
     .pointRadius('radius').pointColor('color')
     .pointLabel(d => d.label || d.name || 'Location')
@@ -54,43 +50,20 @@
   const controls = world.controls();
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
   controls.enableDamping = true; controls.dampingFactor = 0.08;
-  let globeReady = false;
-  let customSkinLoaded = false;
-  const applyCustomSkin = () => {
-    if (globeReady && customSkinLoaded) world.globeImageUrl(customEarthTexture);
-  };
   world.onGlobeReady(() => {
-    globeReady = true;
     loading.style.display = 'none';
-    // Apply restrained shading only after the fallback globe is visible.
+    // Aligned experimental bump map derived from the exact same skin pixels.
+    // This strengthens apparent relief but does not physically displace the mesh.
     try {
       const material = world.globeMaterial();
       if (material) {
-        material.bumpScale = 0.12;
+        material.bumpScale = 0.42;
+        material.shininess = 5;
         if (material.specular && material.specular.set) material.specular.set('#536b80');
-        material.shininess = 9;
         material.needsUpdate = true;
       }
     } catch (err) { console.warn('Optional terrain shading unavailable.', err); }
-    applyCustomSkin();
   });
-
-  // Preflight the local texture before asking Globe.gl to use it. If the image is
-  // missing/corrupt, keep the known-working Earth rather than blocking initialization.
-  const skinProbe = new Image();
-  // Require CORS-enabled image loading before passing the official NASA texture to WebGL.
-  skinProbe.crossOrigin = 'anonymous';
-  skinProbe.onload = () => {
-    if (skinProbe.naturalWidth >= 1024 && skinProbe.naturalHeight >= 512) {
-      customSkinLoaded = true;
-      applyCustomSkin();
-    } else {
-      console.warn('Custom Earth skin has unexpected dimensions; keeping fallback texture.');
-    }
-  };
-  skinProbe.onerror = () => console.warn('Custom Earth skin failed to load; keeping fallback texture.');
-  skinProbe.src = customEarthTexture;
-  window.setTimeout(() => { if (!globeReady) { loading.textContent = 'EARTH VIEW IS TAKING LONGER THAN EXPECTED · CHECK CONNECTION'; } }, 12000);
   function renderPoints() {
     let points = [];
     if (showQuakes) points = points.concat(quakes);
