@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v7-relief';
+const CACHE = 'earth-live-main-shell-v8-relief-pulse';
 const SHELL = ['./', './index.html', './style.css', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
