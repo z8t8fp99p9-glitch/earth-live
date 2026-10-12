@@ -1,0 +1,5 @@
+--- a/service-worker.js
++++ b/service-worker.js
+@@
+-const CACHE_NAME = 'earth-live-shell-v5d-nasa-blue-marble';
++const CACHE_NAME = 'earth-live-shell-v5e-local-relief-skin';

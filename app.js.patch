@@ -1,0 +1,5 @@
+--- a/app.js
++++ b/app.js
+@@
+-  const customEarthTexture = 'https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography-bathymetry/january/world.topo.bathy.200401.3x5400x2700.jpg';
++  const customEarthTexture = './earth-relief-skin.jpg';
