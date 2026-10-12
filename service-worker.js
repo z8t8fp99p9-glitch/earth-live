@@ -1,7 +1,6 @@
-const CACHE_NAME = 'earth-live-shell-aligned-relief-v1';
+const CACHE_NAME = 'earth-live-cesium-test-v1';
 const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install', event => {
-  // Keep large texture assets out of install precache to avoid mobile quota failures.
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
