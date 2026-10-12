@@ -25,8 +25,12 @@
     {name:'Dubai',lat:25.2048,lng:55.2708,description:'United Arab Emirates · major city'}
   ];
   let quakes = [], showQuakes = true, showCities = false, orbital = true, refreshTimer;
+  // Start with the known-working Earth texture. The custom skin is an optional upgrade,
+  // never a dependency for rendering the globe.
+  const fallbackEarthTexture = 'https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg';
+  const customEarthTexture = './earth-relief-skin.jpg';
   const world = Globe()(el)
-    .globeImageUrl('./earth-relief-skin.jpg')
+    .globeImageUrl(fallbackEarthTexture)
     .bumpImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png')
     .backgroundImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#48baff').atmosphereAltitude(0.16)
@@ -50,9 +54,15 @@
   const controls = world.controls();
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
   controls.enableDamping = true; controls.dampingFactor = 0.08;
+  let globeReady = false;
+  let customSkinLoaded = false;
+  const applyCustomSkin = () => {
+    if (globeReady && customSkinLoaded) world.globeImageUrl(customEarthTexture);
+  };
   world.onGlobeReady(() => {
+    globeReady = true;
     loading.style.display = 'none';
-    // Restrained terrain shading: enhance depth without turning the globe into a hard relief model.
+    // Apply restrained shading only after the fallback globe is visible.
     try {
       const material = world.globeMaterial();
       if (material) {
@@ -62,7 +72,23 @@
         material.needsUpdate = true;
       }
     } catch (err) { console.warn('Optional terrain shading unavailable.', err); }
+    applyCustomSkin();
   });
+
+  // Preflight the local texture before asking Globe.gl to use it. If the image is
+  // missing/corrupt, keep the known-working Earth rather than blocking initialization.
+  const skinProbe = new Image();
+  skinProbe.onload = () => {
+    if (skinProbe.naturalWidth >= 1024 && skinProbe.naturalHeight >= 512) {
+      customSkinLoaded = true;
+      applyCustomSkin();
+    } else {
+      console.warn('Custom Earth skin has unexpected dimensions; keeping fallback texture.');
+    }
+  };
+  skinProbe.onerror = () => console.warn('Custom Earth skin failed to load; keeping fallback texture.');
+  skinProbe.src = customEarthTexture + '?v=1';
+  window.setTimeout(() => { if (!globeReady) { loading.textContent = 'EARTH VIEW IS TAKING LONGER THAN EXPECTED · CHECK CONNECTION'; } }, 12000);
   function renderPoints() {
     let points = [];
     if (showQuakes) points = points.concat(quakes);

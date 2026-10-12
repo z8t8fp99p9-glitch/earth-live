@@ -1,6 +1,7 @@
-const CACHE_NAME = 'earth-live-shell-v5b-root-texture-fix';
-const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg','./earth-relief-skin.jpg'];
+const CACHE_NAME = 'earth-live-shell-v5c-safe-skin-fallback';
+const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install', event => {
+  // Do not make install depend on the optional generated texture being present.
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', event => {
