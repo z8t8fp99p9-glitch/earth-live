@@ -25,9 +25,11 @@
     {name:'Dubai',lat:25.2048,lng:55.2708,description:'United Arab Emirates · major city'}
   ];
   let quakes = [], showQuakes = true, showCities = false, orbital = true, refreshTimer;
+
+  // Progressive loading: start with a lighter Earth, then enhance it with our detailed relief.
+  const starterEarthTexture = 'https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg';
   const world = Globe()(el)
-    .globeImageUrl('./earth-relief-skin.jpg')
-    .bumpImageUrl('./earth-relief-bump.jpg')
+    .globeImageUrl(starterEarthTexture)
     .backgroundImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#4aa6ff').atmosphereAltitude(0.18)
     .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude('alt')
@@ -44,14 +46,29 @@
         else { detailLink.removeAttribute('href'); detailLink.style.display = 'none'; }
       }
     });
+
   const resize = () => world.width(el.clientWidth).height(el.clientHeight);
   window.addEventListener('resize', resize, {passive:true}); resize();
   world.pointOfView({lat:20,lng:15,altitude:2.4},0);
   const controls = world.controls();
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
   controls.enableDamping = true; controls.dampingFactor = 0.08;
+
+  let reliefEnhancementStarted = false;
   world.onGlobeReady(() => {
+    // Hide the initializing overlay as soon as the starter globe is ready.
     loading.style.display = 'none';
+
+    // Give the first globe a chance to paint before downloading the large local textures.
+    if (!reliefEnhancementStarted) {
+      reliefEnhancementStarted = true;
+      window.setTimeout(() => {
+        world.globeImageUrl('./earth-relief-skin.jpg');
+        // Add the large bump map later so it does not delay the first visible Earth.
+        window.setTimeout(() => world.bumpImageUrl('./earth-relief-bump.jpg'), 1800);
+      }, 700);
+    }
+
     // Aligned experimental bump map derived from the exact same skin pixels.
     // This strengthens apparent relief but does not physically displace the mesh.
     try {
@@ -64,6 +81,7 @@
       }
     } catch (err) { console.warn('Optional terrain shading unavailable.', err); }
   });
+
   function renderPoints() {
     let points = [];
     if (showQuakes) points = points.concat(quakes);
@@ -77,6 +95,7 @@
     citiesBtn.setAttribute('aria-pressed', String(showCities));
     orbitBtn.setAttribute('aria-pressed', String(orbital));
   }
+
   async function loadQuakes() {
     refreshBtn.disabled = true; updated.textContent = 'Refreshing USGS public feed…';
     try {
@@ -86,8 +105,8 @@
       quakes = (data.features || []).filter(f => f.geometry && f.geometry.coordinates).map(f => {
         const p = f.properties || {}, c = f.geometry.coordinates, mag = Number(p.mag) || 0, place = p.place || 'Location unavailable';
         const eventDate = p.time ? new Date(p.time) : null;
-      const time = eventDate ? eventDate.toLocaleString(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true, timeZoneName:'short'}) : 'Time unavailable';
-      const depth = Number.isFinite(c[2]) ? c[2].toFixed(1) + ' km' : 'Unavailable';
+        const time = eventDate ? eventDate.toLocaleString(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true, timeZoneName:'short'}) : 'Time unavailable';
+        const depth = Number.isFinite(c[2]) ? c[2].toFixed(1) + ' km' : 'Unavailable';
         return {
           lat:c[1], lng:c[0], alt:Math.min(0.12,0.012+Math.max(0,mag)*0.012),
           radius:Math.max(0.12,Math.min(0.7,Math.max(0.5,mag)*0.13)),
@@ -114,6 +133,7 @@
       count.textContent = 'FEED OFFLINE';
     } finally { refreshBtn.disabled = false; }
   }
+
   function setActive(btn, on) { btn.classList.toggle('active', on); }
   quakeBtn.addEventListener('click', () => { showQuakes = !showQuakes; setActive(quakeBtn,showQuakes); renderPoints(); });
   citiesBtn.addEventListener('click', () => { showCities = !showCities; setActive(citiesBtn,showCities); renderPoints(); });
