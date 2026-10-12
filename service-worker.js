@@ -1,4 +1,4 @@
-const CACHE_NAME = 'earth-live-shell-v2';
+const CACHE_NAME = 'earth-live-shell-v4';
 const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
