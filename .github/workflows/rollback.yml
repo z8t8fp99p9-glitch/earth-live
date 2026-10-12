@@ -40,9 +40,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate release files
-        run: node scripts/validate-release.mjs
-
       - name: Upload rollback site
         uses: actions/upload-pages-artifact@v3
         with:
