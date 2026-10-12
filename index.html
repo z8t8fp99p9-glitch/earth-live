@@ -36,6 +36,17 @@
       <p class="panel-foot">Map imagery: Esri World Imagery. Earthquake data: USGS.</p>
     </section>
     <div class="gesture-hint" id="gestureHint">Drag to rotate · Pinch to zoom · Two fingers to tilt</div>
+    <section id="quakeDetails" class="quake-details glass" aria-live="polite" hidden>
+      <button id="closeQuakeDetails" class="close-btn quake-close" aria-label="Close earthquake details">×</button>
+      <div class="quake-detail-eyebrow">EARTHQUAKE EVENT</div>
+      <div class="quake-detail-title"><span id="detailMagnitude">M—</span><strong id="detailPlace">Select an event</strong></div>
+      <div class="quake-detail-grid">
+        <div><small>DEPTH</small><strong id="detailDepth">—</strong></div>
+        <div><small>TIME</small><strong id="detailTime">—</strong></div>
+        <div><small>COORDINATES</small><strong id="detailCoords">—</strong></div>
+      </div>
+      <a id="detailLink" href="https://earthquake.usgs.gov/" target="_blank" rel="noopener noreferrer">View full USGS event ↗</a>
+    </section>
     <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
   </main>
   <script src="./app.js"></script>

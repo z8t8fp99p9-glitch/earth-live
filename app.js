@@ -1,231 +1,33 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const statusEl = $('status');
-  const errorEl = $('errorMessage');
-  const basicBtn = $('basicBtn');
-  const hdBtn = $('hdBtn');
-  const lightingBtn = $('lightingBtn');
-  const layersBtn = $('layersBtn');
-  const layersPanel = $('layersPanel');
-  const quakeToggle = $('quakeToggle');
-  const quakeCount = $('quakeCount');
-  const hint = $('gestureHint');
-  const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-  let viewer, imageryLayer, quality = 'basic', lighting = 'day', quakeTimer = null, quakeEntities = [], hintTimer = null;
-  const quakeSource = new Map();
-
-  function setStatus(message) { statusEl.textContent = message || ''; }
-  function updateQualityButtons() {
-    basicBtn.classList.toggle('active', quality === 'basic');
-    hdBtn.classList.toggle('active', quality === 'hd');
-    basicBtn.setAttribute('aria-pressed', String(quality === 'basic'));
-    hdBtn.setAttribute('aria-pressed', String(quality === 'hd'));
+  const statusEl=$('status'), errorEl=$('errorMessage'), basicBtn=$('basicBtn'), hdBtn=$('hdBtn');
+  const lightingBtn=$('lightingBtn'), layersBtn=$('layersBtn'), layersPanel=$('layersPanel'), quakeToggle=$('quakeToggle'), quakeCount=$('quakeCount');
+  const detail=$('quakeDetails');
+  const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+  const MAX_VISIBLE_QUAKES=220, MAX_ANIMATED_PULSES=24, REFRESH_MS=5*60*1000;
+  let viewer, imageryLayer, quality='basic', lighting='day', quakeTimer=null, touchState=null, lastTwoFingerEnd=0;
+  const quakeEntities=new Map(), quakeData=new Map();
+  let clickHandler=null;
+  const setStatus=m=>{statusEl.textContent=m||'';};
+  function updateQualityButtons(){basicBtn.classList.toggle('active',quality==='basic');hdBtn.classList.toggle('active',quality==='hd');basicBtn.setAttribute('aria-pressed',String(quality==='basic'));hdBtn.setAttribute('aria-pressed',String(quality==='hd'));}
+  function imageryProvider(mode){return new Cesium.UrlTemplateImageryProvider({url:ESRI,minimumLevel:0,maximumLevel:mode==='basic'?3:19,credit:new Cesium.Credit('Imagery © Esri, Maxar, Earthstar Geographics, and the GIS User Community')});}
+  function setQuality(mode){if(!viewer||mode===quality)return;const cam=viewer.camera;const saved={position:cam.position.clone(),direction:cam.direction.clone(),up:cam.up.clone()};quality=mode;updateQualityButtons();setStatus(mode==='basic'?'BASIC · LIGHTWEIGHT':'HD · DETAILED IMAGERY');try{const next=viewer.imageryLayers.addImageryProvider(imageryProvider(mode));next.alpha=1;const old=imageryLayer;imageryLayer=next;if(old)viewer.imageryLayers.remove(old,true);viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();}catch(e){console.error(e);setStatus('Map mode unavailable');}setTimeout(()=>setStatus(''),1800);}
+  function setLighting(){lighting=lighting==='day'?'night':'day';viewer.clock.currentTime=Cesium.JulianDate.now();viewer.clock.shouldAnimate=true;viewer.scene.globe.enableLighting=lighting==='night';viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;$('lightingIcon').textContent=lighting==='day'?'☼':'☾';lightingBtn.setAttribute('aria-label',lighting==='day'?'Switch to night shading':'Switch to day shading');lightingBtn.style.background=lighting==='night'?'rgba(103,157,220,.23)':'';setStatus(lighting==='night'?'REAL-TIME SOLAR SHADING':'DAY VIEW');viewer.scene.requestRender();setTimeout(()=>setStatus(''),1600);}
+  function makeQuakeEntity(feature,animate){const p=feature.properties||{},c=feature.geometry?.coordinates;if(!c||c.length<2)return null;const lon=+c[0],lat=+c[1],depth=Math.max(0,+(c[2]||0)),mag=+(p.mag||0);if(!Number.isFinite(lon)||!Number.isFinite(lat))return null;const id=String(feature.id||`${lon}:${lat}:${p.time||''}`);const pos=Cesium.Cartesian3.fromDegrees(lon,lat,1000);const ent=viewer.entities.add({id:'quake-'+id,position:pos,point:{pixelSize:Math.max(5,Math.min(11,4+mag*1.05)),color:Cesium.Color.fromCssColorString('#ff716b'),outlineColor:Cesium.Color.WHITE.withAlpha(.9),outlineWidth:1.1,heightReference:Cesium.HeightReference.NONE,disableDepthTestDistance:0},label:mag>=5?{text:`M${mag.toFixed(1)}`,font:'10px sans-serif',fillColor:Cesium.Color.WHITE,outlineColor:Cesium.Color.BLACK,outlineWidth:2,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-15),scaleByDistance:new Cesium.NearFarScalar(2e5,1,1.5e7,.45)}:undefined});
+    if(animate){const start=Date.now();ent.ellipse={semiMajorAxis:new Cesium.CallbackProperty(()=>{const t=((Date.now()-start)%2600)/2600;return 14000+t*Math.max(1,mag)*65000;},false),semiMinorAxis:new Cesium.CallbackProperty(()=>{const t=((Date.now()-start)%2600)/2600;return 14000+t*Math.max(1,mag)*65000;},false),height:1100,material:new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(()=>{const t=((Date.now()-start)%2600)/2600;return Cesium.Color.fromCssColorString('#ff655f').withAlpha(.18*(1-t));},false)),outline:true,outlineColor:new Cesium.CallbackProperty(()=>{const t=((Date.now()-start)%2600)/2600;return Cesium.Color.fromCssColorString('#ff8179').withAlpha(.65*(1-t));},false),outlineWidth:1.5,heightReference:Cesium.HeightReference.NONE};}
+    quakeData.set(id,{id,mag,lon,lat,depth,time:+p.time||0,title:p.title||'Earthquake',url:p.url||'https://earthquake.usgs.gov/'});return ent;}
+  function showQuake(id){const q=quakeData.get(id);if(!q)return;$('detailMagnitude').textContent=`M${q.mag.toFixed(1)}`;$('detailPlace').textContent=q.title;$('detailDepth').textContent=`${q.depth.toFixed(1)} km`;$('detailTime').textContent=q.time?new Date(q.time).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'Time unavailable';$('detailCoords').textContent=`${q.lat.toFixed(2)}°, ${q.lon.toFixed(2)}°`;$('detailLink').href=q.url;detail.hidden=false;}
+  function closeDetails(){detail.hidden=true;}
+  async function loadQuakes(){if(!viewer||!quakeToggle.checked)return;quakeCount.hidden=false;quakeCount.textContent='Loading USGS events…';try{const r=await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson',{cache:'no-store'});if(!r.ok)throw Error('USGS '+r.status);const data=await r.json();const all=(data.features||[]).filter(f=>f.geometry?.coordinates&&Number.isFinite(+f.properties?.mag));const selected=all.sort((a,b)=>((+b.properties.mag*1000000)+(+b.properties.time||0)/100000)-((+a.properties.mag*1000000)+(+a.properties.time||0)/100000)).slice(0,MAX_VISIBLE_QUAKES);const wanted=new Set(selected.map(f=>String(f.id)));for(const [id,e] of quakeEntities){if(!wanted.has(id)){viewer.entities.remove(e);quakeEntities.delete(id);quakeData.delete(id);}}
+      selected.sort((a,b)=>(+b.properties.time||0)-(+a.properties.time||0));selected.forEach((f,i)=>{const id=String(f.id);if(quakeEntities.has(id))return;const ent=makeQuakeEntity(f,i<MAX_ANIMATED_PULSES);if(ent)quakeEntities.set(id,ent);});quakeCount.textContent=`Showing ${selected.length} of ${all.length.toLocaleString()} events · past 7 days`;setStatus('EARTHQUAKES UPDATED');setTimeout(()=>setStatus(''),1300);viewer.scene.requestRender();}catch(e){console.error(e);quakeCount.textContent='USGS unavailable · tap off/on to retry';}}
+  function clearQuakes(){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}for(const e of quakeEntities.values())viewer.entities.remove(e);quakeEntities.clear();quakeData.clear();quakeCount.hidden=true;closeDetails();}
+  function toggleQuakes(){if(quakeToggle.checked){loadQuakes();if(quakeTimer)clearInterval(quakeTimer);quakeTimer=setInterval(loadQuakes,REFRESH_MS);}else clearQuakes();}
+  function installTouchGestures(){const canvas=viewer.canvas;canvas.style.touchAction='none';const pt=t=>({x:t.clientX,y:t.clientY});const metrics=ts=>{const a=pt(ts[0]),b=pt(ts[1]);return{x:(a.x+b.x)/2,y:(a.y+b.y)/2,d:Math.hypot(b.x-a.x,b.y-a.y),a:Math.atan2(b.y-a.y,b.x-a.x)};};const clampPitch=()=>{const c=viewer.camera;const pitch=c.pitch;const min=Cesium.Math.toRadians(-88),max=Cesium.Math.toRadians(-8);if(pitch<min||pitch>max){const p=Cesium.Math.clamp(pitch,min,max);c.setView({orientation:{heading:c.heading,pitch:p,roll:c.roll}});}};
+    canvas.addEventListener('touchstart',e=>{if(e.touches.length===2){e.preventDefault();touchState={...metrics(e.touches)};viewer.scene.screenSpaceCameraController.enableInputs=false;}else if(e.touches.length>2){e.preventDefault();touchState=null;}},{passive:false});
+    canvas.addEventListener('touchmove',e=>{if(e.touches.length!==2||!touchState)return;e.preventDefault();const m=metrics(e.touches),dy=m.y-touchState.y,dx=m.x-touchState.x,dd=m.d-touchState.d;let da=m.a-touchState.a;while(da>Math.PI)da-=2*Math.PI;while(da< -Math.PI)da+=2*Math.PI;const cam=viewer.camera;try{if(Math.abs(dy)>0.2){cam.rotateUp(dy*0.0032);clampPitch();}if(Math.abs(dx)>0.2)cam.rotateRight(-dx*0.0025);if(Math.abs(dd)>0.2){const h=cam.positionCartographic.height;const amount=Math.max(1500,Math.min(350000,Math.abs(dd)*Math.max(5000,h*.006)));if(dd>0)cam.zoomIn(amount);else cam.zoomOut(amount);}if(Math.abs(da)>0.004)cam.twistRight(-da);viewer.scene.requestRender();}catch(err){/* Ignore camera limit edge cases. */}touchState=m;},{passive:false});
+    const end=e=>{if(e.touches.length<2&&touchState){touchState=null;lastTwoFingerEnd=Date.now();viewer.scene.screenSpaceCameraController.enableInputs=true;}};canvas.addEventListener('touchend',end,{passive:true});canvas.addEventListener('touchcancel',end,{passive:true});
   }
-  function imageryProvider(mode) {
-    return new Cesium.UrlTemplateImageryProvider({
-      url: ESRI,
-      maximumLevel: mode === 'basic' ? 5 : 19,
-      credit: new Cesium.Credit('Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community')
-    });
-  }
-  async function setQuality(mode) {
-    if (!viewer || mode === quality) return;
-    const camera = viewer.camera;
-    const saved = { position: camera.position.clone(), direction: camera.direction.clone(), up: camera.up.clone() };
-    quality = mode;
-    updateQualityButtons();
-    setStatus(mode === 'basic' ? 'BASIC MAP' : 'HD IMAGERY');
-    try {
-      const provider = imageryProvider(mode);
-      if (imageryLayer) viewer.imageryLayers.remove(imageryLayer, false);
-      imageryLayer = viewer.imageryLayers.addImageryProvider(provider);
-      imageryLayer.alpha = 1;
-      viewer.camera.setView({ destination: saved.position, orientation: { direction: saved.direction, up: saved.up } });
-      viewer.scene.requestRender();
-    } catch (e) {
-      setStatus('Map mode unavailable');
-    }
-    window.setTimeout(() => setStatus(''), 1800);
-  }
-  function setLighting() {
-    lighting = lighting === 'day' ? 'night' : 'day';
-    viewer.scene.globe.enableLighting = lighting === 'night';
-    viewer.scene.globe.showGroundAtmosphere = true;
-    viewer.scene.skyAtmosphere.show = true;
-    $('lightingIcon').textContent = lighting === 'day' ? '☼' : '☾';
-    lightingBtn.setAttribute('aria-label', lighting === 'day' ? 'Switch to night lighting' : 'Switch to day lighting');
-    lightingBtn.style.background = lighting === 'night' ? 'rgba(103,157,220,.23)' : '';
-    setStatus(lighting === 'night' ? 'SOLAR NIGHT SHADING' : 'DAY VIEW');
-    window.setTimeout(() => setStatus(''), 1600);
-  }
-  function pulseEntity(feature) {
-    const p = feature.properties || {};
-    const coords = feature.geometry && feature.geometry.coordinates;
-    if (!coords || coords.length < 2) return null;
-    const lon = Number(coords[0]), lat = Number(coords[1]), depthKm = Math.max(0, Number(coords[2] || 0));
-    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
-    const mag = Number(p.mag || 0);
-    const id = String(feature.id || `${lon}:${lat}:${p.time || ''}`);
-    const now = Date.now();
-    const position = Cesium.Cartesian3.fromDegrees(lon, lat, 1500);
-    const entity = viewer.entities.add({
-      id: 'quake-' + id,
-      position,
-      point: { pixelSize: Math.max(5, Math.min(12, 4 + mag * 1.15)), color: Cesium.Color.fromCssColorString('#ff716b'), outlineColor: Cesium.Color.WHITE.withAlpha(.9), outlineWidth: 1.2, heightReference: Cesium.HeightReference.NONE },
-      ellipse: {
-        semiMajorAxis: new Cesium.CallbackProperty(() => {
-          const t = ((Date.now() - now) % 2400) / 2400;
-          return 18000 + t * (Math.max(1, mag) * 90000);
-        }, false),
-        semiMinorAxis: new Cesium.CallbackProperty(() => {
-          const t = ((Date.now() - now) % 2400) / 2400;
-          return 18000 + t * (Math.max(1, mag) * 90000);
-        }, false),
-        height: 1600,
-        material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
-          const t = ((Date.now() - now) % 2400) / 2400;
-          return Cesium.Color.fromCssColorString('#ff655f').withAlpha(.20 * (1 - t));
-        }, false)),
-        outline: true,
-        outlineColor: new Cesium.CallbackProperty(() => {
-          const t = ((Date.now() - now) % 2400) / 2400;
-          return Cesium.Color.fromCssColorString('#ff8179').withAlpha(.78 * (1 - t));
-        }, false),
-        outlineWidth: 2,
-        heightReference: Cesium.HeightReference.NONE
-      },
-      label: { text: `M${mag.toFixed(1)}`, font: '11px sans-serif', fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK.withAlpha(.8), outlineWidth: 2, style: Cesium.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new Cesium.Cartesian2(0, -18), scaleByDistance: new Cesium.NearFarScalar(2e5, 1, 1.5e7, .45), show: mag >= 4.5 }
-    });
-    entity.description = `${p.title || 'Earthquake'}<br>Magnitude: ${mag.toFixed(1)}<br>Depth: ${depthKm.toFixed(1)} km`;
-    return entity;
-  }
-  async function loadQuakes() {
-    if (!viewer || !quakeToggle.checked) return;
-    quakeCount.hidden = false; quakeCount.textContent = 'Loading USGS feed…';
-    try {
-      const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson', { cache: 'no-store' });
-      if (!response.ok) throw new Error('USGS response ' + response.status);
-      const data = await response.json();
-      const features = (data.features || []).filter(f => f.geometry && f.geometry.coordinates);
-      const currentIds = new Set(features.map(f => String(f.id)));
-      for (const [id, entity] of quakeSource.entries()) if (!currentIds.has(id)) { viewer.entities.remove(entity); quakeSource.delete(id); }
-      for (const feature of features) {
-        const id = String(feature.id);
-        if (!quakeSource.has(id)) {
-          const entity = pulseEntity(feature);
-          if (entity) quakeSource.set(id, entity);
-        }
-      }
-      quakeCount.textContent = `${features.length.toLocaleString()} earthquakes · last 7 days`;
-      setStatus('EARTHQUAKES LIVE');
-      window.setTimeout(() => setStatus(''), 1500);
-    } catch (err) {
-      quakeCount.textContent = 'Could not reach USGS. Tap off/on to retry.';
-    }
-  }
-  function clearQuakes() {
-    if (quakeTimer) { clearInterval(quakeTimer); quakeTimer = null; }
-    for (const entity of quakeSource.values()) viewer.entities.remove(entity);
-    quakeSource.clear(); quakeEntities = [];
-    quakeCount.hidden = true;
-  }
-  function toggleQuakes() {
-    if (quakeToggle.checked) {
-      loadQuakes();
-      if (quakeTimer) clearInterval(quakeTimer);
-      quakeTimer = setInterval(loadQuakes, 5 * 60 * 1000);
-    } else clearQuakes();
-  }
-  function installTouchGestures() {
-    const canvas = viewer.canvas;
-    canvas.style.touchAction = 'none';
-    let gesture = null;
-    const pt = t => ({ x: t.clientX, y: t.clientY });
-    const metrics = touches => {
-      const a = pt(touches[0]), b = pt(touches[1]);
-      return { x: (a.x+b.x)/2, y: (a.y+b.y)/2, distance: Math.hypot(b.x-a.x,b.y-a.y), angle: Math.atan2(b.y-a.y,b.x-a.x) };
-    };
-    canvas.addEventListener('touchstart', e => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const m = metrics(e.touches);
-        gesture = { ...m };
-        viewer.scene.screenSpaceCameraController.enableInputs = false;
-      } else if (e.touches.length > 2) { e.preventDefault(); gesture = null; }
-    }, { passive: false });
-    canvas.addEventListener('touchmove', e => {
-      if (e.touches.length !== 2 || !gesture) return;
-      e.preventDefault();
-      const m = metrics(e.touches);
-      const dy = m.y - gesture.y;
-      const dx = m.x - gesture.x;
-      const dd = m.distance - gesture.distance;
-      let da = m.angle - gesture.angle;
-      while (da > Math.PI) da -= 2*Math.PI;
-      while (da < -Math.PI) da += 2*Math.PI;
-      try {
-        if (Math.abs(dy) > .1) viewer.camera.rotateUp(Cesium.Math.clamp(-dy * .0045, -.09, .09));
-        if (Math.abs(dx) > .1) viewer.camera.rotateRight(Cesium.Math.clamp(-dx * .0035, -.08, .08));
-        if (Math.abs(dd) > .1) {
-          const amount = Math.max(2000, Math.min(250000, Math.abs(dd) * viewer.camera.positionCartographic.height * .004));
-          if (dd > 0) viewer.camera.zoomOut(amount); else viewer.camera.zoomIn(amount);
-        }
-        if (Math.abs(da) > .003) viewer.camera.twistRight(-da * .7);
-        viewer.scene.requestRender();
-      } catch (_) { /* Keep the gesture responsive if the camera reaches a limit. */ }
-      gesture = m;
-    }, { passive: false });
-    const end = e => {
-      if (e.touches.length < 2 && gesture) {
-        gesture = null;
-        viewer.scene.screenSpaceCameraController.enableInputs = true;
-      }
-    };
-    canvas.addEventListener('touchend', end, { passive: true });
-    canvas.addEventListener('touchcancel', end, { passive: true });
-  }
-  function init() {
-    if (!window.Cesium) { errorEl.hidden = false; setStatus(''); return; }
-    try {
-      viewer = new Cesium.Viewer('globe', {
-        imageryProvider: false,
-        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-        animation: false, timeline: false, baseLayerPicker: false, geocoder: false,
-        homeButton: false, sceneModePicker: false, navigationHelpButton: false,
-        fullscreenButton: false, infoBox: true, selectionIndicator: false,
-        shouldAnimate: true, requestRenderMode: false,
-        scene3DOnly: true, contextOptions: { webgl: { alpha: false, antialias: true, powerPreference: 'high-performance' } }
-      });
-      viewer.imageryLayers.removeAll(false);
-      imageryLayer = viewer.imageryLayers.addImageryProvider(imageryProvider('basic'));
-      viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#030509');
-      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#101820');
-      viewer.scene.globe.enableLighting = false;
-      viewer.scene.globe.showGroundAtmosphere = true;
-      viewer.scene.skyAtmosphere.show = true;
-      viewer.scene.fog.enabled = true;
-      viewer.scene.screenSpaceCameraController.enableTilt = true;
-      viewer.scene.screenSpaceCameraController.enableLook = true;
-      viewer.scene.screenSpaceCameraController.minimumZoomDistance = 650000;
-      viewer.scene.screenSpaceCameraController.maximumZoomDistance = 35000000;
-      viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(12, 18, 24500000), orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0 } });
-      viewer.camera.percentageChanged = .01;
-      viewer.scene.globe.depthTestAgainstTerrain = false;
-      installTouchGestures();
-      setStatus('EARTH ONLINE');
-      window.setTimeout(() => setStatus(''), 2200);
-      hintTimer = setTimeout(() => hint.classList.add('hide'), 8000);
-    } catch (err) {
-      console.error(err); errorEl.hidden = false; setStatus('');
-    }
-  }
-  basicBtn.addEventListener('click', () => setQuality('basic'));
-  hdBtn.addEventListener('click', () => setQuality('hd'));
-  lightingBtn.addEventListener('click', setLighting);
-  layersBtn.addEventListener('click', () => { layersPanel.hidden = !layersPanel.hidden; layersBtn.setAttribute('aria-expanded', String(!layersPanel.hidden)); });
-  $('closeLayers').addEventListener('click', () => { layersPanel.hidden = true; layersBtn.setAttribute('aria-expanded', 'false'); });
-  quakeToggle.addEventListener('change', toggleQuakes);
-  document.addEventListener('visibilitychange', () => { if (document.hidden && quakeTimer) clearInterval(quakeTimer); else if (!document.hidden && quakeToggle.checked) { loadQuakes(); quakeTimer = setInterval(loadQuakes, 5 * 60 * 1000); } });
-  init();
+  function init(){if(!window.Cesium){errorEl.hidden=false;return;}try{viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:true,requestRenderMode:false,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});viewer.imageryLayers.removeAll(false);imageryLayer=viewer.imageryLayers.addImageryProvider(imageryProvider('basic'));viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');viewer.scene.globe.enableLighting=false;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.clock.currentTime=Cesium.JulianDate.now();viewer.clock.shouldAnimate=true;viewer.scene.screenSpaceCameraController.enableTilt=true;viewer.scene.screenSpaceCameraController.enableLook=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=650000;viewer.scene.screenSpaceCameraController.maximumZoomDistance=35000000;viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});viewer.scene.globe.depthTestAgainstTerrain=false;installTouchGestures();clickHandler=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);clickHandler.setInputAction(m=>{if(Date.now()-lastTwoFingerEnd<350)return;const picked=viewer.scene.pick(m.position);if(Cesium.defined(picked)&&picked.id){const id=String(picked.id.id||'').replace(/^quake-/,'');if(quakeData.has(id))showQuake(id);else closeDetails();}else closeDetails();},Cesium.ScreenSpaceEventType.LEFT_CLICK);setStatus('EARTH ONLINE');setTimeout(()=>setStatus(''),1800);}catch(e){console.error(e);errorEl.hidden=false;setStatus('');}}
+  basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));lightingBtn.addEventListener('click',setLighting);layersBtn.addEventListener('click',()=>{layersPanel.hidden=!layersPanel.hidden;layersBtn.setAttribute('aria-expanded',String(!layersPanel.hidden));});$('closeLayers').addEventListener('click',()=>{layersPanel.hidden=true;layersBtn.setAttribute('aria-expanded','false');});quakeToggle.addEventListener('change',toggleQuakes);$('closeQuakeDetails').addEventListener('click',closeDetails);document.addEventListener('visibilitychange',()=>{if(document.hidden&&quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}else if(!document.hidden&&quakeToggle.checked){loadQuakes();if(!quakeTimer)quakeTimer=setInterval(loadQuakes,REFRESH_MS);}});init();
 })();
