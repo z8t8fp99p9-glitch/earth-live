@@ -26,10 +26,10 @@
   ];
   let quakes = [], showQuakes = true, showCities = false, orbital = true, refreshTimer;
   const world = Globe()(el)
-    .globeImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-blue-marble.jpg')
+    .globeImageUrl('./assets/earth-relief-skin.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png')
     .backgroundImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/night-sky.png')
-    .showAtmosphere(true).atmosphereColor('#4aa6ff').atmosphereAltitude(0.18)
+    .showAtmosphere(true).atmosphereColor('#48baff').atmosphereAltitude(0.16)
     .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude('alt')
     .pointRadius('radius').pointColor('color')
     .pointLabel(d => d.label || d.name || 'Location')
@@ -50,22 +50,18 @@
   const controls = world.controls();
   controls.autoRotate = true; controls.autoRotateSpeed = 0.28;
   controls.enableDamping = true; controls.dampingFactor = 0.08;
-  // Keep close zoom within the useful resolution of the bundled globe texture.
-  // This avoids magnifying pixels excessively on mobile while preserving normal pinch zoom.
-  controls.minDistance = 128;
-  controls.maxDistance = 900;
   world.onGlobeReady(() => {
-    // The existing topology bump map provides a subtle terrain impression without
-    // adding terrain meshes or per-frame height calculations. Tune it gently if
-    // this globe.gl version exposes its material accessor.
+    loading.style.display = 'none';
+    // Restrained terrain shading: enhance depth without turning the globe into a hard relief model.
     try {
       const material = world.globeMaterial();
-      if (material && 'bumpScale' in material) {
-        material.bumpScale = 0.16;
+      if (material) {
+        material.bumpScale = 0.12;
+        if (material.specular && material.specular.set) material.specular.set('#536b80');
+        material.shininess = 9;
         material.needsUpdate = true;
       }
-    } catch (_) { /* Keep the default material if the library API differs. */ }
-    loading.style.display = 'none';
+    } catch (err) { console.warn('Optional terrain shading unavailable.', err); }
   });
   function renderPoints() {
     let points = [];
