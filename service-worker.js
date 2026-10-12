@@ -1,5 +1,5 @@
-const CACHE_NAME = 'earth-live-shell-v5-realistic-terrain';
-const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg','./assets/earth-relief-skin.jpg'];
+const CACHE_NAME = 'earth-live-shell-v5b-root-texture-fix';
+const SHELL = ['./','./index.html','./app.js','./manifest.webmanifest','./icons/icon.svg','./earth-relief-skin.jpg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

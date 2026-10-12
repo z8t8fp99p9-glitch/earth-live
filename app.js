@@ -26,7 +26,7 @@
   ];
   let quakes = [], showQuakes = true, showCities = false, orbital = true, refreshTimer;
   const world = Globe()(el)
-    .globeImageUrl('./assets/earth-relief-skin.jpg')
+    .globeImageUrl('./earth-relief-skin.jpg')
     .bumpImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/earth-topology.png')
     .backgroundImageUrl('https://unpkg.com/three-globe@2.41.12/example/img/night-sky.png')
     .showAtmosphere(true).atmosphereColor('#48baff').atmosphereAltitude(0.16)
