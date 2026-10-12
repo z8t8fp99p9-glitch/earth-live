@@ -2,8 +2,9 @@
   'use strict';
   const $ = (id) => document.getElementById(id);
   const el = $('globe'), loading = $('loading'), detail = $('detail');
-  const detailTitle = $('detailTitle'), detailText = $('detailText');
+  const detailTitle = $('detailTitle'), detailText = $('detailText'), detailLink = $('detailLink');
   const count = $('eventCount'), updated = $('updated');
+  let quakeRings = [];
   const quakeBtn = $('quakeBtn'), citiesBtn = $('citiesBtn'), orbitBtn = $('orbitBtn'), refreshBtn = $('refresh');
   if (!window.Globe) {
     loading.textContent = 'THE GLOBE LIBRARY COULD NOT LOAD. CHECK YOUR CONNECTION AND RELOAD.';
@@ -32,10 +33,16 @@
     .pointsData([]).pointLat('lat').pointLng('lng').pointAltitude('alt')
     .pointRadius('radius').pointColor('color')
     .pointLabel(d => d.label || d.name || 'Location')
+    .ringsData([]).ringLat('lat').ringLng('lng').ringColor(d => [d.ringColor, d.ringColorFade])
+    .ringMaxRadius('ringSize').ringPropagationSpeed(d => d.ringSpeed).ringRepeatPeriod(d => d.ringPeriod)
     .onPointClick(d => {
       detail.style.display = 'block';
       detailTitle.textContent = d.title || d.name || 'LOCATION';
       detailText.textContent = d.description || d.label || 'Map location';
+      if (detailLink) {
+        if (d.url) { detailLink.href = d.url; detailLink.style.display = 'inline-block'; }
+        else { detailLink.removeAttribute('href'); detailLink.style.display = 'none'; }
+      }
     });
   const resize = () => world.width(el.clientWidth).height(el.clientHeight);
   window.addEventListener('resize', resize, {passive:true}); resize();
@@ -51,6 +58,7 @@
       ...c, alt:0.004, radius:0.16, color:'#6be7ff', label:c.name, title:c.name
     })));
     world.pointsData(points);
+    world.ringsData(showQuakes ? quakeRings : []);
     count.textContent = (showQuakes ? quakes.length : 0) + ' QUAKES';
     quakeBtn.setAttribute('aria-pressed', String(showQuakes));
     citiesBtn.setAttribute('aria-pressed', String(showCities));
@@ -64,17 +72,29 @@
       const data = await res.json();
       quakes = (data.features || []).filter(f => f.geometry && f.geometry.coordinates).map(f => {
         const p = f.properties || {}, c = f.geometry.coordinates, mag = Number(p.mag) || 0, place = p.place || 'Location unavailable';
-        const time = p.time ? new Date(p.time).toLocaleString() : 'Time unavailable';
+        const eventDate = p.time ? new Date(p.time) : null;
+      const time = eventDate ? eventDate.toLocaleString(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true, timeZoneName:'short'}) : 'Time unavailable';
+      const depth = Number.isFinite(c[2]) ? c[2].toFixed(1) + ' km' : 'Unavailable';
         return {
           lat:c[1], lng:c[0], alt:Math.min(0.12,0.012+Math.max(0,mag)*0.012),
           radius:Math.max(0.12,Math.min(0.7,Math.max(0.5,mag)*0.13)),
           color:mag>=5?'#ff5d73':mag>=3?'#ffb15e':'#6be7ff',
-          title:'MAGNITUDE ' + mag.toFixed(1),
+          title:'EARTHQUAKE · M' + mag.toFixed(1),
           label:'M' + mag.toFixed(1) + ' · ' + place,
-          description:place + ' · ' + time + ' · USGS public feed'
+          description:'Magnitude: ' + mag.toFixed(1) + '\nLocation: ' + place + '\nDepth: ' + depth + '\nLocal event time: ' + time,
+          url:p.url || null,
+          magnitude:mag, eventTime:Number(p.time)||0,
+          ringColor:mag>=5?'rgba(255,77,104,0.88)':mag>=3?'rgba(255,145,77,0.78)':'rgba(107,231,255,0.58)',
+          ringColorFade:mag>=5?'rgba(255,77,104,0.03)':mag>=3?'rgba(255,145,77,0.02)':'rgba(107,231,255,0.01)',
+          ringSize:Math.max(0.7,Math.min(5.5,0.65+Math.max(0,mag)*0.68)),
+          ringSpeed:mag>=5?2.2:mag>=3?1.5:0.9,
+          ringPeriod:mag>=5?950:mag>=3?1350:1900
         };
       });
-      updated.textContent = 'USGS refreshed ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      // Keep the strongest/recent events visually represented without overwhelming the globe.
+      quakeRings = quakes.filter(q => q.magnitude >= 2.5)
+        .sort((a,b) => b.magnitude-a.magnitude || b.eventTime-a.eventTime).slice(0,180);
+      updated.textContent = 'USGS refreshed ' + new Date().toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'});
       renderPoints();
     } catch (err) {
       updated.textContent = 'Live feed unavailable. Try refresh when online.';
