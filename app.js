@@ -22,23 +22,22 @@ function syncViewport(){
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
  resizeFrame=requestAnimationFrame(()=>{
   resizeFrame=0;
+  /* Use the live app box, not screen.height: on iOS landscape screen.height may still be the portrait dimension. */
+  const rect=app.getBoundingClientRect();
   const vv=window.visualViewport;
-  const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:0;
-  const innerHeight=window.innerHeight||0;
-  const screenHeight=(window.screen&&window.screen.height)||0;
   const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
-  const landscape=(window.innerWidth||0)>(window.innerHeight||0);
-  let target;
+  let targetHeight;
   if(standalone){
-   // In standalone portrait, screen.height is the physical long edge on iOS.
-   // In landscape, screen.height can remain the portrait value; use live viewport height.
-   target=landscape?Math.max(visualHeight,innerHeight):screenHeight;
+   targetHeight=(window.innerWidth>window.innerHeight)
+    ? Math.max(window.innerHeight, vv&&vv.height||0)
+    : Math.max(window.screen&&window.screen.height||0, window.innerHeight, vv&&vv.height||0);
   }else{
-   // Safari must fit the actual webpage area, not the physical screen behind browser chrome.
-   target=Math.max(visualHeight,innerHeight);
+   targetHeight=Math.max(window.innerHeight, vv&&vv.height||0);
   }
-  if(!Number.isFinite(target)||target<100)target=innerHeight||screenHeight||100;
-  app.style.setProperty('--earth-live-height',`${Math.ceil(target)}px`);
+  if(!Number.isFinite(targetHeight)||targetHeight<100)targetHeight=rect.height||window.innerHeight||100;
+  /* In landscape the viewport's height is the short edge; in portrait standalone use screen height. */
+  app.style.height=`${Math.ceil(targetHeight)}px`;
+  app.style.width='100%';
   if(viewer){viewer.resize();viewer.scene.requestRender();}
  });
 }
@@ -52,18 +51,12 @@ function init(){
   viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
   updateButtons();syncViewport();
-  if(window.visualViewport){
-   window.visualViewport.addEventListener('resize',syncViewport,{passive:true});
-   window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});
-  }
+  if(window.visualViewport){window.visualViewport.addEventListener('resize',syncViewport,{passive:true});window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});}
   window.addEventListener('resize',syncViewport,{passive:true});
-  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,150),{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,200);}}, {passive:true});
-  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,200);},{passive:true});
-  if('ResizeObserver' in window){
-   const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});
-   observer.observe(app);
-  }
+  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,200),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,250);}}, {passive:true});
+  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,250);},{passive:true});
+  if('ResizeObserver' in window){const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});observer.observe(app);}
  }catch(e){console.error(e);errorEl.hidden=false;}
 }
 basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));

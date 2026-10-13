@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="./style.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-</head><body><main id="app"><div id="globe" aria-label="Interactive Earth globe"></div><div class="edge-gesture-guard edge-top" aria-hidden="true"></div><div class="edge-gesture-guard edge-right" aria-hidden="true"></div><div class="edge-gesture-guard edge-bottom" aria-hidden="true"></div><div class="edge-gesture-guard edge-left" aria-hidden="true"></div><div class="app-stamp" aria-label="EARTH // LIVE version 1.5"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
+</head><body><main id="app"><div id="globe" aria-label="Interactive Earth globe"></div><div class="edge-gesture-guard edge-top" aria-hidden="true"></div><div class="edge-gesture-guard edge-right" aria-hidden="true"></div><div class="edge-gesture-guard edge-bottom" aria-hidden="true"></div><div class="edge-gesture-guard edge-left" aria-hidden="true"></div><div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 <div class="bottom-ui" aria-label="Map controls">
 <div class="quality glass" role="group" aria-label="Map quality"><button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button><button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button></div>
 <button class="icon-btn glass" id="locateBtn" aria-label="Location feature not enabled yet" title="Location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
@@ -14,6 +14,5 @@
 <button class="icon-btn glass" id="layersBtn" aria-label="Data layers not enabled yet" title="Data layers"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
 </div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div></main>
 <script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./app.js"></script>
-<script src="./viewport-diagnostic.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>
