@@ -1,10 +1,10 @@
-EARTH // LIVE — Live Location Dataset v1.0
+EARTH // LIVE — Day/Night Shadow Dataset v1.0
 
-1. Upload `location-dataset.js` to the repository root.
-2. In the existing `index.html`, add this script after `data-store.js` and before `app.js`:
-   <script src="./location-dataset.js"></script>
-3. Do not replace `index.html`, `app.js`, `style.css`, `data-store.js`, or the service worker.
-4. Open the app on HTTPS and tap the existing Location button. Approve location permission if desired.
-5. Verify local record count via the existing EarthLiveCollections.stats() API in a suitable developer console; this package does not display coordinates or add UI.
+1. Upload `daynight-shadow-dataset.js` to the repository root.
+2. In the existing `index.html`, add this line after `data-store.js` and before `app.js`:
+   <script src="./daynight-shadow-dataset.js"></script>
+3. Do not replace or edit other files as part of this package.
+4. The module calculates and stores solar geometry only. It does not enable or alter the existing Day/Night button, render a shadow, move the camera, or change the visible UI.
+5. After uploading, verify local records are being saved before proceeding to a separate rendering integration.
 
-No assistant-side GitHub changes were made.
+No GitHub edits have been made by the assistant.

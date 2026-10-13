@@ -1,14 +1,12 @@
 {
-  "package": "EARTH // LIVE Live Location Dataset",
+  "package": "EARTH // LIVE Day/Night Shadow Dataset",
   "version": "1.0",
-  "collection": "location",
-  "recordId": "current",
-  "storage": "existing IndexedDB only",
-  "trigger": "explicit tap on existing Location button",
-  "automaticLaunchRequest": false,
-  "backgroundTracking": false,
-  "serverUpload": false,
-  "cameraMovement": false,
+  "collection": "solar-shadow",
+  "coverage": "global",
+  "activeAppIntervalMinutes": 30,
+  "historyDays": 7,
+  "storage": "balanced",
+  "dataSource": "local solar-position calculation; no network",
   "visibleUIChanges": false,
   "githubEditedByAssistant": false
 }
