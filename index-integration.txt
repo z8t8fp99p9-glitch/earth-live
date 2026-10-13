@@ -1,0 +1,13 @@
+EARTH // LIVE — one-line integration (no visible UI change)
+
+In the existing index.html, locate these adjacent script tags:
+
+<script src="./app-version.js"></script>
+<script src="./data-store.js"></script>
+<script src="./app.js"></script>
+
+Insert this line between data-store.js and app.js:
+
+<script src="./cloud-collector.js"></script>
+
+Do not replace the entire index.html. Do not change any other script order or visible UI.

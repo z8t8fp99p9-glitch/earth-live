@@ -1,0 +1,16 @@
+{
+  "package": "EARTH // LIVE Cloud Dataset Foundation",
+  "packageVersion": "1.0",
+  "targetAppVersion": "1.14 baseline context; verify against the currently installed package before integration",
+  "userSettings": {
+    "coverage": "global",
+    "checkIntervalMinutes": 30,
+    "observationHistoryDays": 7,
+    "scientificMeasurements": true,
+    "storageStrategy": "balanced"
+  },
+  "uiChanges": false,
+  "githubChanges": false,
+  "integration": "Add cloud-collector.js after data-store.js and before app.js in existing index.html",
+  "importantLimitation": "Scientific MODIS HDF-EOS parsing is not enabled until the granule download and browser parser path is verified."
+}
