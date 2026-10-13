@@ -26,7 +26,7 @@ function init(){
   viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
   viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
   /* Native Cesium gestures only; no custom touch handler or Live Location camera flight. */
-  viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;
+  viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
   updateButtons();
  }catch(e){console.error(e);errorEl.hidden=false;}

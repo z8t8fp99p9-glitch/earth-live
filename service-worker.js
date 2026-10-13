@@ -1,4 +1,4 @@
-const CACHE='earth-live-main-shell-v29-clean-collection-foundation';
+const CACHE='earth-live-main-shell-v30-v1-1-zoom-stamp';
 const SHELL=['./','./index.html','./style.css','./data-store.js','./app.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(()=>{}).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('earth-live-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
