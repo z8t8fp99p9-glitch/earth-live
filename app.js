@@ -1,9 +1,9 @@
 (() => {
 'use strict';
-const $=id=>document.getElementById(id),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn');
+const $=id=>document.getElementById(id),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn'),app=$('app');
 const IMAGERY='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const HILLSHADE='https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}';
-let viewer,imageryLayer,hillshadeLayer=null,quality='basic';
+let viewer,imageryLayer,hillshadeLayer=null,quality='basic',resizeFrame=0;
 function provider(url,max,credit){return new Cesium.UrlTemplateImageryProvider({url,minimumLevel:0,maximumLevel:max,credit:new Cesium.Credit(credit)});}
 function imagery(mode){return provider(IMAGERY,mode==='basic'?3:19,'Imagery © Esri and contributors');}
 function hillshade(){return provider(HILLSHADE,13,'World Hillshade © Esri, USGS, NGA, NASA, CGIAR, and GIS contributors');}
@@ -18,6 +18,39 @@ function setQuality(mode){
   quality=mode;updateButtons();viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();
  }catch(e){console.error('Map mode change failed',e);}
 }
+/* iOS Home Screen viewport can differ between launches. Measure it, account for the
+   bottom safe area, and explicitly ask Cesium to resize after every viewport change. */
+function readSafeAreaBottom(){
+ const probe=document.createElement('div');
+ probe.style.cssText='position:fixed;left:-100px;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none';
+ document.body.appendChild(probe);
+ const value=parseFloat(getComputedStyle(probe).paddingBottom)||0;
+ probe.remove();
+ return value;
+}
+function syncViewport(){
+ if(resizeFrame)cancelAnimationFrame(resizeFrame);
+ resizeFrame=requestAnimationFrame(()=>{
+  resizeFrame=0;
+  const vv=window.visualViewport;
+  const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:0;
+  const innerHeight=window.innerHeight||0;
+  const safeBottom=readSafeAreaBottom();
+  /* Prefer the larger measured viewport, then extend by the safe inset only when
+     the viewport is visibly shorter than the physical screen's CSS height. */
+  const screenHeight=(window.screen&&window.screen.height)||0;
+  let target=Math.max(visualHeight,innerHeight);
+  if(screenHeight>0 && screenHeight-target>safeBottom+2 && safeBottom>0){
+    target=Math.min(screenHeight,target+safeBottom);
+  }
+  if(!Number.isFinite(target)||target<100)target=innerHeight||screenHeight||100;
+  app.style.setProperty('--earth-live-height',`${Math.ceil(target)}px`);
+  if(viewer){
+   viewer.resize();
+   viewer.scene.requestRender();
+  }
+ });
+}
 function init(){
  if(!window.Cesium){errorEl.hidden=false;return;}
  try{
@@ -29,6 +62,19 @@ function init(){
   viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
   updateButtons();
+  syncViewport();
+  if(window.visualViewport){
+   window.visualViewport.addEventListener('resize',syncViewport,{passive:true});
+   window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});
+  }
+  window.addEventListener('resize',syncViewport,{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,80),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,180);}}, {passive:true});
+  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,180);},{passive:true});
+  if('ResizeObserver' in window){
+   const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});
+   observer.observe(app);
+  }
  }catch(e){console.error(e);errorEl.hidden=false;}
 }
 basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));
