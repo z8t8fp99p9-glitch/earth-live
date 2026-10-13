@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v18-local-db-locate-me';
+const CACHE = 'earth-live-main-shell-v18-locate-dock-smoother-pinch';
 const SHELL = ['./', './index.html', './style.css', './data-store.js', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
