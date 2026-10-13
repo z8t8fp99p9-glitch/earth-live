@@ -41,8 +41,3 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
   .app-stamp { top:calc(env(safe-area-inset-top, 0px) + 12px); }
 }
 /* Landscape: keep controls anchored to the visible lower edge and compact. */
-@media (orientation:landscape) and (max-height:500px) {
-  .bottom-ui { bottom:calc(env(safe-area-inset-bottom, 0px) + 8px); gap:5px; padding:5px; }
-  .quality-btn { padding:8px 10px; }
-  .icon-btn { width:38px; height:38px; flex-basis:38px; }
-}
