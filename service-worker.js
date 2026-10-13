@@ -1,4 +1,4 @@
-const CACHE='earth-live-shell-v1-12';
+const CACHE='earth-live-shell-v1-13';
 const SHELL=['./','./index.html','./style.css','./app-version.js','./data-store.js','./app.js'];
 
 self.addEventListener('install',event=>{
