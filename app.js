@@ -22,22 +22,10 @@ function syncViewport(){
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
  resizeFrame=requestAnimationFrame(()=>{
   resizeFrame=0;
-  /* Use the live app box, not screen.height: on iOS landscape screen.height may still be the portrait dimension. */
-  const rect=app.getBoundingClientRect();
-  const vv=window.visualViewport;
-  const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
-  let targetHeight;
-  if(standalone){
-   targetHeight=(window.innerWidth>window.innerHeight)
-    ? Math.max(window.innerHeight, vv&&vv.height||0)
-    : Math.max(window.screen&&window.screen.height||0, window.innerHeight, vv&&vv.height||0);
-  }else{
-   targetHeight=Math.max(window.innerHeight, vv&&vv.height||0);
-  }
-  if(!Number.isFinite(targetHeight)||targetHeight<100)targetHeight=rect.height||window.innerHeight||100;
-  /* In landscape the viewport's height is the short edge; in portrait standalone use screen height. */
-  app.style.height=`${Math.ceil(targetHeight)}px`;
-  app.style.width='100%';
+  /* Let CSS size the app from the real iOS viewport. Do not use screen.height:
+     on iPhone it can describe the full device screen, not the usable app viewport. */
+  app.style.height='';
+  app.style.width='';
   if(viewer){viewer.resize();viewer.scene.requestRender();}
  });
 }

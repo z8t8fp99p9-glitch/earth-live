@@ -1,4 +1,4 @@
-:root{color-scheme:dark;--glass:rgba(13,18,27,.56);--line:rgba(255,255,255,.15);--text:rgba(248,250,255,.95);--safe-bottom:env(safe-area-inset-bottom,0px);--earth-live-height:100vh}
+:root{color-scheme:dark;--glass:rgba(13,18,27,.56);--line:rgba(255,255,255,.15);--text:rgba(248,250,255,.95);--safe-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;width:100%;margin:0;overflow:hidden;background:#030509;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
 html{background:#030509}
@@ -6,7 +6,6 @@ body{position:fixed;inset:0;min-height:0;overscroll-behavior:none;background:#03
 body::before{content:"";position:fixed;z-index:0;inset:-120px 0 -2px;background-color:#030509;background-image:radial-gradient(1px 1px at 8% 14%,rgba(255,255,255,.72) 99%,transparent 100%),radial-gradient(1px 1px at 21% 67%,rgba(220,238,255,.55) 99%,transparent 100%),radial-gradient(1.5px 1.5px at 37% 31%,rgba(255,255,255,.65) 99%,transparent 100%),radial-gradient(1px 1px at 52% 82%,rgba(255,255,255,.48) 99%,transparent 100%),radial-gradient(1px 1px at 69% 19%,rgba(220,238,255,.7) 99%,transparent 100%),radial-gradient(1.5px 1.5px at 84% 56%,rgba(255,255,255,.58) 99%,transparent 100%),radial-gradient(1px 1px at 93% 89%,rgba(255,255,255,.5) 99%,transparent 100%),radial-gradient(1px 1px at 45% 6%,rgba(255,255,255,.45) 99%,transparent 100%);background-size:317px 283px,401px 337px,467px 389px,353px 431px,521px 367px,439px 313px,383px 479px,557px 397px;background-repeat:repeat;pointer-events:none}
 #app{position:fixed;z-index:1;inset:0;width:100%;height:100%;min-height:0;overflow:hidden;background:transparent;isolation:isolate}
 @supports (height:100dvh){#app{height:100dvh}}
-/* Each Cesium container follows the app's actual box; no inherited min-height can make a square canvas in landscape. */
 #globe,.cesium-viewer,.cesium-viewer-cesiumWidgetContainer,.cesium-widget,.cesium-widget canvas{position:absolute;inset:0;width:100%;height:100%;min-height:0;touch-action:none;outline:none}
 #globe{overflow:hidden;background:transparent}
 .cesium-viewer,.cesium-viewer-cesiumWidgetContainer,.cesium-widget{overflow:hidden}
@@ -29,15 +28,16 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .edge-top,.edge-bottom{left:0;right:0;height:26px}.edge-top{top:0}.edge-bottom{bottom:0}
 .edge-left,.edge-right{top:26px;bottom:26px;width:26px}.edge-left{left:0}.edge-right{right:0}
 
-/* v2.0 iOS standalone: allow the app background to extend behind the status bar. */
-@media (display-mode: standalone) {
-  html, body { background-color:#030509; }
-  body::before { position:fixed; inset:-120px 0 -2px; }
-  #app { position:fixed; inset:0; width:100%; height:100%; min-height:0; }
-  @supports (height:100dvh) {
-    #app { height:100dvh; }
-  }
-  .bottom-ui { bottom:calc(env(safe-area-inset-bottom, 0px) + 14px); }
-  .app-stamp { top:calc(env(safe-area-inset-top, 0px) + 12px); }
+/* iPhone Home Screen app: use the actual viewport and keep controls above the home indicator. */
+@media (display-mode:standalone){
+  html,body{background-color:#030509}
+  #app{position:fixed;inset:0;width:100%;height:100%;min-height:0}
+  @supports(height:100dvh){#app{height:100dvh}}
+  .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
+  .app-stamp{top:calc(env(safe-area-inset-top,0px) + 12px)}
 }
-/* Landscape: keep controls anchored to the visible lower edge and compact. */
+@media (orientation:landscape) and (max-height:500px){
+  .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 18px);gap:5px;padding:5px}
+  .quality-btn{padding:8px 10px}
+  .icon-btn{width:38px;height:38px;flex-basis:38px}
+}
