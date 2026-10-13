@@ -19,10 +19,9 @@
     <div class="astro-info" id="astroInfo" hidden></div>
   </div>
   <div class="astro-sim-only" id="astroSimOnly" hidden aria-label="Time simulation">
-    <div class="astro-vertical-rail">
-      <span class="astro-rail-label">+12h</span>
+    <div class="astro-slider-area">
+      <div class="astro-rail-labels"><span>−12h</span><span>NOW</span><span>+12h</span></div>
       <input id="astroTimeScrubber" type="range" min="-720" max="720" step="5" value="0" aria-label="Simulate up to 12 hours before or after now">
-      <span class="astro-rail-label">−12h</span>
     </div>
     <div class="astro-sim-footer"><span id="astroTimeReadout">Now</span><button id="backToLive" aria-label="Return to live tracking">LIVE</button></div>
   </div>
@@ -30,7 +29,7 @@
 <div class="bottom-ui" aria-label="Map controls">
 <div class="quality glass" role="group" aria-label="Map quality"><button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button><button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button></div>
 <button class="icon-btn glass" id="locateBtn" aria-label="Location feature not enabled yet" title="Location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-<button class="icon-btn glass active" id="lightingBtn" aria-label="Sun and Moon tracker" title="Sun / Moon">☼</button>
+<button class="icon-btn glass" id="lightingBtn" aria-label="Sun and Moon tracker" title="Sun / Moon">☼</button>
 <button class="icon-btn glass" id="layersBtn" aria-label="Data layers not enabled yet" title="Data layers"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
 </div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div></main>
 <script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./app.js"></script>

@@ -1,5 +1,5 @@
 (() => {
-  const version = '1.19';
+  const version = '1.20';
   document.documentElement.dataset.appVersion = version;
   const title = document.querySelector('title');
   if (title) title.textContent = `EARTH // LIVE — v${version}`;

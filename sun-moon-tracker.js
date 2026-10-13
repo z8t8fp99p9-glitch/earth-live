@@ -1,5 +1,5 @@
-/* EARTH // LIVE Sun/Moon Tracker v1.18
- * Closed on app load. Past/Future mode becomes a minimal scrubber + Live button.
+/* EARTH // LIVE Sun/Moon Tracker v1.20
+ * Closed and inactive on launch; orientation-aware, touch-friendly simulation slider.
  */
 (() => {
 'use strict';
@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const panel=$('astroPanel'),button=$('lightingBtn'),close=$('astroClose'),sunTab=$('sunTab'),moonTab=$('moonTab');
 const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'),simOnly=$('astroSimOnly'),pastFutureBtn=$('pastFutureBtn'),scrubber=$('astroTimeScrubber');
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
-let viewer=null,activeObject=null,simulation=false,simTime=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null;
+let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
 function wrap360(v){return ((v%360)+360)%360;}
 function sinD(v){return Math.sin(v*DEG);}
@@ -62,14 +62,14 @@ function chooseLiveObject(which){
  syncObjectButtons();
 }
 function enterSimulation(){
- simulation=true;simTime=new Date();scrubber.value='0';panel.classList.add('simulation-mode');simOnly.hidden=false;normalHeader.hidden=true;normalControls.hidden=true;readout.textContent=fmt(simTime);update();
+ simulation=true;simulationAnchor=new Date();simTime=new Date(simulationAnchor);scrubber.value='0';panel.classList.add('simulation-mode');simOnly.hidden=false;normalHeader.hidden=true;normalControls.hidden=true;readout.textContent=fmt(simTime);update();
 }
 function returnLive(){
  simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;
  activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;
  clearOverlay();lastOverlayBucket=null;syncObjectButtons();
 }
-function scrubTo(value){const offset=Math.max(-720,Math.min(720,Number(value)));simTime=new Date(Date.now()+offset*60000);update();}
+function scrubTo(value){const offset=Math.max(-720,Math.min(720,Number(value)));simTime=new Date(simulationAnchor.getTime()+offset*60000);update();}
 function openPanel(){panel.hidden=false;button.classList.add('active');returnLive();summary.textContent='Choose Sun or Moon';}
 function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();}
 button.addEventListener('click',()=>panel.hidden?openPanel():closePanel());
@@ -78,8 +78,9 @@ sunTab.addEventListener('click',()=>chooseLiveObject('sun'));
 moonTab.addEventListener('click',()=>chooseLiveObject('moon'));
 pastFutureBtn.addEventListener('click',enterSimulation);
 scrubber.addEventListener('input',()=>scrubTo(scrubber.value));
+scrubber.addEventListener('change',()=>scrubTo(scrubber.value));
 $('backToLive').addEventListener('click',returnLive);
-window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
+window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;syncObjectButtons();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
 window.addEventListener('earthlive:foreground',()=>{if(!simulation&&activeObject)update();});
 window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();});
 })();

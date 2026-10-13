@@ -1,13 +1,8 @@
-# v1.19 Integration Status
+# Integration status — v1.20
 
-Completed: package assembly, ZIP integrity check, JavaScript syntax checks.
-Not verified: actual iPhone PWA runtime, CSS vertical slider appearance, rail placement in portrait/landscape, Cesium time-linked lighting, overlay performance.
-
-Test:
-1. App launches with panel closed.
-2. Open Lighting and enter Past/Future.
-3. Portrait: slim rail is on right, no horizontal overlay across globe.
-4. Landscape: rail stays near right edge and doesn't block globe center.
-5. Drag vertically to change time within ±12 hours.
-6. Tap LIVE to return to first Sun/Moon selection view.
-7. Confirm Basic/HD, Location, Layers, zoom and rotation still work.
+- Built locally from the previous v1.19 package; GitHub was not edited.
+- Slider direction: horizontal in portrait, vertical in landscape.
+- Slider input: input/change handlers retained; simulation time anchored when simulation begins to make the drag position stable.
+- Launch state: panel hidden, no active Sun/Moon selection, tracker button's active style removed.
+- Black bottom strip: estimated visually at ~116 px in supplied 707 × 1536 screenshot; app controls continue to use the safe-area inset. The strip is not assumed to be the safe-area height, and exact viewport behavior still requires iPhone testing.
+- Not runtime-tested in Safari/PWA; astronomy output not independently validated.

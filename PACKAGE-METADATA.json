@@ -1,24 +1,21 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.19",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.19.zip",
-  "base": "current v1.14 source retrieved read-only",
+  "version": "1.20",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.20.zip",
+  "base": "v1.19 package files, modified locally",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "compact Sun/Moon panel on existing Lighting button",
+  "ui_scope": "orientation-aware time simulation slider and launch-state correction",
   "moon_visibility_threshold_degrees": 40,
-  "moon_visibility_grid_cell_degrees": 10,
   "live_refresh_seconds": 30,
-  "simulation_rate": "1 simulated minute per real second",
-  "ui_update": "two-step Sun/Moon selection then Live/Past-Future with horizontal time scrubber",
-  "moon_altitude_threshold_degrees": 40,
-  "user_facing_threshold_toggle": false,
-  "interaction": "Sun/Moon live toggles; separate Past/Future Position; 24-hour window; Back to live returns to first view",
+  "simulation_window_minutes": [-720, 720],
   "ui_changes": [
-    "vertical time rail at right edge in simulation mode",
-    "compact time readout and LIVE button",
-    "no horizontal time panel"
+    "portrait mode uses a horizontal glowing circular-thumb slider",
+    "landscape mode uses a vertical slider on the right side",
+    "slider input uses a fixed simulation anchor so drag values map consistently to time",
+    "Sun/Moon tracker icon starts inactive and panel stays closed on launch",
+    "controls remain above the bottom safe-area inset"
   ]
 }
