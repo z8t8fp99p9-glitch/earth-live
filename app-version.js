@@ -1,8 +1,1 @@
-(() => {
-  const version = '1.22';
-  document.documentElement.dataset.appVersion = version;
-  const title = document.querySelector('title');
-  if (title) title.textContent = `EARTH // LIVE — v${version}`;
-  const label = document.getElementById('appVersion');
-  if (label) label.textContent = `v${version}`;
-})();
+window.EARTH_LIVE_APP_VERSION = '1.23';

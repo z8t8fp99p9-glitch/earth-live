@@ -6,3 +6,6 @@
 - Launch state: panel hidden, no active Sun/Moon selection, tracker button's active style removed.
 - Black bottom strip: estimated visually at ~116 px in supplied 707 × 1536 screenshot; app controls continue to use the safe-area inset. The strip is not assumed to be the safe-area height, and exact viewport behavior still requires iPhone testing.
 - Not runtime-tested in Safari/PWA; astronomy output not independently validated.
+
+
+v1.23: Landscape-only vertical rail spacing adjustment. Portrait CSS and application JavaScript unchanged from v1.22. Needs visual testing in the deployed iPhone app.

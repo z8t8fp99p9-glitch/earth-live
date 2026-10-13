@@ -1,8 +1,8 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.22",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.22.zip",
+  "version": "1.23",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.23.zip",
   "base": "v1.21 with explicit range-direction reset and local-now anchoring",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
@@ -22,10 +22,12 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "explicitly reset the slider to horizontal-tb and left-to-right direction so inherited v1.19 vertical/RTL settings cannot invert values",
-    "landscape rotates the horizontal native range exactly once: increasing values move up toward +12h; decreasing values move down toward -12h",
-    "portrait horizontal range: increasing values move right toward +12h; decreasing values move left toward -12h",
-    "simulation anchor explicitly captures Date.now() at entry, with zero offset displaying current device-local time",
-    "new service-worker cache name v1-22 to replace stale v1-21 assets on update"
-  ]
+    "Landscape-only: center the vertical slider track within its rail and shorten it to fit the available rail height.",
+    "Landscape-only: add clear separation between the slider and timestamp/LIVE footer so they do not overlap.",
+    "Portrait slider styling unchanged.",
+    "Existing app.js, sun-moon-tracker.js, data-store.js, moon-dataset.js, and index.html retained from v1.22.",
+    "Service-worker cache bumped to v1-23."
+  ],
+  "title": "EARTH // LIVE \u2014 Sun / Moon Tracker v1.23",
+  "description": "Landscape-only spacing adjustment for the vertical Cosmic Glow slider. Shortens and centers the vertical track inside its rail, adds separation before the timestamp and LIVE button, and prevents the track from crossing the readout. Portrait styling and existing globe/control files are preserved."
 }
