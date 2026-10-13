@@ -18,8 +18,6 @@ function setQuality(mode){
   quality=mode;updateButtons();viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();
  }catch(e){console.error('Map mode change failed',e);}
 }
-/* iOS Home Screen viewport can differ between launches. Measure it, account for the
-   bottom safe area, and explicitly ask Cesium to resize after every viewport change. */
 function readSafeAreaBottom(){
  const probe=document.createElement('div');
  probe.style.cssText='position:fixed;left:-100px;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none';
@@ -28,6 +26,10 @@ function readSafeAreaBottom(){
  probe.remove();
  return value;
 }
+/* Evidence-led test: in standalone mode the previous code added only the bottom
+   safe-area inset to innerHeight (844 + 34 = 878), leaving a 34px gap on a 912px
+   screen. Test the reported screen height for standalone mode; keep Safari fitted
+   to its actual visible viewport. The diagnostic overlay remains enabled. */
 function syncViewport(){
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
  resizeFrame=requestAnimationFrame(()=>{
@@ -36,12 +38,13 @@ function syncViewport(){
   const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:0;
   const innerHeight=window.innerHeight||0;
   const safeBottom=readSafeAreaBottom();
-  /* Prefer the larger measured viewport, then extend by the safe inset only when
-     the viewport is visibly shorter than the physical screen's CSS height. */
   const screenHeight=(window.screen&&window.screen.height)||0;
-  let target=Math.max(visualHeight,innerHeight);
-  if(screenHeight>0 && screenHeight-target>safeBottom+2 && safeBottom>0){
-    target=Math.min(screenHeight,target+safeBottom);
+  const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  let target;
+  if(standalone&&screenHeight>0){
+    target=screenHeight;
+  }else{
+    target=Math.max(visualHeight,innerHeight);
   }
   if(!Number.isFinite(target)||target<100)target=innerHeight||screenHeight||100;
   app.style.setProperty('--earth-live-height',`${Math.ceil(target)}px`);
@@ -58,7 +61,6 @@ function init(){
   viewer.imageryLayers.removeAll(false);imageryLayer=viewer.imageryLayers.addImageryProvider(imagery('basic'));
   viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
   viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
-  /* Native Cesium gestures only; no custom touch handler or Live Location camera flight. */
   viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
   updateButtons();
