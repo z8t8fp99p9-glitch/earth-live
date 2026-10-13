@@ -1,21 +1,31 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.21",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.21.zip",
-  "base": "v1.20 package files, landscape time-direction label correction",
+  "version": "1.22",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.22.zip",
+  "base": "v1.21 with explicit range-direction reset and local-now anchoring",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "landscape slider direction-label correction only",
+  "ui_scope": "fix reversed range input mapping and establish simulation at device current time",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
-  "simulation_window_minutes": [-720, 720],
+  "simulation_window_minutes": [
+    -720,
+    720
+  ],
   "ui_changes": [
     "portrait mode uses a horizontal glowing circular-thumb slider",
-    "landscape mode uses a vertical slider on the right side, with +12h at the top and −12h at the bottom to match upward-forward movement",
+    "landscape mode uses a vertical slider on the right side, with +12h at the top and \u221212h at the bottom to match upward-forward movement",
     "slider input uses a fixed simulation anchor so drag values map consistently to time",
     "Sun/Moon tracker icon starts inactive and panel stays closed on launch",
     "controls remain above the bottom safe-area inset"
+  ],
+  "changes": [
+    "explicitly reset the slider to horizontal-tb and left-to-right direction so inherited v1.19 vertical/RTL settings cannot invert values",
+    "landscape rotates the horizontal native range exactly once: increasing values move up toward +12h; decreasing values move down toward -12h",
+    "portrait horizontal range: increasing values move right toward +12h; decreasing values move left toward -12h",
+    "simulation anchor explicitly captures Date.now() at entry, with zero offset displaying current device-local time",
+    "new service-worker cache name v1-22 to replace stale v1-21 assets on update"
   ]
 }

@@ -24,6 +24,7 @@ function moonPosition(date){
  return null;
 }
 function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function currentLocalTime(){return new Date(Date.now());}
 function setClock(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);viewer.clock.shouldAnimate=false;viewer.scene.requestRender();}}
 function moonAltitude(lat,lon,moon,date){const hour=wrap360(gmstDeg(date)+lon-moon.ra),s=sinD(lat)*sinD(moon.dec)+cosD(lat)*cosD(moon.dec)*Math.cos(hour*DEG);return Math.asin(Math.max(-1,Math.min(1,s)))/DEG;}
 function clearOverlay(){if(!viewer)return;for(const e of overlayEntities)viewer.entities.remove(e);overlayEntities=[];}
@@ -62,14 +63,22 @@ function chooseLiveObject(which){
  syncObjectButtons();
 }
 function enterSimulation(){
- simulation=true;simulationAnchor=new Date();simTime=new Date(simulationAnchor);scrubber.value='0';panel.classList.add('simulation-mode');simOnly.hidden=false;normalHeader.hidden=true;normalControls.hidden=true;readout.textContent=fmt(simTime);update();
+ simulation=true;simulationAnchor=currentLocalTime();simTime=new Date(simulationAnchor.getTime());scrubber.value='0';panel.classList.add('simulation-mode');simOnly.hidden=false;normalHeader.hidden=true;normalControls.hidden=true;readout.textContent=fmt(simTime);update();
 }
 function returnLive(){
  simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;
  activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;
  clearOverlay();lastOverlayBucket=null;syncObjectButtons();
 }
-function scrubTo(value){const offset=Math.max(-720,Math.min(720,Number(value)));simTime=new Date(simulationAnchor.getTime()+offset*60000);update();}
+function scrubTo(value){
+ const raw=Number(value);
+ const offset=Math.max(-720,Math.min(720,Number.isFinite(raw)?raw:0));
+ // Native range values are always chronological: negative = past, positive = future.
+ // CSS is reset to LTR/horizontal; landscape rotates that same control once, so up = future.
+ simTime=new Date(simulationAnchor.getTime()+offset*60000);
+ readout.textContent=fmt(simTime);
+ update();
+}
 function openPanel(){panel.hidden=false;button.classList.add('active');returnLive();summary.textContent='Choose Sun or Moon';}
 function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();}
 button.addEventListener('click',()=>panel.hidden?openPanel():closePanel());
