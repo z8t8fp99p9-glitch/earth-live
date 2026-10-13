@@ -1,14 +1,14 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Flight Dataset",
+  "package": "Earthquake Dataset",
   "version": "1.0",
-  "filename": "EARTH-LIVE-Flight-Dataset-v1.0.zip",
-  "cost_target": "$0",
-  "scope": "Provider-independent local dataset foundation with optional public adsb.fi lookup adapter",
+  "filename": "EARTH-LIVE-Earthquake-Dataset-v1.0.zip",
+  "source": "USGS public GeoJSON summary feed",
+  "coverage": "Global",
+  "active_app_check_interval_minutes": 5,
+  "history_retention_days": 7,
+  "storage": "Existing IndexedDB earthquakes collection",
   "ui_changes": false,
   "github_edits": false,
-  "runtime_tested_in_iphone_pwa": false,
-  "default_history_hours": 6,
-  "default_poll_interval_seconds": 15,
-  "minimum_poll_interval_seconds": 10
+  "runtime_tested_in_iphone_pwa": false
 }

@@ -1,19 +1,20 @@
-EARTH // LIVE — Flight Dataset v1.0
+EARTH // LIVE — Earthquake Dataset v1.0
 MANUAL INTEGRATION ONLY — DO NOT REPLACE THE APP
 
-1. Preserve a backup of the working app files.
-2. Upload `flight-dataset.js` beside `index.html`.
+1. Keep a copy of your current working files.
+2. Upload `earthquake-dataset.js` beside `index.html`.
 3. In `index.html`, add this script tag AFTER `data-store.js` and BEFORE `app.js`:
-   <script src="./flight-dataset.js"></script>
+   <script src="./earthquake-dataset.js"></script>
 4. Do not replace `app.js`, `data-store.js`, `app-version.js`, or `index.html` wholesale.
-5. This package does not add a visible flight-search UI. It exposes `window.EarthLiveFlights` for a later controlled integration.
-6. After deployment, verify in a browser console:
-   typeof window.EarthLiveFlights
-   window.EarthLiveFlights.health()
-7. To test source access, call `window.EarthLiveFlights.lookupCallsign("CALLSIGN")` with a real currently active callsign. A failed request may mean the flight is not found, the provider has no coverage, rate limiting, or browser CORS. It is not proof that the dataset code is broken.
-8. To start a later tracking loop from a deliberate user action:
-   window.EarthLiveFlights.startTracking({ type: "callsign", value: "CALLSIGN" }, { intervalMs: 15000 })
-   To stop it:
-   window.EarthLiveFlights.stopTracking()
-9. Do not expose credentials in public JavaScript. This package contains no secrets and does not add a proxy/server.
-10. No runtime test on the iPhone PWA has been completed. Do not treat it as installed until you upload and verify it.
+5. This package adds no visible controls or map markers. It only provides a collector module.
+6. Verify after deployment (using a browser console/test harness):
+   typeof window.EarthLiveEarthquakes
+   window.EarthLiveEarthquakes.health()
+7. To request a collection refresh from a deliberate test action:
+   window.EarthLiveEarthquakes.refresh()
+8. To start the active-app collector:
+   window.EarthLiveEarthquakes.start()
+   To stop:
+   window.EarthLiveEarthquakes.stop()
+9. The module starts automatically only if `window.EarthLiveCollections` is already available when it loads; otherwise call `start()` after the store is ready.
+10. This package has not been runtime-tested inside the iPhone PWA. Verify source access and local storage before treating it as installed.
