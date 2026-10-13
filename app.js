@@ -1,106 +1,37 @@
 (() => {
 'use strict';
-const $=id=>document.getElementById(id);
-const statusEl=$('status'),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn'),lightingBtn=$('lightingBtn'),layersBtn=$('layersBtn'),layersPanel=$('layersPanel'),quakeToggle=$('quakeToggle'),quakeCount=$('quakeCount'),detail=$('quakeDetails');
-const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const $=id=>document.getElementById(id),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn');
+const IMAGERY='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const HILLSHADE='https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}';
-const MAX_ANIMATED_PULSES=10,REFRESH_MS=300000,QUAKE_RENDER_FPS=15;
-let viewer,imageryLayer,hillshadeLayer=null,quality='basic',solarShading=true,quakeTimer=null,quakeLoading=false,quakeAbort=null,renderTimer=null;
-const quakeEntities=new Map(),quakeData=new Map(),quakePulseEntities=new Map();
-let clickHandler=null;
-const setStatus=m=>{statusEl.textContent=m||'';};
-function updateQualityButtons(){basicBtn.classList.toggle('active',quality==='basic');hdBtn.classList.toggle('active',quality==='hd');basicBtn.setAttribute('aria-pressed',String(quality==='basic'));hdBtn.setAttribute('aria-pressed',String(quality==='hd'));}
-function imageryProvider(mode){return new Cesium.UrlTemplateImageryProvider({url:ESRI,minimumLevel:0,maximumLevel:mode==='basic'?3:19,credit:new Cesium.Credit('Imagery © Esri, Maxar, Earthstar Geographics, and the GIS User Community')});}
-function makeHillshadeProvider(){return new Cesium.UrlTemplateImageryProvider({url:HILLSHADE,minimumLevel:0,maximumLevel:13,credit:new Cesium.Credit('World Hillshade © Esri, USGS, NGA, NASA, CGIAR, and GIS contributors')});}
-function syncHillshade(mode){if(mode==='hd'){if(!hillshadeLayer){hillshadeLayer=viewer.imageryLayers.addImageryProvider(makeHillshadeProvider());hillshadeLayer.alpha=0.26;}}else if(hillshadeLayer){viewer.imageryLayers.remove(hillshadeLayer,true);hillshadeLayer=null;}}
-function setQuality(mode){if(!viewer||mode===quality)return;const cam=viewer.camera,saved={position:cam.position.clone(),direction:cam.direction.clone(),up:cam.up.clone()};quality=mode;updateQualityButtons();setStatus(mode==='basic'?'BASIC · LIGHTWEIGHT':'HD · DETAILED IMAGERY + RELIEF');try{const next=viewer.imageryLayers.addImageryProvider(imageryProvider(mode));const old=imageryLayer;imageryLayer=next;if(old)viewer.imageryLayers.remove(old,true);syncHillshade(mode);viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();}catch(e){console.error(e);setStatus('Map mode unavailable');}setTimeout(()=>setStatus(''),1600);}
-function setLighting(){solarShading=!solarShading;viewer.scene.globe.enableLighting=solarShading;viewer.scene.globe.dynamicAtmosphereLighting=solarShading;viewer.scene.globe.dynamicAtmosphereLightingFromSun=solarShading;$('lightingIcon').textContent=solarShading?'☼':'◐';lightingBtn.setAttribute('aria-label',solarShading?'Solar shading on — switch to flat lighting':'Solar shading off — switch to real-time Sun lighting');lightingBtn.style.background=solarShading?'rgba(103,157,220,.23)':'';setStatus(solarShading?'REAL-TIME SUN SHADING':'FLAT LIGHTING');viewer.scene.requestRender();setTimeout(()=>setStatus(''),1500);}
-function addQuakePulse(ent,mag){if(!ent||!ent.position)return;const id=String(ent.id).replace(/^quake-/,'');if((quakePulseEntities.get(id)||[]).length>=3)return;const start=Date.now(),strength=Math.max(1,Math.min(8,mag)),cycle=3600,phaseFor=offset=>((Date.now()-start+offset)%cycle)/cycle,colors=['#ff514d','#ff786e','#ffb09a'],rings=[];for(let i=0;i<3;i++){const phase=()=>phaseFor(i*(cycle/3));const radius=new Cesium.CallbackProperty(()=>0.70*(24000+phase()*strength*98000),false);const opacity=new Cesium.CallbackProperty(()=>{const p=phase();return .88*Math.sin(Math.PI*p);},false);rings.push(viewer.entities.add({position:ent.position,ellipse:{semiMajorAxis:radius,semiMinorAxis:radius,height:1120+i*8,material:Cesium.Color.TRANSPARENT,outline:true,outlineColor:new Cesium.CallbackProperty(()=>Cesium.Color.fromCssColorString(colors[i]).withAlpha(opacity.getValue()),false),outlineWidth:i===0?3.2:2.5,heightReference:Cesium.HeightReference.NONE}}));}quakePulseEntities.set(id,rings);}
-function addQuakeGlow(ent,mag){if(!ent||!ent.point)return;const start=Date.now(),base=Math.max(5,Math.min(11,4+mag));ent.point.pixelSize=new Cesium.CallbackProperty(()=>base+3.8*(.5+.5*Math.sin((Date.now()-start)/360)),false);ent.point.color=new Cesium.CallbackProperty(()=>{const a=.62+.38*(.5+.5*Math.sin((Date.now()-start)/360));return Cesium.Color.fromCssColorString('#ff514d').withAlpha(a);},false);}
-function makeQuakeEntity(feature,animate){const p=feature.properties||{},c=feature.geometry&&feature.geometry.coordinates;if(!c||c.length<2)return null;const lon=+c[0],lat=+c[1],depth=Math.max(0,+(c[2]||0)),mag=+(p.mag||0);if(!Number.isFinite(lon)||!Number.isFinite(lat))return null;const id=String(feature.id||`${lon}:${lat}:${p.time||''}`),pos=Cesium.Cartesian3.fromDegrees(lon,lat,1000);const ent=viewer.entities.add({id:'quake-'+id,position:pos,point:{pixelSize:Math.max(5,Math.min(11,4+mag)),color:Cesium.Color.fromCssColorString('#ff716b'),outlineColor:Cesium.Color.WHITE.withAlpha(.9),outlineWidth:1,heightReference:Cesium.HeightReference.NONE,disableDepthTestDistance:0},label:mag>=5?{text:`M${mag.toFixed(1)}`,font:'10px sans-serif',fillColor:Cesium.Color.WHITE,outlineColor:Cesium.Color.BLACK,outlineWidth:2,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-15),scaleByDistance:new Cesium.NearFarScalar(2e5,1,1.5e7,.45)}:undefined});if(animate){addQuakeGlow(ent,mag);addQuakePulse(ent,mag);}quakeData.set(id,{id,mag,lon,lat,depth,time:+p.time||0,title:p.title||'Earthquake',url:p.url||'https://earthquake.usgs.gov/'});return ent;}
-function showQuake(id){const q=quakeData.get(id);if(!q)return;$('detailMagnitude').textContent=`M${q.mag.toFixed(1)}`;$('detailPlace').textContent=q.title;$('detailDepth').textContent=`${q.depth.toFixed(1)} km`;$('detailTime').textContent=q.time?new Date(q.time).toLocaleString([],{dateStyle:'medium',timeStyle:'short'}):'Time unavailable';$('detailCoords').textContent=`${q.lat.toFixed(2)}°, ${q.lon.toFixed(2)}°`;$('detailLink').href=q.url;detail.hidden=false;}
-function closeDetails(){detail.hidden=true;}
-async function loadQuakes(){if(!viewer||!quakeToggle.checked||quakeLoading)return;quakeLoading=true;quakeCount.hidden=false;quakeCount.textContent='Loading USGS events…';quakeAbort=new AbortController();try{const quakeUrl='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson';const r=window.EarthLiveDataStore?await window.EarthLiveDataStore.cacheFirst(quakeUrl,{signal:quakeAbort.signal}):await fetch(quakeUrl,{cache:'no-store',signal:quakeAbort.signal});if(!r.ok)throw Error('USGS '+r.status);const data=await r.json();if(window.EarthLiveDataStore)window.EarthLiveDataStore.put('earthquakes','usgs-past-day',data,24*60*60*1000).catch(e=>console.info('Could not save earthquake cache',e));const all=(data.features||[]).filter(f=>f.geometry&&f.geometry.coordinates&&Number.isFinite(+f.properties?.mag));const selected=all.slice();const wanted=new Set(selected.map(f=>String(f.id)));for(const [id,e] of quakeEntities){if(!wanted.has(id)){viewer.entities.remove(e);for(const pulse of (quakePulseEntities.get(id)||[]))viewer.entities.remove(pulse);quakePulseEntities.delete(id);quakeEntities.delete(id);quakeData.delete(id);}}selected.sort((a,b)=>(+b.properties.time||0)-(+a.properties.time||0));selected.forEach((f,i)=>{const id=String(f.id);if(quakeEntities.has(id)){const old=quakeData.get(id),p=f.properties||{},c=f.geometry&&f.geometry.coordinates;if(old&&c&&(+p.mag!==old.mag||+c[0]!==old.lon||+c[1]!==old.lat||(+p.time||0)!==old.time)){viewer.entities.remove(quakeEntities.get(id));for(const pulse of (quakePulseEntities.get(id)||[]))viewer.entities.remove(pulse);quakePulseEntities.delete(id);quakeEntities.delete(id);quakeData.delete(id);}else return;}const ent=makeQuakeEntity(f,i<MAX_ANIMATED_PULSES);if(ent)quakeEntities.set(id,ent);});quakeCount.textContent=`Showing ${selected.length.toLocaleString()} events · past 24 hours · USGS`;setStatus('EARTHQUAKES UPDATED');setTimeout(()=>setStatus(''),1200);viewer.scene.requestRender();}catch(e){if(e.name!=='AbortError'){console.error(e);quakeCount.textContent='USGS unavailable · tap off/on to retry';}}finally{quakeLoading=false;quakeAbort=null;}}
-function stopQuakeRendering(){if(renderTimer){clearInterval(renderTimer);renderTimer=null;}if(viewer){viewer.scene.requestRenderMode=true;viewer.scene.requestRender();}}
-function startQuakeRendering(){if(!viewer||document.hidden||renderTimer)return;viewer.scene.requestRenderMode=true;renderTimer=setInterval(()=>{if(viewer&&!document.hidden&&quakeToggle.checked)viewer.scene.requestRender();},1000/QUAKE_RENDER_FPS);viewer.scene.requestRender();}
-function clearQuakes(){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}if(quakeAbort)quakeAbort.abort();stopQuakeRendering();for(const e of quakeEntities.values())viewer.entities.remove(e);for(const list of quakePulseEntities.values())for(const pulse of list)viewer.entities.remove(pulse);quakePulseEntities.clear();quakeEntities.clear();quakeData.clear();quakeCount.hidden=true;closeDetails();}
-function toggleQuakes(){if(quakeToggle.checked){startQuakeRendering();loadQuakes();if(quakeTimer)clearInterval(quakeTimer);quakeTimer=setInterval(loadQuakes,REFRESH_MS);viewer.scene.requestRender();}else clearQuakes();}
-
-/* Location is a locally saved marker, not a camera-control feature. */
-const LOCATION_KEY='earth-live-saved-location-v1';
-let userLocationEntity=null;
-function addSavedLocationMarker(record){
- if(!viewer||!record||!Number.isFinite(record.lat)||!Number.isFinite(record.lon))return;
- if(userLocationEntity)viewer.entities.remove(userLocationEntity);
- userLocationEntity=viewer.entities.add({
-  id:'earth-live-saved-location',
-  position:Cesium.Cartesian3.fromDegrees(record.lon,record.lat,1500),
-  point:{pixelSize:10,color:Cesium.Color.fromCssColorString('#42e8ff'),outlineColor:Cesium.Color.WHITE,outlineWidth:3,disableDepthTestDistance:0},
-  label:{text:'Saved location',font:'600 13px sans-serif',fillColor:Cesium.Color.WHITE,outlineColor:Cesium.Color.BLACK,outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:0}
- });
- viewer.scene.requestRender();
-}
-async function loadSavedLocation(){
+let viewer,imageryLayer,hillshadeLayer=null,quality='basic';
+function provider(url,max,credit){return new Cesium.UrlTemplateImageryProvider({url,minimumLevel:0,maximumLevel:max,credit:new Cesium.Credit(credit)});}
+function imagery(mode){return provider(IMAGERY,mode==='basic'?3:19,'Imagery © Esri and contributors');}
+function hillshade(){return provider(HILLSHADE,13,'World Hillshade © Esri, USGS, NGA, NASA, CGIAR, and GIS contributors');}
+function updateButtons(){basicBtn.classList.toggle('active',quality==='basic');hdBtn.classList.toggle('active',quality==='hd');basicBtn.setAttribute('aria-pressed',String(quality==='basic'));hdBtn.setAttribute('aria-pressed',String(quality==='hd'));}
+function setQuality(mode){
+ if(!viewer||mode===quality)return;
+ const cam=viewer.camera,saved={position:cam.position.clone(),direction:cam.direction.clone(),up:cam.up.clone()};
  try{
-  if(window.EarthLiveDataStore){
-   const saved=await window.EarthLiveDataStore.get('location','last-known');
-   if(saved&&saved.data){addSavedLocationMarker(saved.data);return;}
-  }
-  const raw=localStorage.getItem(LOCATION_KEY);
-  if(raw)addSavedLocationMarker(JSON.parse(raw));
- }catch(error){console.info('No saved location available offline',error);}
+  const next=viewer.imageryLayers.addImageryProvider(imagery(mode)),old=imageryLayer;imageryLayer=next;if(old)viewer.imageryLayers.remove(old,true);
+  if(mode==='hd'&&!hillshadeLayer){hillshadeLayer=viewer.imageryLayers.addImageryProvider(hillshade());hillshadeLayer.alpha=.26;}
+  if(mode==='basic'&&hillshadeLayer){viewer.imageryLayers.remove(hillshadeLayer,true);hillshadeLayer=null;}
+  quality=mode;updateButtons();viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();
+ }catch(e){console.error('Map mode change failed',e);}
 }
-function locateMe(){
- if(!viewer){setStatus('EARTH IS STILL LOADING');return;}
- if(!navigator.geolocation){setStatus('LOCATION IS NOT AVAILABLE IN THIS BROWSER');setTimeout(()=>setStatus(''),2200);return;}
- setStatus('SAVING LOCATION…');
- navigator.geolocation.getCurrentPosition(async position=>{
-  try{
-   const record={lat:Math.round(position.coords.latitude*1000)/1000,lon:Math.round(position.coords.longitude*1000)/1000,savedAt:Date.now()};
-   localStorage.setItem(LOCATION_KEY,JSON.stringify(record));
-   if(window.EarthLiveDataStore)await window.EarthLiveDataStore.put('location','last-known',record,0);
-   addSavedLocationMarker(record);
-   setStatus('LOCATION SAVED · MAP VIEW UNCHANGED');
-  }catch(e){console.error(e);setStatus('COULD NOT SAVE LOCATION');}
-  setTimeout(()=>setStatus(''),2200);
- },error=>{
-  const message=error.code===1?'LOCATION PERMISSION DENIED':error.code===3?'LOCATION REQUEST TIMED OUT':'LOCATION UNAVAILABLE';
-  setStatus(message);setTimeout(()=>setStatus(''),2400);
- },{enableHighAccuracy:false,maximumAge:600000,timeout:12000});
-}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
 function init(){
  if(!window.Cesium){errorEl.hidden=false;return;}
  try{
-  viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:true,requestRenderMode:true,maximumRenderTimeChange:60,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});
-  viewer.imageryLayers.removeAll(false);
-  imageryLayer=viewer.imageryLayers.addImageryProvider(imageryProvider('basic'));
-  viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');
-  viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
-  viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;
-  viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;
-  viewer.clock.clockStep=Cesium.ClockStep.SYSTEM_CLOCK;viewer.clock.multiplier=1;viewer.clock.shouldAnimate=true;viewer.clock.currentTime=Cesium.JulianDate.now();
-  /* Restore Cesium's default camera input controller; do not override gestures. */
-  viewer.scene.screenSpaceCameraController.enableInputs=true;
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;
-  viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;
+  viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:false,requestRenderMode:true,maximumRenderTimeChange:Infinity,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});
+  viewer.imageryLayers.removeAll(false);imageryLayer=viewer.imageryLayers.addImageryProvider(imagery('basic'));
+  viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
+  viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
+  /* Native Cesium gestures only; no custom touch handler or Live Location camera flight. */
+  viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
-  viewer.scene.globe.depthTestAgainstTerrain=false;
-  clickHandler=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-  clickHandler.setInputAction(m=>{const picked=viewer.scene.pick(m.position);if(Cesium.defined(picked)&&picked.id){const id=String(picked.id.id||'').replace(/^quake-/,'');if(quakeData.has(id))showQuake(id);else closeDetails();}else closeDetails();},Cesium.ScreenSpaceEventType.LEFT_CLICK);
-  lightingBtn.style.background='rgba(103,157,220,.23)';
-  setStatus('EARTH ONLINE · LIVE SUN');setTimeout(()=>setStatus(''),1800);
-  loadSavedLocation();
- }catch(e){console.error(e);errorEl.hidden=false;setStatus('');}
+  updateButtons();
+ }catch(e){console.error(e);errorEl.hidden=false;}
 }
-$('locateBtn').addEventListener('click',locateMe);
-basicBtn.addEventListener('click',()=>setQuality('basic'));
-hdBtn.addEventListener('click',()=>setQuality('hd'));
-lightingBtn.addEventListener('click',setLighting);
-layersBtn.addEventListener('click',()=>{layersPanel.hidden=!layersPanel.hidden;layersBtn.setAttribute('aria-expanded',String(!layersPanel.hidden));});
-$('closeLayers').addEventListener('click',()=>{layersPanel.hidden=true;layersBtn.setAttribute('aria-expanded','false');});
-quakeToggle.addEventListener('change',toggleQuakes);
-$('closeQuakeDetails').addEventListener('click',closeDetails);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}stopQuakeRendering();}else if(quakeToggle.checked){startQuakeRendering();loadQuakes();if(!quakeTimer)quakeTimer=setInterval(loadQuakes,REFRESH_MS);viewer.scene.requestRender();}});
+basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));
+['locateBtn','lightingBtn','layersBtn'].forEach(id=>$(id).setAttribute('aria-disabled','true'));
 init();
 })();

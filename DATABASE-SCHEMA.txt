@@ -1,0 +1,23 @@
+EARTH // LIVE DATA COLLECTION FOUNDATION
+Database: earth-live-collections, IndexedDB version 2.
+Stores: records, metadata.
+Indexes: collection, capturedAt, source.
+
+Planned namespaces: location, solar-shadow, earthquakes, clouds, satellites.
+Future collections may use any namespace string; the envelope does not require a schema change.
+
+Record envelope:
+key (collection:id), collection, id, schemaVersion, source, capturedAt,
+observedAt, validUntil, geometry, payload, savedAt, tags.
+
+API:
+EarthLiveCollections.open()
+EarthLiveCollections.save(collection,id,payload,options)
+EarthLiveCollections.get(collection,id)
+EarthLiveCollections.list(collection,options)
+EarthLiveCollections.remove(collection,id)
+EarthLiveCollections.clearCollection(collection)
+EarthLiveCollections.stats()
+
+Storage only. No location permission, collectors, network polling, or data overlays are active.
+This IndexedDB is local to this browser origin/device; it is not a cloud server or cross-device sync.

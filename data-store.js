@@ -1,53 +1,40 @@
-/* EARTH // LIVE local data store. IndexedDB records + Cache API response cache. */
+/* Extensible EARTH // LIVE local database. Storage only; no data collection is started. */
 (() => {
-  'use strict';
-  const DB_NAME='earth-live-local-data', DB_VERSION=1, STORE='records';
-  let dbPromise;
-  function open(){
-    if(dbPromise)return dbPromise;
-    dbPromise=new Promise((resolve,reject)=>{
-      if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return;}
-      const req=indexedDB.open(DB_NAME,DB_VERSION);
-      req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'key'});};
-      req.onsuccess=()=>resolve(req.result);
-      req.onerror=()=>reject(req.error||new Error('Could not open local database'));
-      req.onblocked=()=>reject(new Error('Local database upgrade is blocked'));
-    });
-    return dbPromise;
-  }
-  async function request(mode,fn){
-    const db=await open();
-    return new Promise((resolve,reject)=>{
-      const tx=db.transaction(STORE,mode),store=tx.objectStore(STORE);
-      let req;try{req=fn(store);}catch(e){reject(e);return;}
-      tx.oncomplete=()=>resolve(req&&Object.prototype.hasOwnProperty.call(req,'result')?req.result:undefined);
-      tx.onerror=()=>reject(tx.error||new Error('Database transaction failed'));
-      tx.onabort=()=>reject(tx.error||new Error('Database transaction aborted'));
-    });
-  }
-  async function put(type,id,data,ttlMs){
-    const now=Date.now(),record={key:String(type)+':'+String(id),type:String(type),id:String(id),data,savedAt:now,expiresAt:ttlMs>0?now+ttlMs:0};
-    await request('readwrite',store=>store.put(record));return true;
-  }
-  async function get(type,id){
-    const record=await request('readonly',store=>store.get(String(type)+':'+String(id)));
-    if(!record)return null;
-    if(record.expiresAt&&record.expiresAt<=Date.now()){request('readwrite',store=>store.delete(record.key)).catch(()=>{});return null;}
-    return {data:record.data,savedAt:record.savedAt,expiresAt:record.expiresAt||null};
-  }
-  async function removeExpired(){
-    const now=Date.now();await request('readwrite',store=>{const req=store.openCursor();req.onsuccess=()=>{const cursor=req.result;if(!cursor)return;if(cursor.value.expiresAt&&cursor.value.expiresAt<=now)cursor.delete();cursor.continue();};return req;});
-  }
-  async function cacheFirst(url,options){
-    let cache=null,cached=null;
-    try{if('caches' in window){cache=await caches.open('earth-live-data-v1');cached=await cache.match(url);}}catch(e){console.info('Cache API unavailable',e);}
-    try{
-      const response=await fetch(url,options);
-      if(response.ok&&cache&&response.type!=='opaque'){try{await cache.put(url,response.clone());}catch(e){console.info('Response cache skipped',e);}}
-      return response;
-    }catch(error){if(cached)return cached;throw error;}
-  }
-  window.EarthLiveDataStore=Object.freeze({open,put,get,removeExpired,cacheFirst,databaseName:DB_NAME});
-  open().then(removeExpired).catch(error=>console.info('Local database unavailable; online features can continue',error));
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)removeExpired().catch(()=>{});});
+'use strict';
+const DB='earth-live-collections',VERSION=2,RECORDS='records',META='metadata';
+const PLANNED=Object.freeze(['location','solar-shadow','earthquakes','clouds','satellites']);
+let dbPromise;
+function open(){
+ if(dbPromise)return dbPromise;
+ dbPromise=new Promise((resolve,reject)=>{
+  if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return;}
+  const req=indexedDB.open(DB,VERSION);
+  req.onupgradeneeded=()=>{
+   const d=req.result;let s=d.objectStoreNames.contains(RECORDS)?req.transaction.objectStore(RECORDS):d.createObjectStore(RECORDS,{keyPath:'key'});
+   if(!s.indexNames.contains('collection'))s.createIndex('collection','collection',{unique:false});
+   if(!s.indexNames.contains('capturedAt'))s.createIndex('capturedAt','capturedAt',{unique:false});
+   if(!s.indexNames.contains('source'))s.createIndex('source','source',{unique:false});
+   if(!d.objectStoreNames.contains(META)){const m=d.createObjectStore(META,{keyPath:'key'});m.put({key:'schema',version:VERSION,createdAt:Date.now(),plannedCollections:PLANNED.slice()});}
+  };
+  req.onsuccess=()=>{req.result.onversionchange=()=>{req.result.close();dbPromise=null;};resolve(req.result);};
+  req.onerror=()=>reject(req.error||new Error('Database open failed'));
+  req.onblocked=()=>reject(new Error('Close other EARTH // LIVE tabs to upgrade local storage'));
+ });return dbPromise;
+}
+function tx(stores,mode,run){return open().then(d=>new Promise((resolve,reject)=>{const t=d.transaction(stores,mode);let value;try{value=run(t);}catch(e){reject(e);return;}t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error||new Error('Database transaction failed'));t.onabort=()=>reject(t.error||new Error('Database transaction aborted'));}));}
+const key=(c,id)=>String(c)+':'+String(id);
+async function save(collection,id,payload,options={}){
+ if(!collection||!id)throw new Error('Collection and ID required');
+ const r={key:key(collection,id),collection:String(collection),id:String(id),schemaVersion:Number(options.schemaVersion||1),source:String(options.source||'local'),capturedAt:Number(options.capturedAt||Date.now()),observedAt:options.observedAt==null?null:Number(options.observedAt),validUntil:options.validUntil==null?null:Number(options.validUntil),geometry:options.geometry||null,payload,savedAt:Date.now(),tags:Array.isArray(options.tags)?options.tags:[]};
+ await tx([RECORDS],'readwrite',t=>t.objectStore(RECORDS).put(r));return r;
+}
+async function get(collection,id){const d=await open();return new Promise((resolve,reject)=>{const r=d.transaction(RECORDS).objectStore(RECORDS).get(key(collection,id));r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);});}
+async function list(collection,options={}){
+ const d=await open();return new Promise((resolve,reject)=>{const s=d.transaction(RECORDS).objectStore(RECORDS),r=collection?s.index('collection').getAll(IDBKeyRange.only(String(collection))):s.getAll();r.onsuccess=()=>{let a=r.result||[];if(options.source)a=a.filter(x=>x.source===options.source);if(options.since!=null)a=a.filter(x=>x.capturedAt>=Number(options.since));if(options.limit!=null)a=a.slice(-Math.max(0,Number(options.limit)));resolve(a);};r.onerror=()=>reject(r.error);});
+}
+async function remove(collection,id){await tx([RECORDS],'readwrite',t=>t.objectStore(RECORDS).delete(key(collection,id)));}
+async function clearCollection(collection){const d=await open();return new Promise((resolve,reject)=>{const t=d.transaction(RECORDS,'readwrite'),r=t.objectStore(RECORDS).index('collection').openCursor(IDBKeyRange.only(String(collection)));r.onsuccess=()=>{const c=r.result;if(c){c.delete();c.continue();}};t.oncomplete=()=>resolve(true);t.onerror=()=>reject(t.error);});}
+async function stats(){const d=await open();return new Promise((resolve,reject)=>{const t=d.transaction([RECORDS,META],'readonly'),a=t.objectStore(RECORDS).getAll(),m=t.objectStore(META).get('schema');t.oncomplete=()=>{const counts={};(a.result||[]).forEach(r=>counts[r.collection]=(counts[r.collection]||0)+1);resolve({database:DB,version:VERSION,totalRecords:(a.result||[]).length,collectionCounts:counts,schema:m.result||null,plannedCollections:PLANNED.slice()});};t.onerror=()=>reject(t.error);});}
+window.EarthLiveCollections=Object.freeze({open,save,get,list,remove,clearCollection,stats,databaseName:DB,databaseVersion:VERSION,plannedCollections:PLANNED});
+open().catch(e=>console.info('Local collection database will initialize when available:',e.message));
 })();

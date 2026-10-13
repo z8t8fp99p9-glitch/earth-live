@@ -1,17 +1,5 @@
-const CACHE = 'earth-live-main-shell-v28-default-camera-offline-location';
-const SHELL = ['./', './index.html', './style.css', './data-store.js', './app.js'];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('earth-live-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', event => {
-  const req = event.request, url = new URL(req.url);
-  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
-  if (!/\\.(html|css|js)$/.test(url.pathname) && !url.pathname.endsWith('/')) return;
-  event.respondWith(fetch(req).then(response => {
-    if (response && response.ok) caches.open(CACHE).then(cache => cache.put(req, response.clone()));
-    return response;
-  }).catch(() => caches.match(req).then(cached => cached || caches.match('./index.html'))));
-});
+const CACHE='earth-live-main-shell-v29-clean-collection-foundation';
+const SHELL=['./','./index.html','./style.css','./data-store.js','./app.js'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(()=>{}).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('earth-live-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==self.location.origin)return;if(!/\.(html|css|js)$/.test(u.pathname)&&!u.pathname.endsWith('/'))return;e.respondWith(fetch(r).then(response=>{if(response&&response.ok)caches.open(CACHE).then(c=>c.put(r,response.clone()));return response;}).catch(()=>caches.match(r).then(c=>c||caches.match('./index.html'))));});
