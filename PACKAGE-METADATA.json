@@ -1,8 +1,8 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.17",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.17.zip",
+  "version": "1.18",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.18.zip",
   "base": "current v1.14 source retrieved read-only",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
@@ -15,5 +15,10 @@
   "ui_update": "two-step Sun/Moon selection then Live/Past-Future with horizontal time scrubber",
   "moon_altitude_threshold_degrees": 40,
   "user_facing_threshold_toggle": false,
-  "interaction": "Sun/Moon live toggles; separate Past/Future Position; 24-hour window; Back to live returns to first view"
+  "interaction": "Sun/Moon live toggles; separate Past/Future Position; 24-hour window; Back to live returns to first view",
+  "ui_changes": [
+    "panel closed by default",
+    "simulation mode only shows time scrubber and Live button",
+    "24-hour simulation window"
+  ]
 }

@@ -1,13 +1,11 @@
-/* EARTH // LIVE Sun/Moon Tracker v1.17
- * Sun/Moon buttons toggle live tracking independently.
- * Past/Future enters a 24-hour (±12 h) simulation window with a horizontal scrubber.
- * Moon visibility threshold remains a fixed internal 40° default.
+/* EARTH // LIVE Sun/Moon Tracker v1.18
+ * Closed on app load. Past/Future mode becomes a minimal scrubber + Live button.
  */
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
 const panel=$('astroPanel'),button=$('lightingBtn'),close=$('astroClose'),sunTab=$('sunTab'),moonTab=$('moonTab');
-const objectRow=$('astroObjectRow'),pastFutureBtn=$('pastFutureBtn'),timeline=$('astroTimeline'),scrubber=$('astroTimeScrubber');
+const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'),simOnly=$('astroSimOnly'),pastFutureBtn=$('pastFutureBtn'),scrubber=$('astroTimeScrubber');
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
 let viewer=null,activeObject=null,simulation=false,simTime=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
@@ -25,7 +23,7 @@ function moonPosition(date){
  if(window.EarthLiveMoon&&typeof window.EarthLiveMoon.calculate==='function'){const m=window.EarthLiveMoon.calculate(date);return {ra:m.rightAscensionDeg,dec:m.declinationDeg,illumination:m.illuminationPercent,phase:m.phaseName,distance:m.distanceKm};}
  return null;
 }
-function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
 function setClock(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);viewer.clock.shouldAnimate=false;viewer.scene.requestRender();}}
 function moonAltitude(lat,lon,moon,date){const hour=wrap360(gmstDeg(date)+lon-moon.ra),s=sinD(lat)*sinD(moon.dec)+cosD(lat)*cosD(moon.dec)*Math.cos(hour*DEG);return Math.asin(Math.max(-1,Math.min(1,s)))/DEG;}
 function clearOverlay(){if(!viewer)return;for(const e of overlayEntities)viewer.entities.remove(e);overlayEntities=[];}
@@ -46,49 +44,42 @@ function update(){
  if(!activeObject){info.hidden=true;clearOverlay();lastOverlayBucket=null;return;}
  info.hidden=false;
  if(activeObject==='sun'){
-  const sun=sunPosition(date);title.textContent='SUN';summary.textContent=simulation?'Past / Future position':'Live Sun tracking';
+  const sun=sunPosition(date);title.textContent='SUN';summary.textContent='Live Sun tracking';
   info.innerHTML='<strong>Sun position</strong><br>Subsolar point: '+sun.latitude.toFixed(1)+'° latitude, '+sun.longitude.toFixed(1)+'° longitude';
   clearOverlay();lastOverlayBucket=null;
  }else{
-  const moon=moonPosition(date);title.textContent='MOON';summary.textContent=simulation?'Past / Future position':'Live Moon tracking';
+  const moon=moonPosition(date);title.textContent='MOON';summary.textContent='Live Moon tracking';
   if(moon){info.innerHTML='<strong>'+moon.phase+'</strong> · '+moon.illumination.toFixed(0)+'% illuminated<br>Approx. distance: '+Math.round(moon.distance).toLocaleString()+' km';renderMoonOverlay(date,moon);}
-  else info.textContent='Moon calculator unavailable. Check moon-dataset.js.';
+  else info.textContent='Moon calculator unavailable.';
  }
  syncObjectButtons();
 }
-function syncObjectButtons(){
- sunTab.classList.toggle('active',activeObject==='sun');moonTab.classList.toggle('active',activeObject==='moon');
- sunTab.setAttribute('aria-pressed',String(activeObject==='sun'));moonTab.setAttribute('aria-pressed',String(activeObject==='moon'));
-}
+function syncObjectButtons(){sunTab.classList.toggle('active',activeObject==='sun'&&!simulation);moonTab.classList.toggle('active',activeObject==='moon'&&!simulation);sunTab.setAttribute('aria-pressed',String(activeObject==='sun'&&!simulation));moonTab.setAttribute('aria-pressed',String(activeObject==='moon'&&!simulation));}
 function chooseLiveObject(which){
- simulation=false;timeline.hidden=true;pastFutureBtn.classList.remove('active');
+ if(simulation)return;
  if(activeObject===which){activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;clearOverlay();lastOverlayBucket=null;}
  else{activeObject=which;update();}
  syncObjectButtons();
 }
 function enterSimulation(){
- simulation=true;simTime=new Date();scrubber.value='0';timeline.hidden=false;
- pastFutureBtn.classList.add('active');summary.textContent='Past / Future · 24-hour window';
- update();readout.textContent=fmt(simTime);
+ simulation=true;simTime=new Date();scrubber.value='0';panel.classList.add('simulation-mode');simOnly.hidden=false;normalHeader.hidden=true;normalControls.hidden=true;readout.textContent=fmt(simTime);update();
 }
 function returnLive(){
- simulation=false;timeline.hidden=true;pastFutureBtn.classList.remove('active');
+ simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;
  activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;
  clearOverlay();lastOverlayBucket=null;syncObjectButtons();
 }
 function scrubTo(value){const offset=Math.max(-720,Math.min(720,Number(value)));simTime=new Date(Date.now()+offset*60000);update();}
 function openPanel(){panel.hidden=false;button.classList.add('active');returnLive();summary.textContent='Choose Sun or Moon';}
-function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;timeline.hidden=true;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();}
+function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();}
 button.addEventListener('click',()=>panel.hidden?openPanel():closePanel());
 close.addEventListener('click',closePanel);
 sunTab.addEventListener('click',()=>chooseLiveObject('sun'));
 moonTab.addEventListener('click',()=>chooseLiveObject('moon'));
-pastFutureBtn.addEventListener('click',()=>timeline.hidden?enterSimulation():returnLive());
+pastFutureBtn.addEventListener('click',enterSimulation);
 scrubber.addEventListener('input',()=>scrubTo(scrubber.value));
-$('timeMinus').addEventListener('click',()=>{simTime=new Date(simTime.getTime()-3600000);scrubber.value=String(Math.max(-720,Math.min(720,(simTime.getTime()-Date.now())/60000)));update();});
-$('timePlus').addEventListener('click',()=>{simTime=new Date(simTime.getTime()+3600000);scrubber.value=String(Math.max(-720,Math.min(720,(simTime.getTime()-Date.now())/60000)));update();});
 $('backToLive').addEventListener('click',returnLive);
-window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;update();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
+window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
 window.addEventListener('earthlive:foreground',()=>{if(!simulation&&activeObject)update();});
 window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();});
 })();
