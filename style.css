@@ -31,8 +31,9 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 /* iPhone Home Screen app: use the actual viewport and keep controls above the home indicator. */
 @media (display-mode:standalone){
   html,body{background-color:#030509}
-  #app{position:fixed;inset:0;width:100%;height:100%;min-height:0}
-  @supports(height:100dvh){#app{height:100dvh}}
+  /* iOS standalone can report 100dvh shorter than the physical screen. In standalone there is no Safari toolbar, so 100vh is the appropriate full-screen height. */
+  #app{position:fixed;inset:0;width:100%;height:100vh;min-height:0}
+  @supports(height:100lvh){#app{height:100lvh}}
   .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
   .app-stamp{top:calc(env(safe-area-inset-top,0px) + 12px)}
 }
