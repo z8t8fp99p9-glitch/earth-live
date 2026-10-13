@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 const statusEl=$('status'),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn'),lightingBtn=$('lightingBtn'),layersBtn=$('layersBtn'),layersPanel=$('layersPanel'),quakeToggle=$('quakeToggle'),quakeCount=$('quakeCount'),detail=$('quakeDetails');
 const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const HILLSHADE='https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}';
-const MAX_ANIMATED_PULSES=16,REFRESH_MS=300000,QUAKE_RENDER_FPS=15;
+const MAX_ANIMATED_PULSES=10,REFRESH_MS=300000,QUAKE_RENDER_FPS=15;
 let viewer,imageryLayer,hillshadeLayer=null,quality='basic',solarShading=true,quakeTimer=null,quakeLoading=false,quakeAbort=null,touchState=null,renderTimer=null;
 const quakeEntities=new Map(),quakeData=new Map(),quakePulseEntities=new Map();
 let clickHandler=null;
