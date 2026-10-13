@@ -80,23 +80,21 @@ function installTouchGestures(){const canvas=viewer.canvas;canvas.style.touchAct
 viewer.scene.screenSpaceCameraController.enableInputs=false;
 canvas.addEventListener('touchstart',e=>{stopInertia();if(e.target.closest&&e.target.closest('button,a,input'))return;e.preventDefault();if(e.touches.length===1){const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY,px:p.clientX,py:p.clientY,vx:0,vy:0,lastT:performance.now(),samples:[],anchor:pickGlobePoint(p.clientX,p.clientY)};}else if(e.touches.length===2){const m=metrics(e.touches);{const pts=points(e.touches);touchState={mode:2,...m,anchorA:pickGlobePoint(pts[0].x,pts[0].y),anchorB:pickGlobePoint(pts[1].x,pts[1].y),fingerA:{x:pts[0].x,y:pts[0].y},fingerB:{x:pts[1].x,y:pts[1].y}};}}else touchState=null;},{passive:false,capture:true});
 canvas.addEventListener('touchmove',e=>{if(!touchState)return;e.preventDefault();const cam=viewer.camera;try{if(e.touches.length===1&&touchState.mode===1){const p=e.touches[0],now=performance.now(),dt=Math.max(8,now-touchState.lastT),dx=p.clientX-touchState.x,dy=p.clientY-touchState.y;const instantX=dx/dt,instantY=dy/dt;const anchored=anchoredDragTo(p.clientX,p.clientY,touchState.anchor);if(!anchored){cam.rotateRight(-dx*.0045);cam.rotateUp(-dy*.0038);touchState.anchor=pickGlobePoint(p.clientX,p.clientY);}const samples=[...(touchState.samples||[]),{t:now,x:p.clientX,y:p.clientY}].filter(q=>now-q.t<=90);touchState={...touchState,mode:1,x:p.clientX,y:p.clientY,vx:instantX,vy:instantY,lastT:now,samples};}
-else if(e.touches.length===2&&touchState.mode===2){const m=metrics(e.touches),dx=m.x-touchState.x,dy=m.y-touchState.y,dd=m.d-touchState.d;let da=m.a-touchState.a;while(da>Math.PI)da-=Math.PI*2;while(da< -Math.PI)da+=Math.PI*2;
-// Separate the main two-finger intent so camera transforms do not fight each other.
-const translating=Math.hypot(dx,dy),pinching=Math.abs(dd),twisting=Math.abs(da);
-const tiltGesture=Math.abs(dy)>Math.abs(dx)*1.12&&Math.abs(dy)>pinching*.72&&twisting<.12;
-const rollGesture=twisting>.018&&twisting>translating*.00035&&pinching<Math.max(18,translating*.8);
-// Tilt: move the camera, then gently correct against BOTH original surface anchors.
-// A partial correction avoids stiff/jerky over-constraint near the horizon.
-if(tiltGesture){cam.rotateUp(-dy*.0022);const live=points(e.touches),a=live[0]||{x:m.x,y:m.y},b=live[1]||{x:m.x,y:m.y};anchoredDragTo(a.x,a.y,touchState.anchorA,.52);anchoredDragTo(b.x,b.y,touchState.anchorB,.52);}
-else if(rollGesture){ // Roll: first-contact finger is the main pivot; the other finger guides twist.
-  if(twisting>.025)cam.twistRight(-da*.58);
-  const live=points(e.touches),a=live[0]||{x:m.x,y:m.y};anchoredDragTo(a.x,a.y,touchState.anchorA,.78);
-}
-else { // Horizontal orbit remains direct; pinch retains the established zoom response.
-  if(Math.abs(dx)>.2)cam.rotateRight(-dx*.0030);
-  if(Math.abs(dd)>.15){const h=cam.positionCartographic.height,amount=clamp(Math.abs(dd)*Math.max(250,h*.0025),Math.min(150,h*.001),Math.max(500,h*.045));if(dd>0)cam.zoomIn(amount);else cam.zoomOut(amount);}
-  // Small residual twist can still be used without hijacking the gesture.
-  if(twisting>.045&&translating<8)cam.twistRight(-da*.4);
+else if(e.touches.length===2&&touchState.mode===2){const m=metrics(e.touches),dx=m.x-touchState.x,dy=m.y-touchState.y,dd=m.d-touchState.d;
+// No roll/twist and no two-finger orbit: keep the two-finger vocabulary simple.
+// A clear vertical translation tilts; a change in finger spacing zooms.
+const vertical=Math.abs(dy),horizontal=Math.abs(dx),pinching=Math.abs(dd);
+const tiltGesture=vertical>Math.max(2.5,horizontal*1.18)&&vertical>pinching*1.12;
+if(tiltGesture){
+  cam.rotateUp(-dy*.0022);
+  // Gently correct against both surface points captured at gesture start.
+  const live=points(e.touches),a=live[0]||{x:m.x,y:m.y},b=live[1]||{x:m.x,y:m.y};
+  anchoredDragTo(a.x,a.y,touchState.anchorA,.52);
+  anchoredDragTo(b.x,b.y,touchState.anchorB,.52);
+}else if(pinching>.15){
+  const h=cam.positionCartographic.height;
+  const amount=clamp(pinching*Math.max(250,h*.0025),Math.min(150,h*.001),Math.max(500,h*.045));
+  if(dd>0)cam.zoomIn(amount);else cam.zoomOut(amount);
 }
 touchState={...touchState,mode:2,...m};}viewer.scene.requestRender();}catch(err){console.debug('Touch gesture limit',err);}},{passive:false,capture:true});
 const end=e=>{if(e.touches.length===0){const ended=touchState;touchState=null;if(ended&&ended.mode===1){/* Estimate a deliberate flick from recent motion; continue with the same surface anchor as direct dragging. */const now=performance.now(),samples=(ended.samples||[]).filter(q=>now-q.t<=120);let vx=0,vy=0;const first=samples[0],last=samples[samples.length-1];if(first&&last&&last.t-first.t>=32){const span=last.t-first.t;vx=(last.x-first.x)/span;vy=(last.y-first.y)/span;}const speed=Math.hypot(vx,vy);if(speed>.36&&ended.anchor){const strength=clamp((speed-.36)*1.45,0,1);vx=clamp(vx*strength,-.85,.85);vy=clamp(vy*strength,-.85,.85);let x=ended.x,y=ended.y,lastFrame=performance.now(),elapsed=0;const glide=frameTime=>{if(!viewer||!viewer.camera){inertiaFrame=0;return;}const dt=Math.min(24,Math.max(0,frameTime-lastFrame));lastFrame=frameTime;elapsed+=dt;const height=viewer.camera.positionCartographic.height;/* Use the drag's surface-anchor transform and damp the synthetic pointer more at close zoom. */const zoomFactor=clamp(Math.sqrt(height/9000000),.16,1);if(elapsed>620||Math.hypot(vx,vy)<.022){inertiaFrame=0;return;}x+=vx*dt*zoomFactor;y+=vy*dt*zoomFactor;anchoredDragTo(x,y,ended.anchor);const friction=Math.pow(.885,dt/16.67);vx*=friction;vy*=friction;viewer.scene.requestRender();inertiaFrame=requestAnimationFrame(glide);};inertiaFrame=requestAnimationFrame(glide);}}}else if(e.touches.length===1){stopInertia();const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY,vx:0,vy:0,lastT:performance.now(),samples:[],anchor:pickGlobePoint(p.clientX,p.clientY)};}else if(e.touches.length===2){stopInertia();const m=metrics(e.touches);{const pts=points(e.touches);touchState={mode:2,...m,anchorA:pickGlobePoint(pts[0].x,pts[0].y),anchorB:pickGlobePoint(pts[1].x,pts[1].y),fingerA:{x:pts[0].x,y:pts[0].y},fingerB:{x:pts[1].x,y:pts[1].y}};}}};canvas.addEventListener('touchend',end,{passive:true,capture:true});canvas.addEventListener('touchcancel',end,{passive:true,capture:true});

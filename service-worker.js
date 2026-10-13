@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v20-two-finger-anchoring';
+const CACHE = 'earth-live-main-shell-v21-no-roll-pinch-tilt';
 const SHELL = ['./', './index.html', './style.css', './data-store.js', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
