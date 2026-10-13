@@ -9,3 +9,8 @@
 .locate-btn:active{transform:scale(.96);background:rgba(50,90,120,.82)}
 .locate-btn:focus-visible{outline:2px solid #8bdcff;outline-offset:3px}
 @media(max-width:390px){.bottom-ui{gap:5px;padding:5px}.locate-btn,.icon-btn{width:39px!important;height:39px!important;flex-basis:39px!important}.quality-btn{min-width:48px;padding:9px 9px}.quality{padding:3px;gap:1px}}
+
+/* Locate Me sits directly beside the Basic/HD selector in the same dock. */
+.bottom-ui{flex-wrap:nowrap;justify-content:center;width:max-content;max-width:calc(100vw - 12px);gap:7px}
+.locate-btn{position:relative!important;inset:auto!important;flex:0 0 43px!important;width:43px!important;height:43px!important;padding:0}
+@media(max-width:390px){.bottom-ui{gap:4px;padding:4px}.quality-btn{min-width:43px;padding:9px 7px}.locate-btn,.icon-btn{width:36px!important;height:36px!important;flex-basis:36px!important}.icon-btn svg,.locate-btn svg{width:19px;height:19px}}
