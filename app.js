@@ -18,18 +18,6 @@ function setQuality(mode){
   quality=mode;updateButtons();viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();
  }catch(e){console.error('Map mode change failed',e);}
 }
-function readSafeAreaBottom(){
- const probe=document.createElement('div');
- probe.style.cssText='position:fixed;left:-100px;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden;pointer-events:none';
- document.body.appendChild(probe);
- const value=parseFloat(getComputedStyle(probe).paddingBottom)||0;
- probe.remove();
- return value;
-}
-/* Evidence-led test: in standalone mode the previous code added only the bottom
-   safe-area inset to innerHeight (844 + 34 = 878), leaving a 34px gap on a 912px
-   screen. Test the reported screen height for standalone mode; keep Safari fitted
-   to its actual visible viewport. The diagnostic overlay remains enabled. */
 function syncViewport(){
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
  resizeFrame=requestAnimationFrame(()=>{
@@ -37,21 +25,21 @@ function syncViewport(){
   const vv=window.visualViewport;
   const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:0;
   const innerHeight=window.innerHeight||0;
-  const safeBottom=readSafeAreaBottom();
   const screenHeight=(window.screen&&window.screen.height)||0;
   const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  const landscape=(window.innerWidth||0)>(window.innerHeight||0);
   let target;
-  if(standalone&&screenHeight>0){
-    target=screenHeight;
+  if(standalone){
+   // In standalone portrait, screen.height is the physical long edge on iOS.
+   // In landscape, screen.height can remain the portrait value; use live viewport height.
+   target=landscape?Math.max(visualHeight,innerHeight):screenHeight;
   }else{
-    target=Math.max(visualHeight,innerHeight);
+   // Safari must fit the actual webpage area, not the physical screen behind browser chrome.
+   target=Math.max(visualHeight,innerHeight);
   }
   if(!Number.isFinite(target)||target<100)target=innerHeight||screenHeight||100;
   app.style.setProperty('--earth-live-height',`${Math.ceil(target)}px`);
-  if(viewer){
-   viewer.resize();
-   viewer.scene.requestRender();
-  }
+  if(viewer){viewer.resize();viewer.scene.requestRender();}
  });
 }
 function init(){
@@ -63,16 +51,15 @@ function init(){
   viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
   viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
-  updateButtons();
-  syncViewport();
+  updateButtons();syncViewport();
   if(window.visualViewport){
    window.visualViewport.addEventListener('resize',syncViewport,{passive:true});
    window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});
   }
   window.addEventListener('resize',syncViewport,{passive:true});
-  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,80),{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,180);}}, {passive:true});
-  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,180);},{passive:true});
+  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,150),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,200);}}, {passive:true});
+  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,200);},{passive:true});
   if('ResizeObserver' in window){
    const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});
    observer.observe(app);

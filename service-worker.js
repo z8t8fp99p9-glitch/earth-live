@@ -1,4 +1,4 @@
-const CACHE='earth-live-viewport-diagnostic-v1-7';
+const CACHE='earth-live-fullscreen-layout-v1-8';
 const SHELL=['./','./index.html','./style.css','./app-version.js','./data-store.js','./app.js','./viewport-diagnostic.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(()=>{}).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('earth-live-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
