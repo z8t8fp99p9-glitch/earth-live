@@ -81,17 +81,20 @@ viewer.scene.screenSpaceCameraController.enableInputs=false;
 canvas.addEventListener('touchstart',e=>{stopInertia();if(e.target.closest&&e.target.closest('button,a,input'))return;e.preventDefault();if(e.touches.length===1){const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY,px:p.clientX,py:p.clientY,vx:0,vy:0,lastT:performance.now(),samples:[],anchor:pickGlobePoint(p.clientX,p.clientY)};}else if(e.touches.length===2){const m=metrics(e.touches);{const pts=points(e.touches);touchState={mode:2,...m,anchorA:pickGlobePoint(pts[0].x,pts[0].y),anchorB:pickGlobePoint(pts[1].x,pts[1].y),fingerA:{x:pts[0].x,y:pts[0].y},fingerB:{x:pts[1].x,y:pts[1].y}};}}else touchState=null;},{passive:false,capture:true});
 canvas.addEventListener('touchmove',e=>{if(!touchState)return;e.preventDefault();const cam=viewer.camera;try{if(e.touches.length===1&&touchState.mode===1){const p=e.touches[0],now=performance.now(),dt=Math.max(8,now-touchState.lastT),dx=p.clientX-touchState.x,dy=p.clientY-touchState.y;const instantX=dx/dt,instantY=dy/dt;const anchored=anchoredDragTo(p.clientX,p.clientY,touchState.anchor);if(!anchored){cam.rotateRight(-dx*.0045);cam.rotateUp(-dy*.0038);touchState.anchor=pickGlobePoint(p.clientX,p.clientY);}const samples=[...(touchState.samples||[]),{t:now,x:p.clientX,y:p.clientY}].filter(q=>now-q.t<=90);touchState={...touchState,mode:1,x:p.clientX,y:p.clientY,vx:instantX,vy:instantY,lastT:now,samples};}
 else if(e.touches.length===2&&touchState.mode===2){const m=metrics(e.touches),dx=m.x-touchState.x,dy=m.y-touchState.y,dd=m.d-touchState.d;
-// No roll/twist and no two-finger orbit: keep the two-finger vocabulary simple.
-// A clear vertical translation tilts; a change in finger spacing zooms.
+// Two-finger vocabulary: horizontal = orbit, vertical = anchored tilt, spacing = pinch.
+// Deliberately ignore angle change: there is no roll/twist gesture.
 const vertical=Math.abs(dy),horizontal=Math.abs(dx),pinching=Math.abs(dd);
-const tiltGesture=vertical>Math.max(2.5,horizontal*1.18)&&vertical>pinching*1.12;
-if(tiltGesture){
+// Keep orbit and tilt responsive even when the movement is diagonal.
+if(horizontal>0.2)cam.rotateRight(-dx*.0030);
+if(vertical>0.2){
   cam.rotateUp(-dy*.0022);
-  // Gently correct against both surface points captured at gesture start.
+  // Softly correct the tilt against both surface points captured at gesture start.
   const live=points(e.touches),a=live[0]||{x:m.x,y:m.y},b=live[1]||{x:m.x,y:m.y};
-  anchoredDragTo(a.x,a.y,touchState.anchorA,.52);
-  anchoredDragTo(b.x,b.y,touchState.anchorB,.52);
-}else if(pinching>.15){
+  anchoredDragTo(a.x,a.y,touchState.anchorA,.40);
+  anchoredDragTo(b.x,b.y,touchState.anchorB,.40);
+}
+// Preserve pinch direction and the established zoom response; no twist calculation is applied.
+if(pinching>.15){
   const h=cam.positionCartographic.height;
   const amount=clamp(pinching*Math.max(250,h*.0025),Math.min(150,h*.001),Math.max(500,h*.045));
   if(dd>0)cam.zoomIn(amount);else cam.zoomOut(amount);
