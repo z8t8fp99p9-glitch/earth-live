@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v14-compact-three-rings-30pct';
+const CACHE = 'earth-live-main-shell-v15-performance-24fps';
 const SHELL = ['./', './index.html', './style.css', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
