@@ -18,6 +18,7 @@
   <div class="top-brand glass"><span class="brand-dot"></span><span>EARTH <b>//</b> LIVE <small>LITE</small></span></div>
   <div id="status" class="status glass" aria-live="polite">Preparing Earth…</div>
   <div class="bottom-ui">
+    <button class="locate-btn glass" id="locateBtn" aria-label="Locate me on Earth" title="Locate Me"><span aria-hidden="true">⌖</span><span class="locate-label">Locate Me</span></button>
     <div class="quality glass" role="group" aria-label="Map quality">
       <button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button>
       <button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button>
@@ -47,6 +48,7 @@
   </section>
   <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
+<script src="./data-store.js"></script>
 <script src="./app.js"></script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}</script>
 </body>
