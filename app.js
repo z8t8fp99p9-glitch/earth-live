@@ -24,7 +24,7 @@ function addQuakePulse(ent,mag){
   const colors=['#ff514d','#ff786e','#ffb09a'],rings=[];
   for(let i=0;i<3;i++){
     const phase=()=>phaseFor(i*(cycle/3));
-    const radius=new Cesium.CallbackProperty(()=>38000+phase()*strength*155000,false);
+    const radius=new Cesium.CallbackProperty(()=>24000+phase()*strength*98000,false);
     const opacity=new Cesium.CallbackProperty(()=>{const p=phase();return .88*Math.sin(Math.PI*p);},false);
     rings.push(viewer.entities.add({position:ent.position,ellipse:{
       semiMajorAxis:radius,semiMinorAxis:radius,height:1120+i*8,
