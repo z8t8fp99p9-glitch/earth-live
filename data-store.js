@@ -4,34 +4,12 @@
 const DB='earth-live-collections',VERSION=2,RECORDS='records',META='metadata';
 const PLANNED=Object.freeze(['location','solar-shadow','earthquakes','clouds','satellites']);
 let dbPromise;
-function open(){
- if(dbPromise)return dbPromise;
- dbPromise=new Promise((resolve,reject)=>{
-  if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return;}
-  const req=indexedDB.open(DB,VERSION);
-  req.onupgradeneeded=()=>{
-   const d=req.result;let s=d.objectStoreNames.contains(RECORDS)?req.transaction.objectStore(RECORDS):d.createObjectStore(RECORDS,{keyPath:'key'});
-   if(!s.indexNames.contains('collection'))s.createIndex('collection','collection',{unique:false});
-   if(!s.indexNames.contains('capturedAt'))s.createIndex('capturedAt','capturedAt',{unique:false});
-   if(!s.indexNames.contains('source'))s.createIndex('source','source',{unique:false});
-   if(!d.objectStoreNames.contains(META)){const m=d.createObjectStore(META,{keyPath:'key'});m.put({key:'schema',version:VERSION,createdAt:Date.now(),plannedCollections:PLANNED.slice()});}
-  };
-  req.onsuccess=()=>{req.result.onversionchange=()=>{req.result.close();dbPromise=null;};resolve(req.result);};
-  req.onerror=()=>reject(req.error||new Error('Database open failed'));
-  req.onblocked=()=>reject(new Error('Close other EARTH // LIVE tabs to upgrade local storage'));
- });return dbPromise;
-}
+function open(){if(dbPromise)return dbPromise;dbPromise=new Promise((resolve,reject)=>{if(!('indexedDB'in window)){reject(new Error('IndexedDB unavailable'));return;}const req=indexedDB.open(DB,VERSION);req.onupgradeneeded=()=>{const d=req.result;let s=d.objectStoreNames.contains(RECORDS)?req.transaction.objectStore(RECORDS):d.createObjectStore(RECORDS,{keyPath:'key'});if(!s.indexNames.contains('collection'))s.createIndex('collection','collection',{unique:false});if(!s.indexNames.contains('capturedAt'))s.createIndex('capturedAt','capturedAt',{unique:false});if(!s.indexNames.contains('source'))s.createIndex('source','source',{unique:false});if(!d.objectStoreNames.contains(META)){const m=d.createObjectStore(META,{keyPath:'key'});m.put({key:'schema',version:VERSION,createdAt:Date.now(),plannedCollections:PLANNED.slice()});}};req.onsuccess=()=>{req.result.onversionchange=()=>{req.result.close();dbPromise=null;};resolve(req.result);};req.onerror=()=>reject(req.error||new Error('Database open failed'));req.onblocked=()=>reject(new Error('Close other EARTH // LIVE tabs to upgrade local storage'));});return dbPromise;}
 function tx(stores,mode,run){return open().then(d=>new Promise((resolve,reject)=>{const t=d.transaction(stores,mode);let value;try{value=run(t);}catch(e){reject(e);return;}t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error||new Error('Database transaction failed'));t.onabort=()=>reject(t.error||new Error('Database transaction aborted'));}));}
 const key=(c,id)=>String(c)+':'+String(id);
-async function save(collection,id,payload,options={}){
- if(!collection||!id)throw new Error('Collection and ID required');
- const r={key:key(collection,id),collection:String(collection),id:String(id),schemaVersion:Number(options.schemaVersion||1),source:String(options.source||'local'),capturedAt:Number(options.capturedAt||Date.now()),observedAt:options.observedAt==null?null:Number(options.observedAt),validUntil:options.validUntil==null?null:Number(options.validUntil),geometry:options.geometry||null,payload,savedAt:Date.now(),tags:Array.isArray(options.tags)?options.tags:[]};
- await tx([RECORDS],'readwrite',t=>t.objectStore(RECORDS).put(r));return r;
-}
+async function save(collection,id,payload,options={}){if(!collection||!id)throw new Error('Collection and ID required');const r={key:key(collection,id),collection:String(collection),id:String(id),schemaVersion:Number(options.schemaVersion||1),source:String(options.source||'local'),capturedAt:Number(options.capturedAt||Date.now()),observedAt:options.observedAt==null?null:Number(options.observedAt),validUntil:options.validUntil==null?null:Number(options.validUntil),geometry:options.geometry||null,payload,savedAt:Date.now(),tags:Array.isArray(options.tags)?options.tags:[]};await tx([RECORDS],'readwrite',t=>t.objectStore(RECORDS).put(r));return r;}
 async function get(collection,id){const d=await open();return new Promise((resolve,reject)=>{const r=d.transaction(RECORDS).objectStore(RECORDS).get(key(collection,id));r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);});}
-async function list(collection,options={}){
- const d=await open();return new Promise((resolve,reject)=>{const s=d.transaction(RECORDS).objectStore(RECORDS),r=collection?s.index('collection').getAll(IDBKeyRange.only(String(collection))):s.getAll();r.onsuccess=()=>{let a=r.result||[];if(options.source)a=a.filter(x=>x.source===options.source);if(options.since!=null)a=a.filter(x=>x.capturedAt>=Number(options.since));if(options.limit!=null)a=a.slice(-Math.max(0,Number(options.limit)));resolve(a);};r.onerror=()=>reject(r.error);});
-}
+async function list(collection,options={}){const d=await open();return new Promise((resolve,reject)=>{const s=d.transaction(RECORDS).objectStore(RECORDS),r=collection?s.index('collection').getAll(IDBKeyRange.only(String(collection))):s.getAll();r.onsuccess=()=>{let a=r.result||[];if(options.source)a=a.filter(x=>x.source===options.source);if(options.since!=null)a=a.filter(x=>x.capturedAt>=Number(options.since));if(options.limit!=null)a=a.slice(-Math.max(0,Number(options.limit)));resolve(a);};r.onerror=()=>reject(r.error);});}
 async function remove(collection,id){await tx([RECORDS],'readwrite',t=>t.objectStore(RECORDS).delete(key(collection,id)));}
 async function clearCollection(collection){const d=await open();return new Promise((resolve,reject)=>{const t=d.transaction(RECORDS,'readwrite'),r=t.objectStore(RECORDS).index('collection').openCursor(IDBKeyRange.only(String(collection)));r.onsuccess=()=>{const c=r.result;if(c){c.delete();c.continue();}};t.oncomplete=()=>resolve(true);t.onerror=()=>reject(t.error);});}
 async function stats(){const d=await open();return new Promise((resolve,reject)=>{const t=d.transaction([RECORDS,META],'readonly'),a=t.objectStore(RECORDS).getAll(),m=t.objectStore(META).get('schema');t.oncomplete=()=>{const counts={};(a.result||[]).forEach(r=>counts[r.collection]=(counts[r.collection]||0)+1);resolve({database:DB,version:VERSION,totalRecords:(a.result||[]).length,collectionCounts:counts,schema:m.result||null,plannedCollections:PLANNED.slice()});};t.onerror=()=>reject(t.error);});}

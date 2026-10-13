@@ -1,13 +1,15 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Moon Dataset",
-  "version": "1.0",
-  "filename": "EARTH-LIVE-Moon-Dataset-v1.0.zip",
-  "calculation": "On-demand lightweight analytical approximation",
-  "network_requests": 0,
-  "permanent_timers": 0,
-  "automatic_database_writes": false,
-  "ui_changes": false,
-  "github_edits": false,
-  "runtime_tested_in_iphone_pwa": false
+  "package": "Sun / Moon Tracker Integration",
+  "version": "1.15",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.15.zip",
+  "base": "current v1.14 source retrieved read-only",
+  "github_changes": false,
+  "runtime_tested_in_iphone_pwa": false,
+  "astronomy_validated": false,
+  "ui_scope": "compact Sun/Moon panel on existing Lighting button",
+  "moon_visibility_threshold_degrees": 40,
+  "moon_visibility_grid_cell_degrees": 10,
+  "live_refresh_seconds": 30,
+  "simulation_rate": "1 simulated minute per real second"
 }

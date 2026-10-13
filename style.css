@@ -14,7 +14,7 @@ body::before{content:"";position:fixed;z-index:0;inset:-120px 0 -2px;background-
 .bottom-ui{position:absolute;left:50%;bottom:calc(var(--safe-bottom) + 22px);transform:translateX(-50%);display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;width:max-content;max-width:calc(100vw - 12px);gap:7px;padding:7px;border-radius:23px;z-index:4}
 button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}.quality{display:flex;align-items:center;padding:4px;border-radius:17px;gap:3px}
 .quality-btn{min-width:61px;padding:11px 14px;border-radius:13px;background:transparent;color:rgba(235,242,252,.66);font-size:12px;font-weight:650}.quality-btn.active{background:rgba(231,244,255,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 2px 12px rgba(0,0,0,.14)}
-.icon-btn{width:43px;height:43px;flex:0 0 43px;border-radius:16px;display:grid;place-items:center;font-size:22px;color:#e8f4ff}.icon-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.icon-btn[aria-disabled=true]{cursor:default;opacity:.84}
+.icon-btn{width:43px;height:43px;flex:0 0 43px;border-radius:16px;display:grid;place-items:center;font-size:22px;color:#e8f4ff}.icon-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.icon-btn[aria-disabled=true]{cursor:default;opacity:.84}.icon-btn.active{background:rgba(79,156,217,.25);border-color:rgba(126,194,255,.42)}
 .error{position:absolute;left:16px;right:16px;top:25%;padding:15px;border-radius:16px;text-align:center;font-size:13px}
 @media(min-width:700px){.bottom-ui{bottom:25px;gap:9px}.icon-btn{width:47px;height:47px;flex-basis:47px}}
 @media(max-width:390px){.bottom-ui{gap:4px;padding:4px}.quality-btn{min-width:43px;padding:9px 7px}.icon-btn{width:36px;height:36px;flex-basis:36px}.icon-btn svg{width:19px;height:19px}}
@@ -27,20 +27,31 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .edge-gesture-guard{position:absolute;z-index:3;pointer-events:none;touch-action:none;-webkit-user-select:none;user-select:none}
 .edge-top,.edge-bottom{left:0;right:0;height:26px}.edge-top{top:0}.edge-bottom{bottom:0}
 .edge-left,.edge-right{top:26px;bottom:26px;width:26px}.edge-left{left:0}.edge-right{right:0}
-
-/* iOS fallback: also activate standalone layout when navigator.standalone is true. */
 html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:auto!important;min-height:0}
-
-/* iPhone Home Screen app: anchor all four edges instead of relying on a reported viewport height. */
-@media (display-mode:standalone){
-  html,body{background-color:#030509}
-  /* With top and bottom anchors, the app fills the containing viewport even when iOS reports a short vh/dvh value. */
-  #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:auto!important;min-height:0}
-  .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
-  .app-stamp{top:calc(env(safe-area-inset-top,0px) + 12px)}
-}
-@media (orientation:landscape) and (max-height:500px){
-  .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 18px);gap:5px;padding:5px}
-  .quality-btn{padding:8px 10px}
-  .icon-btn{width:38px;height:38px;flex-basis:38px}
-}
+@media (display-mode:standalone){html,body{background-color:#030509}#app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:auto!important;min-height:0}.bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}.app-stamp{top:calc(env(safe-area-inset-top,0px) + 12px)}}
+@media (orientation:landscape) and (max-height:500px){.bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 18px);gap:5px;padding:5px}.quality-btn{padding:8px 10px}.icon-btn{width:38px;height:38px;flex-basis:38px}}
+.astro-panel{position:absolute;z-index:6;left:12px;right:12px;bottom:calc(var(--safe-bottom) + 82px);max-width:430px;margin:0 auto;padding:14px;border-radius:19px;color:var(--text)}
+.astro-panel[hidden],.astro-sim[hidden]{display:none!important}
+.astro-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.astro-title{font-size:13px;font-weight:800;letter-spacing:1.2px}
+.astro-subtitle{font-size:11px;color:rgba(231,241,252,.64);margin-top:4px}
+.astro-close{width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.08);font-size:22px;line-height:1}
+.astro-row{display:flex;gap:6px;margin-top:8px}
+.astro-choice{flex:1;min-height:36px;padding:8px 12px;border-radius:11px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:12px;font-weight:650}
+.astro-choice.active{background:rgba(89,160,219,.22);border-color:rgba(126,194,255,.42)}
+.astro-info{margin-top:11px;padding:10px 11px;border-radius:11px;background:rgba(0,0,0,.17);font-size:12px;line-height:1.55;color:rgba(244,248,255,.88)}
+.astro-sim{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1)}
+.astro-sim>label{display:block;font-size:11px;color:rgba(231,241,252,.68);margin-bottom:6px}
+.astro-sim input[type=datetime-local]{width:100%;min-height:38px;border-radius:10px;padding:8px;background:rgba(0,0,0,.3);color:#fff;border:1px solid rgba(255,255,255,.14);font:inherit;font-size:12px;color-scheme:dark}
+.astro-time-actions{display:flex;gap:6px;margin-top:7px}
+.astro-time-actions button,.astro-live-return{flex:1;min-height:34px;padding:7px;border-radius:10px;background:rgba(255,255,255,.075);font-size:11px;font-weight:650}
+.astro-live-return{width:100%;margin-top:6px;color:#bfe3ff}
+.astro-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:rgba(231,241,252,.8)}
+.mini-switch{position:relative;display:inline-block;width:39px;height:23px}
+.mini-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.mini-switch span{position:absolute;inset:0;border-radius:20px;background:#535d69}
+.mini-switch span:before{content:"";position:absolute;width:17px;height:17px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform .15s}
+.mini-switch input:checked+span{background:#288e62}
+.mini-switch input:checked+span:before{transform:translateX(16px)}
+@media(max-width:390px){.astro-panel{left:8px;right:8px;bottom:calc(var(--safe-bottom) + 72px);padding:11px}.astro-choice{padding:7px 8px}.astro-info{font-size:11px}}
+@media (orientation:landscape) and (max-height:500px){.astro-panel{max-width:420px;max-height:calc(100vh - 105px);overflow:auto;bottom:calc(var(--safe-bottom) + 65px)}}

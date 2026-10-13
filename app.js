@@ -22,14 +22,7 @@ function syncViewport(){
  const standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
  document.documentElement.classList.toggle('standalone-app',!!standalone);
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
- resizeFrame=requestAnimationFrame(()=>{
-  resizeFrame=0;
-  /* Let CSS size the app from the real iOS viewport. Do not use screen.height:
-     on iPhone it can describe the full device screen, not the usable app viewport. */
-  app.style.height='';
-  app.style.width='';
-  if(viewer){viewer.resize();viewer.scene.requestRender();}
- });
+ resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;app.style.height='';app.style.width='';if(viewer){viewer.resize();viewer.scene.requestRender();}});
 }
 function init(){
  if(!window.Cesium){errorEl.hidden=false;return;}
@@ -40,16 +33,17 @@ function init(){
   viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
   viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.15;
   viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
+  window.EarthLiveViewer=viewer;
+  window.dispatchEvent(new CustomEvent('earthlive:viewer-ready',{detail:{viewer}}));
   updateButtons();syncViewport();
   if(window.visualViewport){window.visualViewport.addEventListener('resize',syncViewport,{passive:true});window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});}
-  window.addEventListener('resize',syncViewport,{passive:true});
-  window.addEventListener('orientationchange',()=>setTimeout(syncViewport,200),{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,250);}}, {passive:true});
-  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,250);},{passive:true});
+  window.addEventListener('resize',syncViewport,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(syncViewport,200),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,250);window.dispatchEvent(new Event('earthlive:foreground'));}}, {passive:true});
+  window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,250);window.dispatchEvent(new Event('earthlive:foreground'));},{passive:true});
   if('ResizeObserver' in window){const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});observer.observe(app);}
  }catch(e){console.error(e);errorEl.hidden=false;}
 }
 basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));
-['locateBtn','lightingBtn','layersBtn'].forEach(id=>$(id).setAttribute('aria-disabled','true'));
+['locateBtn','layersBtn'].forEach(id=>$(id).setAttribute('aria-disabled','true'));
 init();
 })();
