@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v26-single-drag-pinch-only';
+const CACHE = 'earth-live-main-shell-v27-live-location-polish';
 const SHELL = ['./', './index.html', './style.css', './data-store.js', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
