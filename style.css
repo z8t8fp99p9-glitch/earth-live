@@ -102,3 +102,38 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
 .astro-panel.simulation-mode{padding:9px 12px;border-radius:15px}
 .astro-panel.simulation-mode #astroSimOnly{display:block}
 .astro-panel.simulation-mode #astroNormalHeader,.astro-panel.simulation-mode #astroNormalControls{display:none!important}
+
+/* v1.19 — vertical time rail, keeps the globe unobstructed */
+.astro-panel.simulation-mode{
+  width:auto!important;
+  min-width:0!important;
+  max-width:150px!important;
+  padding:10px 9px!important;
+  bottom:calc(var(--safe-bottom) + 82px);
+  right:12px!important;
+  left:auto!important;
+  border-radius:16px!important;
+  background:rgba(7,12,19,.72)!important;
+  backdrop-filter:blur(14px);
+}
+.astro-panel.simulation-mode #astroSimOnly{display:flex!important;flex-direction:column;align-items:center;gap:8px}
+.astro-vertical-rail{height:clamp(180px,30vh,280px);width:42px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:7px}
+.astro-rail-label{font-size:9px;color:rgba(224,238,250,.58);font-variant-numeric:tabular-nums}
+#astroTimeScrubber{
+  display:block;
+  width:clamp(150px,26vh,230px);
+  height:28px;
+  margin:0;
+  accent-color:#78cfff;
+  writing-mode:vertical-lr;
+  direction:rtl;
+  touch-action:pan-x;
+}
+.astro-sim-footer{width:100%;display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:0}
+#astroTimeReadout{font-size:9px;line-height:1.25;text-align:center;color:rgba(231,241,252,.68);font-variant-numeric:tabular-nums;max-width:125px}
+#backToLive{min-height:30px;width:100%;padding:6px 8px;border-radius:10px;background:rgba(120,207,255,.15);border:1px solid rgba(120,207,255,.4);font-size:10px;letter-spacing:.7px;font-weight:800;color:#e3f5ff}
+@media(orientation:landscape){
+ .astro-panel.simulation-mode{top:50%!important;bottom:auto!important;transform:translateY(-50%);right:14px!important;max-width:118px!important}
+ .astro-vertical-rail{height:clamp(145px,42vh,230px)}
+ .astro-panel.simulation-mode #astroNormalHeader,.astro-panel.simulation-mode #astroNormalControls{display:none!important}
+}

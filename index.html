@@ -19,8 +19,12 @@
     <div class="astro-info" id="astroInfo" hidden></div>
   </div>
   <div class="astro-sim-only" id="astroSimOnly" hidden aria-label="Time simulation">
-    <input id="astroTimeScrubber" type="range" min="-720" max="720" step="5" value="0" aria-label="Simulate up to 12 hours before or after now">
-    <div class="astro-sim-footer"><span id="astroTimeReadout">Now</span><button id="backToLive" aria-label="Return to live tracking">Live</button></div>
+    <div class="astro-vertical-rail">
+      <span class="astro-rail-label">+12h</span>
+      <input id="astroTimeScrubber" type="range" min="-720" max="720" step="5" value="0" aria-label="Simulate up to 12 hours before or after now">
+      <span class="astro-rail-label">−12h</span>
+    </div>
+    <div class="astro-sim-footer"><span id="astroTimeReadout">Now</span><button id="backToLive" aria-label="Return to live tracking">LIVE</button></div>
   </div>
 </section>
 <div class="bottom-ui" aria-label="Map controls">
