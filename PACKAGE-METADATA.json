@@ -1,22 +1,14 @@
 {
-  "package": "EARTH // LIVE Satellite Dataset",
+  "package": "EARTH // LIVE Live Location Dataset",
   "version": "1.0",
-  "settings": {
-    "coverage": "global",
-    "activeAppCheckIntervalMinutes": 30,
-    "providerFetchMinimumIntervalMinutes": 120,
-    "observationHistoryDays": 7,
-    "catalog": "useful",
-    "storage": "balanced"
-  },
-  "source": "CelesTrak GP OMM JSON",
-  "groups": [
-    "STATIONS",
-    "WEATHER",
-    "EARTH-RESOURCES",
-    "GPS-OPS"
-  ],
-  "propagation": "satellite.js SGP4; position output requires frame transformation before globe rendering",
-  "uiChanges": false,
+  "collection": "location",
+  "recordId": "current",
+  "storage": "existing IndexedDB only",
+  "trigger": "explicit tap on existing Location button",
+  "automaticLaunchRequest": false,
+  "backgroundTracking": false,
+  "serverUpload": false,
+  "cameraMovement": false,
+  "visibleUIChanges": false,
   "githubEditedByAssistant": false
 }

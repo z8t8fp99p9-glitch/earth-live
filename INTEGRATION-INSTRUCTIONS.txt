@@ -1,22 +1,10 @@
-EARTH // LIVE — Satellite Dataset v1.0 integration
+EARTH // LIVE — Live Location Dataset v1.0
 
-Do not replace any existing app file.
+1. Upload `location-dataset.js` to the repository root.
+2. In the existing `index.html`, add this script after `data-store.js` and before `app.js`:
+   <script src="./location-dataset.js"></script>
+3. Do not replace `index.html`, `app.js`, `style.css`, `data-store.js`, or the service worker.
+4. Open the app on HTTPS and tap the existing Location button. Approve location permission if desired.
+5. Verify local record count via the existing EarthLiveCollections.stats() API in a suitable developer console; this package does not display coordinates or add UI.
 
-1. Upload `satellite-collector.js` to the repository root.
-
-2. In the existing `index.html`, add the following library script before `data-store.js`:
-   <script src="https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/dist/satellite.min.js"></script>
-
-3. Add the collector script immediately after `data-store.js` and before `app.js`:
-   <script src="./satellite-collector.js"></script>
-
-The resulting order around the existing scripts should be:
-   <script src="./app-version.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/satellite.js@6.0.1/dist/satellite.min.js"></script>
-   <script src="./data-store.js"></script>
-   <script src="./satellite-collector.js"></script>
-   <script src="./app.js"></script>
-
-Do not remove or reorder other scripts. No visible UI changes are required.
-
-After uploading, open the app while online and allow the first fetch to finish. Verify in the browser console that satellite records are being saved before assuming collection is working. If the CDN or source endpoint is blocked, records remain unchanged and the error is logged; no tight retry loop is used.
+No assistant-side GitHub changes were made.
