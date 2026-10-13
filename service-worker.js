@@ -1,4 +1,4 @@
-const CACHE = 'earth-live-main-shell-v27-live-location-polish';
+const CACHE = 'earth-live-main-shell-v28-default-camera-offline-location';
 const SHELL = ['./', './index.html', './style.css', './data-store.js', './app.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).catch(() => {}).then(() => self.skipWaiting()));
@@ -9,7 +9,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const req = event.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
-  if (!/\.(html|css|js)$/.test(url.pathname) && !url.pathname.endsWith('/')) return;
+  if (!/\\.(html|css|js)$/.test(url.pathname) && !url.pathname.endsWith('/')) return;
   event.respondWith(fetch(req).then(response => {
     if (response && response.ok) caches.open(CACHE).then(cache => cache.put(req, response.clone()));
     return response;

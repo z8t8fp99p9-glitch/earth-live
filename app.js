@@ -5,7 +5,7 @@ const statusEl=$('status'),errorEl=$('errorMessage'),basicBtn=$('basicBtn'),hdBt
 const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const HILLSHADE='https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}';
 const MAX_ANIMATED_PULSES=10,REFRESH_MS=300000,QUAKE_RENDER_FPS=15;
-let viewer,imageryLayer,hillshadeLayer=null,quality='basic',solarShading=true,quakeTimer=null,quakeLoading=false,quakeAbort=null,touchState=null,renderTimer=null;
+let viewer,imageryLayer,hillshadeLayer=null,quality='basic',solarShading=true,quakeTimer=null,quakeLoading=false,quakeAbort=null,renderTimer=null;
 const quakeEntities=new Map(),quakeData=new Map(),quakePulseEntities=new Map();
 let clickHandler=null;
 const setStatus=m=>{statusEl.textContent=m||'';};
@@ -25,91 +25,82 @@ function stopQuakeRendering(){if(renderTimer){clearInterval(renderTimer);renderT
 function startQuakeRendering(){if(!viewer||document.hidden||renderTimer)return;viewer.scene.requestRenderMode=true;renderTimer=setInterval(()=>{if(viewer&&!document.hidden&&quakeToggle.checked)viewer.scene.requestRender();},1000/QUAKE_RENDER_FPS);viewer.scene.requestRender();}
 function clearQuakes(){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}if(quakeAbort)quakeAbort.abort();stopQuakeRendering();for(const e of quakeEntities.values())viewer.entities.remove(e);for(const list of quakePulseEntities.values())for(const pulse of list)viewer.entities.remove(pulse);quakePulseEntities.clear();quakeEntities.clear();quakeData.clear();quakeCount.hidden=true;closeDetails();}
 function toggleQuakes(){if(quakeToggle.checked){startQuakeRendering();loadQuakes();if(quakeTimer)clearInterval(quakeTimer);quakeTimer=setInterval(loadQuakes,REFRESH_MS);viewer.scene.requestRender();}else clearQuakes();}
+
+/* Location is a locally saved marker, not a camera-control feature. */
+const LOCATION_KEY='earth-live-saved-location-v1';
 let userLocationEntity=null;
+function addSavedLocationMarker(record){
+ if(!viewer||!record||!Number.isFinite(record.lat)||!Number.isFinite(record.lon))return;
+ if(userLocationEntity)viewer.entities.remove(userLocationEntity);
+ userLocationEntity=viewer.entities.add({
+  id:'earth-live-saved-location',
+  position:Cesium.Cartesian3.fromDegrees(record.lon,record.lat,1500),
+  point:{pixelSize:10,color:Cesium.Color.fromCssColorString('#42e8ff'),outlineColor:Cesium.Color.WHITE,outlineWidth:3,disableDepthTestDistance:0},
+  label:{text:'Saved location',font:'600 13px sans-serif',fillColor:Cesium.Color.WHITE,outlineColor:Cesium.Color.BLACK,outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-18),disableDepthTestDistance:0}
+ });
+ viewer.scene.requestRender();
+}
+async function loadSavedLocation(){
+ try{
+  if(window.EarthLiveDataStore){
+   const saved=await window.EarthLiveDataStore.get('location','last-known');
+   if(saved&&saved.data){addSavedLocationMarker(saved.data);return;}
+  }
+  const raw=localStorage.getItem(LOCATION_KEY);
+  if(raw)addSavedLocationMarker(JSON.parse(raw));
+ }catch(error){console.info('No saved location available offline',error);}
+}
 function locateMe(){
  if(!viewer){setStatus('EARTH IS STILL LOADING');return;}
- if(!navigator.geolocation){setStatus('LOCATION IS NOT AVAILABLE IN THIS BROWSER');setTimeout(()=>setStatus(''),2600);return;}
- setStatus('FINDING YOUR LOCATION…');
- navigator.geolocation.getCurrentPosition(position=>{
+ if(!navigator.geolocation){setStatus('LOCATION IS NOT AVAILABLE IN THIS BROWSER');setTimeout(()=>setStatus(''),2200);return;}
+ setStatus('SAVING LOCATION…');
+ navigator.geolocation.getCurrentPosition(async position=>{
   try{
-   const lat=Math.round(position.coords.latitude*1000)/1000;
-   const lon=Math.round(position.coords.longitude*1000)/1000;
-   const pos=Cesium.Cartesian3.fromDegrees(lon,lat,1800);
-   if(userLocationEntity)viewer.entities.remove(userLocationEntity);
-   const pinSvg='<svg xmlns="http://www.w3.org/2000/svg" width="72" height="88" viewBox="0 0 72 88"><defs><filter id="g" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8fbff"/><stop offset=".48" stop-color="#62e7ff"/><stop offset="1" stop-color="#00a9ff"/></linearGradient></defs><path d="M36 82C29 65 8 47 8 30a28 28 0 1 1 56 0C64 47 43 65 36 82Z" fill="#00cfff" opacity=".45" filter="url(#g)"/><path d="M36 80C29 63 10 46 10 30a26 26 0 1 1 52 0C62 46 43 63 36 80Z" fill="url(#c)" stroke="#e8fdff" stroke-width="3"/><circle cx="36" cy="30" r="10" fill="#f5ffff"/><circle cx="36" cy="30" r="5" fill="#00a9df"/></svg>';
-   userLocationEntity=viewer.entities.add({
-    id:'earth-live-approximate-user-location',position:pos,
-    billboard:{image:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(pinSvg),width:36,height:44,verticalOrigin:Cesium.VerticalOrigin.BOTTOM,disableDepthTestDistance:0},
-    point:{pixelSize:7,color:Cesium.Color.fromCssColorString('#54e7ff'),outlineColor:Cesium.Color.WHITE.withAlpha(.98),outlineWidth:2,disableDepthTestDistance:0},
-    label:{text:'You Here? May Be',font:'600 13px sans-serif',fillColor:Cesium.Color.fromCssColorString('#eafcff'),outlineColor:Cesium.Color.fromCssColorString('#04121b'),outlineWidth:4,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-48),disableDepthTestDistance:0,showBackground:true,backgroundColor:Cesium.Color.fromCssColorString('#06131d').withAlpha(.82),backgroundPadding:new Cesium.Cartesian2(9,5)}
-   });
-   viewer.camera.cancelFlight();
-   viewer.camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(lon,lat,Math.max(1400000,viewer.camera.positionCartographic.height)),duration:1.7,complete:()=>viewer.scene.requestRender()});
-   viewer.scene.requestRender();
-   setStatus('APPROXIMATE LOCATION FOUND');
-  }catch(e){console.error(e);setStatus('COULD NOT SHOW LOCATION');}
+   const record={lat:Math.round(position.coords.latitude*1000)/1000,lon:Math.round(position.coords.longitude*1000)/1000,savedAt:Date.now()};
+   localStorage.setItem(LOCATION_KEY,JSON.stringify(record));
+   if(window.EarthLiveDataStore)await window.EarthLiveDataStore.put('location','last-known',record,0);
+   addSavedLocationMarker(record);
+   setStatus('LOCATION SAVED · MAP VIEW UNCHANGED');
+  }catch(e){console.error(e);setStatus('COULD NOT SAVE LOCATION');}
   setTimeout(()=>setStatus(''),2200);
- },error=>{const message=error.code===1?'LOCATION PERMISSION DENIED':error.code===3?'LOCATION REQUEST TIMED OUT':'LOCATION UNAVAILABLE';setStatus(message);setTimeout(()=>setStatus(''),2600);},{enableHighAccuracy:false,maximumAge:0,timeout:15000});
+ },error=>{
+  const message=error.code===1?'LOCATION PERMISSION DENIED':error.code===3?'LOCATION REQUEST TIMED OUT':'LOCATION UNAVAILABLE';
+  setStatus(message);setTimeout(()=>setStatus(''),2400);
+ },{enableHighAccuracy:false,maximumAge:600000,timeout:12000});
 }
 function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
-function pickGlobePoint(clientX,clientY){const rect=viewer.canvas.getBoundingClientRect(),pos=new Cesium.Cartesian2(clientX-rect.left,clientY-rect.top),ray=viewer.camera.getPickRay(pos);return ray?viewer.scene.globe.pick(ray,viewer.scene):undefined;}
-function anchoredDragTo(clientX,clientY,anchor,weight=1){const current=pickGlobePoint(clientX,clientY);if(!current||!anchor)return false;const from=Cesium.Cartesian3.normalize(current,new Cesium.Cartesian3()),to=Cesium.Cartesian3.normalize(anchor,new Cesium.Cartesian3()),dot=clamp(Cesium.Cartesian3.dot(from,to),-1,1);if(dot>0.9999999)return true;let axis=Cesium.Cartesian3.cross(from,to,new Cesium.Cartesian3());if(Cesium.Cartesian3.magnitudeSquared(axis)<1e-12)return true;Cesium.Cartesian3.normalize(axis,axis);const angle=Math.acos(dot)*clamp(weight,0,1);if(angle<1e-7)return true;const q=Cesium.Quaternion.fromAxisAngle(axis,angle),rot=Cesium.Matrix3.fromQuaternion(q),cam=viewer.camera,pos=Cesium.Matrix3.multiplyByVector(rot,cam.positionWC,new Cesium.Cartesian3()),dir=Cesium.Matrix3.multiplyByVector(rot,cam.directionWC,new Cesium.Cartesian3()),up=Cesium.Matrix3.multiplyByVector(rot,cam.upWC,new Cesium.Cartesian3());cam.setView({destination:pos,orientation:{direction:dir,up}});return true;}
-function installTouchGestures(){
- const canvas=viewer.canvas;canvas.style.touchAction='none';let inertiaFrame=0;
- const stopInertia=()=>{if(inertiaFrame){cancelAnimationFrame(inertiaFrame);inertiaFrame=0;}};
- const points=ts=>Array.from(ts,t=>({x:t.clientX,y:t.clientY}));
- const metrics=ts=>{const p=points(ts),a=p[0],b=p[1];return{x:(a.x+b.x)/2,y:(a.y+b.y)/2,d:Math.hypot(b.x-a.x,b.y-a.y)};};
- viewer.scene.screenSpaceCameraController.enableInputs=false;
- canvas.addEventListener('touchstart',e=>{
-   stopInertia();if(e.target.closest&&e.target.closest('button,a,input'))return;e.preventDefault();
-   if(e.touches.length===1){const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY,lastT:performance.now(),samples:[],anchor:pickGlobePoint(p.clientX,p.clientY)};}
-   else if(e.touches.length===2){const m=metrics(e.touches);touchState={mode:2,...m,startD:m.d,gesture:null};}
-   else touchState=null;
- },{passive:false,capture:true});
- canvas.addEventListener('touchmove',e=>{
-   if(!touchState)return;e.preventDefault();const cam=viewer.camera;
-   try{
-     if(e.touches.length===1&&touchState.mode===1){
-       const p=e.touches[0],now=performance.now(),dt=Math.max(8,now-touchState.lastT),dx=p.clientX-touchState.x,dy=p.clientY-touchState.y;
-       // Surface-anchored direct movement; if the globe cannot be picked, use direct camera rotation.
-       const anchored=anchoredDragTo(p.clientX,p.clientY,touchState.anchor);
-       if(!anchored){cam.rotateRight(-dx*.0045);cam.rotateUp(-dy*.0038);touchState.anchor=pickGlobePoint(p.clientX,p.clientY);}
-       const samples=[...(touchState.samples||[]),{t:now,x:p.clientX,y:p.clientY}].filter(q=>now-q.t<=120);
-       touchState={...touchState,x:p.clientX,y:p.clientY,lastT:now,samples};
-     }else if(e.touches.length===2&&touchState.mode===2){
-       const m=metrics(e.touches),dd=m.d-touchState.d,totalD=m.d-(touchState.startD??touchState.d);
-       // Two fingers do one job only: pinch to zoom. No tilt, orbit, or twist.
-       let gesture=touchState.gesture||null;if(!gesture&&Math.abs(totalD)>3)gesture='pinch';
-       if(gesture==='pinch'&&Math.abs(dd)>.01){
-         const h=Math.max(1,cam.positionCartographic.height),target=clamp(h*Math.exp(-dd*.006),1,10000000000),delta=Math.abs(target-h);
-         if(delta>.01){if(target<h)cam.zoomIn(delta);else cam.zoomOut(delta);}
-       }
-       touchState={...touchState,...m,gesture,startD:touchState.startD??touchState.d};
-     }
-     viewer.scene.requestRender();
-   }catch(err){console.debug('Touch gesture limit',err);}
- },{passive:false,capture:true});
- const end=e=>{
-   if(e.touches.length===0){
-     const ended=touchState;touchState=null;
-     if(ended&&ended.mode===1){
-       const now=performance.now(),samples=(ended.samples||[]).filter(q=>now-q.t<=120);let vx=0,vy=0;const first=samples[0],last=samples[samples.length-1];
-       if(first&&last&&last.t-first.t>=32){const span=last.t-first.t;vx=(last.x-first.x)/span;vy=(last.y-first.y)/span;}
-       const speed=Math.hypot(vx,vy);
-       if(speed>.36&&ended.anchor){const strength=clamp((speed-.36)*1.45,0,1);vx=clamp(vx*strength,-.85,.85);vy=clamp(vy*strength,-.85,.85);let x=ended.x||0,y=ended.y||0,lastFrame=performance.now(),elapsed=0;
-         const glide=frameTime=>{if(!viewer||!viewer.camera){inertiaFrame=0;return;}const dt=Math.min(24,Math.max(0,frameTime-lastFrame));lastFrame=frameTime;elapsed+=dt;
-           if(elapsed>620||Math.hypot(vx,vy)<.022){inertiaFrame=0;return;}
-           // Same screen-space inertia at every altitude; no zoom-dependent slowdown.
-           x+=vx*dt;y+=vy*dt;anchoredDragTo(x,y,ended.anchor);
-           const friction=Math.pow(.885,dt/16.67);vx*=friction;vy*=friction;viewer.scene.requestRender();inertiaFrame=requestAnimationFrame(glide);
-         };inertiaFrame=requestAnimationFrame(glide);
-       }
-     }
-   }else if(e.touches.length===1){stopInertia();const p=e.touches[0];touchState={mode:1,x:p.clientX,y:p.clientY,lastT:performance.now(),samples:[],anchor:pickGlobePoint(p.clientX,p.clientY)};}
-   else if(e.touches.length===2){stopInertia();const m=metrics(e.touches);touchState={mode:2,...m,startD:m.d,gesture:null};}
- };
- canvas.addEventListener('touchend',end,{passive:true,capture:true});canvas.addEventListener('touchcancel',end,{passive:true,capture:true});
+function init(){
+ if(!window.Cesium){errorEl.hidden=false;return;}
+ try{
+  viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:true,requestRenderMode:true,maximumRenderTimeChange:60,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});
+  viewer.imageryLayers.removeAll(false);
+  imageryLayer=viewer.imageryLayers.addImageryProvider(imageryProvider('basic'));
+  viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');
+  viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
+  viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;
+  viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;
+  viewer.clock.clockStep=Cesium.ClockStep.SYSTEM_CLOCK;viewer.clock.multiplier=1;viewer.clock.shouldAnimate=true;viewer.clock.currentTime=Cesium.JulianDate.now();
+  /* Restore Cesium's default camera input controller; do not override gestures. */
+  viewer.scene.screenSpaceCameraController.enableInputs=true;
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;
+  viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
+  viewer.scene.globe.depthTestAgainstTerrain=false;
+  clickHandler=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  clickHandler.setInputAction(m=>{const picked=viewer.scene.pick(m.position);if(Cesium.defined(picked)&&picked.id){const id=String(picked.id.id||'').replace(/^quake-/,'');if(quakeData.has(id))showQuake(id);else closeDetails();}else closeDetails();},Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  lightingBtn.style.background='rgba(103,157,220,.23)';
+  setStatus('EARTH ONLINE · LIVE SUN');setTimeout(()=>setStatus(''),1800);
+  loadSavedLocation();
+ }catch(e){console.error(e);errorEl.hidden=false;setStatus('');}
 }
-function init(){if(!window.Cesium){errorEl.hidden=false;return;}try{viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:true,requestRenderMode:true,maximumRenderTimeChange:60,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});viewer.imageryLayers.removeAll(false);imageryLayer=viewer.imageryLayers.addImageryProvider(imageryProvider('basic'));viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.clock.clockStep=Cesium.ClockStep.SYSTEM_CLOCK;viewer.clock.multiplier=1;viewer.clock.shouldAnimate=true;viewer.clock.currentTime=Cesium.JulianDate.now();viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=10000000000;viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});viewer.scene.globe.depthTestAgainstTerrain=false;installTouchGestures();clickHandler=new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);clickHandler.setInputAction(m=>{const picked=viewer.scene.pick(m.position);if(Cesium.defined(picked)&&picked.id){const id=String(picked.id.id||'').replace(/^quake-/,'');if(quakeData.has(id))showQuake(id);else closeDetails();}else closeDetails();},Cesium.ScreenSpaceEventType.LEFT_CLICK);lightingBtn.style.background='rgba(103,157,220,.23)';setStatus('EARTH ONLINE · LIVE SUN');setTimeout(()=>setStatus(''),1800);}catch(e){console.error(e);errorEl.hidden=false;setStatus('');}}
-$('locateBtn').addEventListener('click',locateMe);basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));lightingBtn.addEventListener('click',setLighting);layersBtn.addEventListener('click',()=>{layersPanel.hidden=!layersPanel.hidden;layersBtn.setAttribute('aria-expanded',String(!layersPanel.hidden));});$('closeLayers').addEventListener('click',()=>{layersPanel.hidden=true;layersBtn.setAttribute('aria-expanded','false');});quakeToggle.addEventListener('change',toggleQuakes);$('closeQuakeDetails').addEventListener('click',closeDetails);document.addEventListener('visibilitychange',()=>{if(document.hidden){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}stopQuakeRendering();}else if(quakeToggle.checked){startQuakeRendering();loadQuakes();if(!quakeTimer)quakeTimer=setInterval(loadQuakes,REFRESH_MS);viewer.scene.requestRender();}});init();
+$('locateBtn').addEventListener('click',locateMe);
+basicBtn.addEventListener('click',()=>setQuality('basic'));
+hdBtn.addEventListener('click',()=>setQuality('hd'));
+lightingBtn.addEventListener('click',setLighting);
+layersBtn.addEventListener('click',()=>{layersPanel.hidden=!layersPanel.hidden;layersBtn.setAttribute('aria-expanded',String(!layersPanel.hidden));});
+$('closeLayers').addEventListener('click',()=>{layersPanel.hidden=true;layersBtn.setAttribute('aria-expanded','false');});
+quakeToggle.addEventListener('change',toggleQuakes);
+$('closeQuakeDetails').addEventListener('click',closeDetails);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(quakeTimer){clearInterval(quakeTimer);quakeTimer=null;}stopQuakeRendering();}else if(quakeToggle.checked){startQuakeRendering();loadQuakes();if(!quakeTimer)quakeTimer=setInterval(loadQuakes,REFRESH_MS);viewer.scene.requestRender();}});
+init();
 })();
