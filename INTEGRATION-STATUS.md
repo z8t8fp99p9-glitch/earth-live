@@ -1,25 +1,14 @@
-# Integration status and test checklist
+# v1.17 Integration Status
 
-## Automated checks completed
-- ZIP archive integrity check.
-- JavaScript syntax check with Node.js for `app.js`, `app-version.js`, `data-store.js`, `moon-dataset.js`, and `sun-moon-tracker.js`.
-- Reviewed package paths and script order.
+Checks completed: ZIP integrity and JavaScript syntax.
+Not verified: runtime behavior on iPhone PWA, Cesium time-dependent lighting, overlay smoothness, astronomy precision, and visual regression.
 
-## Not completed
-- No runtime test in Cesium browser or installed iPhone PWA.
-- No visual regression test against the live app.
-- No astronomical cross-validation against USNO/JPL ephemerides.
-- No verification that Cesium globe lighting follows a manually assigned `viewer.clock.currentTime` on the target iOS browser.
-- No verification of service-worker update behavior on device.
-
-## Manual acceptance checklist
-1. App opens with same globe, Basic/HD, Location, Lighting and Layers positions.
-2. App stamp reports v1.15.
-3. Tapping Lighting opens/closes the compact Sun/Moon panel.
-4. Live mode shows current time; selecting Moon shows approximate phase and illumination.
-5. Simulation time changes when date input or ±1h buttons are used; Play/Pause works.
-6. Confirm Sun/day-night lighting responds to simulation time on the actual iPhone PWA.
-7. Confirm Moon 40° overlay appears only when Moon is selected and overlay toggle is enabled.
-8. Rotate/zoom globe and switch Basic/HD; camera controls and texture quality should remain intact.
-9. Close and reopen app; check service worker loads new files and no stale UI remains.
-10. If any regression appears, restore the saved v1.14 files immediately.
+Test:
+1. First view shows only Sun and Moon toggles plus Past/Future Position.
+2. Tap Sun: live Sun info appears; tap again: it turns off.
+3. Tap Moon: live Moon info and internal 40° region appear; tap again: it turns off.
+4. Tap Past/Future Position: horizontal scrubber appears, limited to ±12 hours.
+5. Drag scrubber: displayed time and position update.
+6. Back to live returns to first Sun/Moon selection view.
+7. Verify Basic/HD, Location, Layers, zoom and rotation.
+8. Restore previous files if any regression appears.

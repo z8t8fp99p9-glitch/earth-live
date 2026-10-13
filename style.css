@@ -55,3 +55,38 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
 .mini-switch input:checked+span:before{transform:translateX(16px)}
 @media(max-width:390px){.astro-panel{left:8px;right:8px;bottom:calc(var(--safe-bottom) + 72px);padding:11px}.astro-choice{padding:7px 8px}.astro-info{font-size:11px}}
 @media (orientation:landscape) and (max-height:500px){.astro-panel{max-width:420px;max-height:calc(100vh - 105px);overflow:auto;bottom:calc(var(--safe-bottom) + 65px)}}
+
+/* v1.16 — simplified two-step Sun/Moon controls */
+.astro-panel{padding:13px 14px 14px;bottom:calc(var(--safe-bottom) + 82px)}
+.astro-head{margin-bottom:8px}
+.astro-title{font-size:12px;letter-spacing:1.15px}
+.astro-subtitle{font-size:11px}
+.astro-step[hidden],.astro-timeline[hidden],.astro-info[hidden]{display:none!important}
+.astro-choice{min-height:42px;font-size:13px}
+.astro-back{background:transparent;color:rgba(210,231,250,.82);padding:4px 0 7px;font-size:12px}
+.astro-timeline{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.1)}
+.astro-time-readout{text-align:center;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;padding:4px 0 10px}
+.astro-time-scale{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:9px;color:rgba(231,241,252,.58);margin-bottom:3px}
+.astro-time-scale span:nth-child(2){text-align:center}
+#astroTimeScrubber{display:block;width:100%;height:28px;margin:2px 0 5px;accent-color:#78cfff;touch-action:pan-y}
+.astro-time-actions{display:flex;gap:7px;margin-top:3px}
+.astro-time-actions button{flex:1;min-height:34px;padding:7px;border-radius:10px;background:rgba(255,255,255,.075);font-size:11px;font-weight:650}
+.astro-info{margin-top:9px;padding:9px 10px;font-size:11px;line-height:1.5}
+@media(max-width:390px){.astro-panel{padding:11px 12px 12px}.astro-choice{min-height:39px}.astro-time-readout{font-size:12px}}
+
+/* v1.17 — live object toggles + optional 24-hour simulation */
+.astro-panel{padding:13px 14px 14px;bottom:calc(var(--safe-bottom) + 82px)}
+.astro-head{margin-bottom:8px}
+.astro-title{font-size:12px;letter-spacing:1.15px}
+.astro-subtitle{font-size:11px}
+.astro-choice{min-height:42px;font-size:13px}
+.astro-past-future{width:100%;flex:none;background:rgba(255,255,255,.045);color:rgba(235,244,255,.86)}
+.astro-timeline{margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1)}
+.astro-time-readout{text-align:center;font-size:13px;font-weight:650;font-variant-numeric:tabular-nums;padding:3px 0 9px}
+.astro-time-scale{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:9px;color:rgba(231,241,252,.58);margin-bottom:3px}
+.astro-time-scale span:nth-child(2){text-align:center}
+#astroTimeScrubber{display:block;width:100%;height:29px;margin:2px 0 5px;accent-color:#78cfff;touch-action:pan-y}
+.astro-time-actions{display:flex;gap:7px;margin-top:3px}
+.astro-time-actions button{flex:1;min-height:35px;padding:7px;border-radius:10px;background:rgba(255,255,255,.075);font-size:11px;font-weight:650}
+.astro-info{margin-top:9px;padding:8px 10px;font-size:11px;line-height:1.45}
+@media(max-width:390px){.astro-panel{padding:11px 12px 12px}.astro-choice{min-height:39px}.astro-time-readout{font-size:12px}}
