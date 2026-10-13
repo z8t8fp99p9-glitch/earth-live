@@ -28,6 +28,9 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .edge-top,.edge-bottom{left:0;right:0;height:26px}.edge-top{top:0}.edge-bottom{bottom:0}
 .edge-left,.edge-right{top:26px;bottom:26px;width:26px}.edge-left{left:0}.edge-right{right:0}
 
+/* iOS fallback: also activate standalone layout when navigator.standalone is true. */
+html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:auto!important;min-height:0}
+
 /* iPhone Home Screen app: anchor all four edges instead of relying on a reported viewport height. */
 @media (display-mode:standalone){
   html,body{background-color:#030509}

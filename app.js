@@ -19,6 +19,8 @@ function setQuality(mode){
  }catch(e){console.error('Map mode change failed',e);}
 }
 function syncViewport(){
+ const standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+ document.documentElement.classList.toggle('standalone-app',!!standalone);
  if(resizeFrame)cancelAnimationFrame(resizeFrame);
  resizeFrame=requestAnimationFrame(()=>{
   resizeFrame=0;
