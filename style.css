@@ -1,5 +1,5 @@
 :root{color-scheme:dark;--glass:rgba(13,18,27,.56);--line:rgba(255,255,255,.15);--text:rgba(248,250,255,.95);--safe-bottom:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100%;width:100%;margin:0;overflow:hidden;background:#030509;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}body{overscroll-behavior:none}#app{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:#030509} @supports (height:100dvh){html,body{height:100%;}#app{height:100dvh}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{height:100vh;width:100%;margin:0;overflow:hidden;background:#030509;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}body{overscroll-behavior:none}#app{position:fixed;inset:0;width:100%;height:100vh;overflow:hidden;background:#030509} @supports (height:100dvh){html,body{height:100%;}#app{height:100dvh}} /* iOS Home Screen apps can report a shortened dynamic viewport. In standalone mode, 100vh covers the full app screen. */ @media (display-mode: standalone){html,body,#app{height:100vh}} @supports (-webkit-touch-callout:none){@media (display-mode: standalone){html,body,#app{height:100vh}}}
 #globe,.cesium-viewer,.cesium-viewer-cesiumWidgetContainer,.cesium-widget,.cesium-widget canvas{position:absolute;inset:0;width:100%;height:100%;min-height:100%;touch-action:none;outline:none} @supports (height:100dvh){#globe,.cesium-viewer,.cesium-viewer-cesiumWidgetContainer,.cesium-widget,.cesium-widget canvas{height:100%;}}
 .cesium-viewer-bottom,.cesium-viewer-toolbar,.cesium-viewer-animationContainer,.cesium-viewer-timelineContainer,.cesium-viewer-fullscreenContainer{display:none!important}
 .glass{background:var(--glass);border:1px solid var(--line);box-shadow:0 12px 34px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.075);-webkit-backdrop-filter:blur(22px) saturate(145%);backdrop-filter:blur(22px) saturate(145%)}
@@ -30,4 +30,4 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .bottom-ui{z-index:4}
 .app-stamp{z-index:5}
 
-/* v1.5: make the app shell track the dynamic phone viewport to avoid a stale-height black band; globe scale and camera settings remain untouched. */
+/* v1.6: use full-screen height for installed iOS web apps; normal Safari continues to use dynamic viewport sizing. Globe scale and camera settings remain untouched. */
