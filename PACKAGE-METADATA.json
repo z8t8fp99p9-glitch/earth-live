@@ -1,16 +1,22 @@
 {
-  "package": "EARTH // LIVE Cloud Dataset Foundation",
-  "packageVersion": "1.0",
-  "targetAppVersion": "1.14 baseline context; verify against the currently installed package before integration",
-  "userSettings": {
+  "package": "EARTH // LIVE Satellite Dataset",
+  "version": "1.0",
+  "settings": {
     "coverage": "global",
-    "checkIntervalMinutes": 30,
+    "activeAppCheckIntervalMinutes": 30,
+    "providerFetchMinimumIntervalMinutes": 120,
     "observationHistoryDays": 7,
-    "scientificMeasurements": true,
-    "storageStrategy": "balanced"
+    "catalog": "useful",
+    "storage": "balanced"
   },
+  "source": "CelesTrak GP OMM JSON",
+  "groups": [
+    "STATIONS",
+    "WEATHER",
+    "EARTH-RESOURCES",
+    "GPS-OPS"
+  ],
+  "propagation": "satellite.js SGP4; position output requires frame transformation before globe rendering",
   "uiChanges": false,
-  "githubChanges": false,
-  "integration": "Add cloud-collector.js after data-store.js and before app.js in existing index.html",
-  "importantLimitation": "Scientific MODIS HDF-EOS parsing is not enabled until the granule download and browser parser path is verified."
+  "githubEditedByAssistant": false
 }
