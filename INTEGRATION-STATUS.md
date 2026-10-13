@@ -8,4 +8,7 @@
 - Not runtime-tested in Safari/PWA; astronomy output not independently validated.
 
 
-v1.23: Landscape-only vertical rail spacing adjustment. Portrait CSS and application JavaScript unchanged from v1.22. Needs visual testing in the deployed iPhone app.
+v1.24: Landscape-only vertical rail spacing adjustment. Portrait CSS and application JavaScript unchanged from v1.22. Needs visual testing in the deployed iPhone app.
+
+
+v1.24 scope: responsive layout for the initial Sun/Moon selection panel only. Portrait placement and the simulation slider design are preserved. Landscape placement/size adapts to available viewport and safe areas. Needs real-device visual testing.

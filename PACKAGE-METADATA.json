@@ -1,8 +1,8 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.23",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.23.zip",
+  "version": "1.24",
+  "filename": "EARTH-LIVE-Sun-Moon-v1.24.zip",
   "base": "v1.21 with explicit range-direction reset and local-now anchoring",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
@@ -22,12 +22,12 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Landscape-only: center the vertical slider track within its rail and shorten it to fit the available rail height.",
-    "Landscape-only: add clear separation between the slider and timestamp/LIVE footer so they do not overlap.",
-    "Portrait slider styling unchanged.",
-    "Existing app.js, sun-moon-tracker.js, data-store.js, moon-dataset.js, and index.html retained from v1.22.",
-    "Service-worker cache bumped to v1-23."
+    "Make the initial Sun/Moon options panel respond to available viewport size and orientation.",
+    "Portrait initial panel placement preserved.",
+    "Landscape initial options panel becomes compact and sits on the right side, clear of the bottom control dock.",
+    "Respect dynamic viewport height and iPhone safe-area insets; constrain panel overflow on short screens.",
+    "Approved Cosmic Glow simulation slider styling and all application JavaScript retained from v1.23."
   ],
-  "title": "EARTH // LIVE \u2014 Sun / Moon Tracker v1.23",
-  "description": "Landscape-only spacing adjustment for the vertical Cosmic Glow slider. Shortens and centers the vertical track inside its rail, adds separation before the timestamp and LIVE button, and prevents the track from crossing the readout. Portrait styling and existing globe/control files are preserved."
+  "title": "EARTH // LIVE \u2014 Sun / Moon Options Layout v1.24",
+  "description": "Responsive layout refinement for the initial Sun/Moon choice panel. Portrait placement and approved Cosmic Glow simulation slider remain unchanged. In landscape, the initial options panel becomes a compact side panel, sizes controls to the available viewport, and respects safe-area insets. No direct GitHub edits."
 }

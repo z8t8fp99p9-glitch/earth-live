@@ -187,3 +187,57 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
  #astroTimeScrubber{width:clamp(115px,28vh,150px)}
  .astro-panel.simulation-mode{padding:8px!important}
 }
+
+
+/* v1.24 — responsive Sun/Moon choice panel only.
+   The approved Cosmic Glow simulation slider styles remain unchanged. */
+#astroPanel:not(.simulation-mode){
+  width:min(430px,calc(100vw - 24px));
+  max-width:430px;
+  max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 118px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+#astroPanel:not(.simulation-mode) #astroNormalControls{min-width:0}
+#astroPanel:not(.simulation-mode) .astro-row{width:100%;min-width:0}
+#astroPanel:not(.simulation-mode) .astro-choice{min-width:0;overflow-wrap:anywhere}
+@media (orientation:landscape) and (min-width:600px){
+  /* Keep the initial Sun/Moon choices compact and clear of the bottom control dock. */
+  #astroPanel:not(.simulation-mode){
+    width:min(270px,calc(100vw - 32px));
+    max-width:270px;
+    left:auto;
+    right:calc(env(safe-area-inset-right,0px) + 18px);
+    top:50%;
+    bottom:auto;
+    transform:translateY(-50%);
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 32px);
+    padding:12px;
+  }
+  #astroPanel:not(.simulation-mode) .astro-head{margin-bottom:7px}
+  #astroPanel:not(.simulation-mode) .astro-choice{min-height:38px;padding:8px 9px;font-size:12px}
+  #astroPanel:not(.simulation-mode) .astro-info{max-height:24dvh;overflow:auto}
+}
+@media (orientation:landscape) and (max-height:430px){
+  #astroPanel:not(.simulation-mode){
+    width:min(250px,calc(100vw - 24px));
+    max-width:250px;
+    padding:9px 10px;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 18px);
+  }
+  #astroPanel:not(.simulation-mode) .astro-head{margin-bottom:5px}
+  #astroPanel:not(.simulation-mode) .astro-choice{min-height:34px;padding:6px 8px;font-size:11px}
+  #astroPanel:not(.simulation-mode) .astro-info{margin-top:6px;padding:7px;font-size:10px}
+}
+/* In portrait, preserve the existing approved panel placement and proportions. */
+@media (orientation:portrait){
+  #astroPanel:not(.simulation-mode){
+    left:12px;
+    right:12px;
+    width:auto;
+    max-width:430px;
+    top:auto;
+    bottom:calc(var(--safe-bottom) + 82px);
+    transform:none;
+  }
+}
