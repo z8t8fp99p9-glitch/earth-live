@@ -34,3 +34,7 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .edge-left,.edge-right{top:26px;bottom:26px;width:26px}
 .edge-left{left:0}
 .edge-right{right:0}
+
+/* v1.7 diagnostic test only: disable edge guards to isolate viewport issue.
+   Restore normal guards after testing; do not use this as the permanent build. */
+.edge-gesture-guard{pointer-events:none!important}
