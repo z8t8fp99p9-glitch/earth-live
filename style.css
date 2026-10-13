@@ -171,7 +171,7 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
  .astro-panel.simulation-mode{width:auto!important;min-width:102px!important;max-width:124px!important;left:auto!important;right:calc(env(safe-area-inset-right,0px) + 14px)!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;padding:12px 10px!important}
  .astro-panel.simulation-mode #astroSimOnly{align-items:center;gap:10px}
  .astro-slider-area{width:42px;height:clamp(160px,48vh,270px);display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:0}
- .astro-rail-labels{width:100%;height:100%;flex-direction:column;justify-content:space-between;align-items:center;padding:0;pointer-events:none}
+ .astro-rail-labels{width:100%;height:100%;flex-direction:column-reverse;justify-content:space-between;align-items:center;padding:0;pointer-events:none}
  .astro-rail-labels span:nth-child(2){display:none}
  #astroTimeScrubber{position:absolute;width:clamp(160px,48vh,270px);height:32px;left:50%;top:calc(12px + 12px + clamp(80px,24vh,135px));transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;touch-action:pan-x;}
  .astro-slider-area{position:relative}
