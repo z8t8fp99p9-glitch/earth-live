@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Landscape Balance Polish",
-  "version": "1.30",
-  "filename": "EARTH-LIVE-Landscape-Balance-v1.30.zip",
-  "base": "User-tested v1.29 candidate",
+  "package": "Adaptive Landscape Scroller",
+  "version": "1.31",
+  "filename": "EARTH-LIVE-Adaptive-Landscape-Scroller-v1.31.zip",
+  "base": "User-tested v1.30 candidate",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "CSS-only landscape glass contrast and compact sizing refinement plus version/cache bump; portrait layout unchanged",
+  "ui_scope": "CSS-only landscape scroller sizing refinement plus version/cache bump; portrait layout unchanged",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -22,14 +22,13 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Use the user-tested v1.29 candidate as the source base.",
-    "Keep the bottom glass dock locked to horizontal screen centre in both orientations.",
-    "Improve landscape dock glass contrast and depth so controls remain legible over the globe.",
-    "Unify landscape Sun/Moon and time panels with the dock using consistent dark glass materials.",
-    "Tighten dock sizing on short landscape viewports.",
+    "Use the supplied v1.30 candidate as the exact source base.",
+    "Keep the bottom glass dock horizontally centred in both orientations.",
+    "Adjust the vertical landscape time scroller length to the available viewport height, with a tighter rule for short landscape screens.",
+    "Keep the slider track within the rail area and preserve separate timestamp and LIVE button rows.",
     "Preserve portrait styling and all HTML, app JavaScript, data store, astronomy calculations, globe/camera/gesture logic.",
     "Requires on-device testing; no claim of runtime validation."
   ],
-  "title": "EARTH // LIVE \u2014 Landscape Composition Refinement v1.29",
-  "description": "Focused landscape-only composition refinement based on the supplied v1.28 candidate. Locks the glass dock to the horizontal centre of the screen in both orientations, makes landscape dock proportions more compact, and refines the landscape Sun/Moon and vertical time panels. Preserves the approved portrait layout and horizontal slider. Does not modify app logic, astronomy calculations, globe/camera/gesture code, or HTML structure. Requires on-device testing; not runtime-tested on iPhone."
+  "title": "EARTH // LIVE \u2014 Adaptive Landscape Scroller v1.31",
+  "description": "Landscape-only scroller sizing refinement. The vertical time slider adjusts its length to the available landscape viewport height, with a compact rule for short screens. Keeps the centre dock locked to horizontal screen centre and preserves the approved portrait layout and existing application logic. Requires on-device testing; not runtime-tested on iPhone."
 }

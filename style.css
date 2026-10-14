@@ -671,3 +671,26 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
   .bottom-ui .quality-btn{padding:6px 8px}
   .bottom-ui .icon-btn{width:34px;height:34px;flex-basis:34px}
 }
+
+/* v1.31 — landscape scroller length follows the actual available rail space.
+   Keep the labels and thumb inside the panel on short and tall landscape viewports. */
+@media (orientation:landscape){
+  #astroPanel.simulation-mode .astro-slider-area{
+    height:clamp(88px, calc(100dvh - 270px), 164px)!important;
+    min-height:88px;
+    flex:0 1 auto;
+  }
+  #astroPanel.simulation-mode #astroTimeScrubber{
+    width:clamp(72px, calc(100dvh - 292px), 146px)!important;
+    max-width:none;
+  }
+}
+@media (orientation:landscape) and (max-height:430px){
+  #astroPanel.simulation-mode .astro-slider-area{
+    height:clamp(78px, calc(100dvh - 250px), 112px)!important;
+    min-height:78px;
+  }
+  #astroPanel.simulation-mode #astroTimeScrubber{
+    width:clamp(64px, calc(100dvh - 268px), 94px)!important;
+  }
+}
