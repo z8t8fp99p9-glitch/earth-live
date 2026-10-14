@@ -500,3 +500,92 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
   #astroPanel:not(.simulation-mode) #pastFutureBtn{min-height:31px}
 }
 @media(prefers-reduced-motion:reduce){.astro-glass-knob{transition:none}}
+
+
+/* v1.28 — responsive glass sizing pass.
+   Final override layer only: keeps portrait layout and all globe/tracker JS untouched. */
+:root{--ui-edge:clamp(8px,2.2vw,16px);--ui-gap:clamp(5px,1.4vw,9px)}
+/* All panels use the currently available viewport, including iOS dynamic viewport changes. */
+.astro-panel{
+  box-sizing:border-box;
+  max-width:calc(100vw - (var(--ui-edge) * 2));
+  max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px);
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+.astro-panel *{min-width:0}
+/* Bottom dock stays above the bottom safe area and scales within narrow screens. */
+.bottom-ui{max-width:calc(100vw - 16px);gap:var(--ui-gap);padding:clamp(4px,1.2vw,7px)}
+.quality-btn{min-width:clamp(42px,11vw,61px);padding:clamp(8px,1.9vw,11px) clamp(7px,2vw,14px)}
+.icon-btn{width:clamp(36px,10vw,43px);height:clamp(36px,10vw,43px);flex-basis:clamp(36px,10vw,43px)}
+/* Portrait: retain the approved placement, orientation, and familiar proportions. */
+@media (orientation:portrait){
+  #astroPanel:not(.simulation-mode){
+    left:clamp(10px,3vw,16px);right:clamp(10px,3vw,16px);width:auto;max-width:430px;
+    top:auto;bottom:calc(var(--safe-bottom) + 88px);transform:none;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 170px);
+  }
+  #astroPanel.simulation-mode{
+    left:clamp(10px,3vw,16px)!important;right:clamp(10px,3vw,16px)!important;
+    top:auto!important;bottom:calc(var(--safe-bottom) + 88px)!important;transform:none!important;
+    width:auto!important;max-width:430px!important;min-width:0!important;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 170px);
+  }
+}
+/* Landscape choice panel: size to viewport and keep its controls inside its own scroll area. */
+@media (orientation:landscape){
+  #astroPanel:not(.simulation-mode){
+    box-sizing:border-box;width:min(258px,calc(100vw - 32px));max-width:258px;
+    right:calc(env(safe-area-inset-right,0px) + 18px);left:auto;top:50%;bottom:auto;transform:translateY(-50%);
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 24px);
+    overflow-y:auto;padding:clamp(8px,2vh,12px);
+  }
+  #astroPanel:not(.simulation-mode) .astro-glass-toggle{min-height:clamp(34px,8vh,39px)}
+  #astroPanel:not(.simulation-mode) .astro-glass-knob{width:clamp(27px,6vh,31px);height:clamp(27px,6vh,31px);flex-basis:clamp(27px,6vh,31px)}
+  #astroPanel:not(.simulation-mode) .astro-head{gap:8px;margin-bottom:clamp(4px,1.2vh,7px)}
+  #astroPanel:not(.simulation-mode) .astro-row{margin-top:clamp(4px,1.2vh,7px)}
+}
+/* Landscape simulation rail: reserve separate rows for rail, timestamp, and LIVE button.
+   This prevents the rotated slider and date/time from crossing each other. */
+@media (orientation:landscape){
+  #astroPanel.simulation-mode{
+    box-sizing:border-box;width:clamp(112px,17vw,136px)!important;min-width:112px!important;max-width:136px!important;
+    left:auto!important;right:calc(env(safe-area-inset-right,0px) + 12px)!important;
+    top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;
+    padding:clamp(7px,1.8vh,11px)!important;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 20px);
+    overflow:visible;
+  }
+  #astroPanel.simulation-mode #astroSimOnly{display:flex!important;flex-direction:column;align-items:stretch!important;justify-content:center;gap:clamp(6px,1.8vh,11px);width:100%;}
+  #astroPanel.simulation-mode .astro-slider-area{
+    width:100%;height:clamp(126px,35dvh,205px);min-height:0;flex:0 1 auto;
+    display:flex;align-items:center;justify-content:center;position:relative;overflow:visible;
+  }
+  #astroPanel.simulation-mode .astro-rail-labels{position:absolute;inset:0;width:100%;height:100%;display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:center;padding:0;pointer-events:none}
+  #astroPanel.simulation-mode .astro-rail-labels span{font-size:9px;line-height:1;white-space:nowrap}
+  #astroPanel.simulation-mode .astro-rail-labels span:nth-child(2){display:none}
+  #astroPanel.simulation-mode #astroTimeScrubber{
+    position:absolute;left:50%;top:50%;width:clamp(112px,31dvh,190px);height:30px;margin:0;padding:0;
+    transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;
+    writing-mode:horizontal-tb!important;direction:ltr!important;touch-action:none;
+  }
+  #astroPanel.simulation-mode .astro-sim-footer{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:7px;width:100%;margin:0;flex:0 0 auto}
+  #astroPanel.simulation-mode #astroTimeReadout{display:block;width:100%;max-width:none;text-align:center;white-space:normal;overflow-wrap:anywhere;word-break:normal;font-size:clamp(9px,2.2vh,11px);line-height:1.25;overflow:visible}
+  #astroPanel.simulation-mode #backToLive{display:block;width:100%;min-width:0;min-height:30px;flex:0 0 auto}
+}
+@media (orientation:landscape) and (max-height:430px){
+  #astroPanel.simulation-mode{padding:6px!important}
+  #astroPanel.simulation-mode #astroSimOnly{gap:5px}
+  #astroPanel.simulation-mode .astro-slider-area{height:clamp(105px,31dvh,135px)}
+  #astroPanel.simulation-mode #astroTimeScrubber{width:clamp(100px,27dvh,132px)}
+  #astroPanel.simulation-mode .astro-rail-labels span{font-size:8px}
+  #astroPanel.simulation-mode #astroTimeReadout{font-size:9px}
+  #astroPanel.simulation-mode #backToLive{min-height:27px;padding:4px}
+  #astroPanel:not(.simulation-mode){padding:7px}
+}
+@media (max-width:390px) and (orientation:portrait){
+  .bottom-ui{gap:4px;padding:4px}
+  .quality-btn{min-width:42px;padding:8px 7px}
+  .icon-btn{width:36px;height:36px;flex-basis:36px}
+}
+@media(prefers-reduced-motion:reduce){.astro-glass-knob,.astro-glass-toggle{transition:none}}

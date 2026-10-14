@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Sun / Moon Verification Patch",
-  "version": "1.27",
-  "filename": "EARTH-LIVE-Verification-v1.27.zip",
-  "base": "v1.21 with explicit range-direction reset and local-now anchoring",
+  "package": "Responsive Glass Sizing Patch",
+  "version": "1.28",
+  "filename": "EARTH-LIVE-Responsive-Glass-UI-v1.28.zip",
+  "base": "User-uploaded EARTH-LIVE-Verification-v1.27 ZIP",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Version-stamp reliability patch only; visual UI and tracker/globe behavior preserved",
+  "ui_scope": "CSS-only responsive sizing/spacing patch plus version/cache bump",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -22,11 +22,16 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Fix the app badge so it replaces \u201cLoading version\u2026\u201d with the actual v1.27 label.",
-    "Bump the service-worker cache name to v1-27 so the corrected version script is not hidden behind the previous shell cache.",
-    "Keep the existing v1.26 glass controls, slider CSS, tracker JavaScript, Moon dataset, data store, and globe/camera/gesture logic unchanged.",
-    "This patch does not claim the slider direction is fixed; that requires a deliberate interaction test on the device."
+    "Use the exact user-uploaded v1.27 package as the base.",
+    "Add viewport-aware maximum sizing and safe-area constraints for panels.",
+    "Preserve the approved portrait panel placement and horizontal simulation slider.",
+    "Refine landscape option panel sizing and spacing.",
+    "Reserve separate layout rows for the landscape vertical slider, date/time readout, and LIVE button to prevent overlap.",
+    "Keep bottom controls within narrow viewport bounds without changing their IDs or behavior.",
+    "Do not change app.js, data-store.js, sun-moon-tracker.js, moon-dataset.js, index.html, or globe/camera/gesture logic.",
+    "Update version stamp and service-worker cache to v1-28.",
+    "Not runtime-tested on iPhone; visual and interaction testing required."
   ],
-  "title": "EARTH // LIVE \u2014 Verification Patch v1.27",
-  "description": "Small verification patch for EARTH // LIVE. Fixes the version badge stuck on \u201cLoading version\u2026\u201d and updates the service-worker cache name. Preserves the current glass controls, slider layout, Sun/Moon tracker logic, and globe/camera/gesture code. Slider direction and astronomy behavior still require on-device testing."
+  "title": "EARTH // LIVE \u2014 Responsive Glass UI v1.28",
+  "description": "Focused responsive-sizing refinement based on the supplied v1.27 source. Keeps portrait Sun/Moon and horizontal-slider layout visually unchanged; improves landscape panel sizing and separates the vertical slider rail, date/time readout, and LIVE button to prevent overlap. Uses viewport and safe-area-aware limits. Does not modify application JavaScript, Cesium globe/camera/gesture logic, tracker calculations, or data store. Requires on-device testing; not runtime-tested on iPhone."
 }

@@ -1,8 +1,9 @@
-# Integration status — v1.27
+# Integration status — v1.28
 
-- Scope: version badge and service-worker cache fix only.
-- Changed: `app-version.js`, service-worker cache key, package documentation/metadata.
-- Unchanged: `app.js`, `data-store.js`, `moon-dataset.js`, `sun-moon-tracker.js`, `index.html`, and `style.css`.
-- No Cesium canvas, camera, globe, or gesture handler changes.
-- Slider direction is not declared fixed; it remains an explicit on-device test.
-- ZIP integrity and JavaScript syntax checks passed locally; not runtime-tested on iPhone.
+- Base: exact uploaded `EARTH-LIVE-Verification-v1.27.zip`.
+- Changed: `style.css`, `app-version.js`, `service-worker.js`, package metadata/docs.
+- Unchanged: `index.html`, `app.js`, `data-store.js`, `sun-moon-tracker.js`, `moon-dataset.js`.
+- Main intent: portrait preserved; landscape sizing/readout overlap prevention.
+- No globe/camera/gesture code changes.
+- ZIP integrity passed.
+- Requires on-device portrait/landscape verification.
