@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Adaptive Landscape Scroller",
-  "version": "1.32",
-  "filename": "EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
-  "base": "User-tested v1.31 candidate",
+  "package": "Sun & Moon Visualization",
+  "version": "1.33",
+  "filename": "EARTH-LIVE-Sun-Moon-Visualization-v1.33.zip",
+  "base": "User-tested EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "CSS-only landscape scroller sizing correction plus version/cache bump; portrait layout unchanged",
+  "ui_scope": "Adds selected Sun/Moon directional markers tied to live/simulated time; preserves adaptive landscape scroller and centred dock",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -16,19 +16,20 @@
   ],
   "ui_changes": [
     "portrait mode uses a horizontal glowing circular-thumb slider",
-    "landscape mode uses a vertical slider on the right side, with +12h at the top and −12h at the bottom to match upward-forward movement",
+    "landscape mode uses a vertical slider on the right side, with +12h at the top and \u221212h at the bottom to match upward-forward movement",
     "slider input uses a fixed simulation anchor so drag values map consistently to time",
     "Sun/Moon tracker icon starts inactive and panel stays closed on launch",
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Use the supplied v1.31 candidate as the exact source base.",
-    "Remove the prior short fixed-size ceiling from the landscape vertical time scroller.",
-    "Expand the landscape rail and rotated input track according to viewport height while reserving space for the readout, LIVE button, safe areas, and centre dock.",
-    "Keep the centre dock horizontally centred in both orientations.",
-    "Preserve portrait styling and all HTML, app JavaScript, data store, astronomy calculations, globe/camera/gesture logic.",
-    "Requires on-device testing; no claim of runtime validation."
+    "Render a directionally calculated Sun marker when Sun tracking is selected.",
+    "Render a directionally calculated Moon marker with approximate phase illumination when Moon tracking is selected.",
+    "Synchronize Cesium scene clock to live time and selected \u00b112-hour simulation time.",
+    "Keep the existing 40-degree Moon visibility overlay threshold.",
+    "Keep the marker distances visually scaled for the existing globe camera; do not claim scale-accurate orbital distances.",
+    "Preserve the v1.32 centre dock and responsive landscape scroller.",
+    "Requires on-device interaction and visual testing; no runtime validation claim."
   ],
-  "title": "EARTH // LIVE — Adaptive Landscape Scroller v1.32",
-  "description": "Landscape-only scroller sizing correction. Removes the previous short sizing ceiling so the vertical time slider uses more of the available landscape height while reserving room for labels, timestamp, LIVE button, safe areas, and the fixed centre dock. Portrait layout and existing application logic are unchanged. Requires on-device testing."
+  "title": "EARTH // LIVE \u2014 Sun & Moon Visualization v1.33",
+  "description": "Adds visible, directionally calculated Sun and Moon markers linked to live time and the existing \u00b112-hour simulation slider. Includes a simple Moon illumination appearance and keeps the current Moon visibility overlay. Celestial markers are visually scaled for readability; the Moon model is an approximation, not a precision ephemeris. Preserves the centred dock and adaptive landscape scroller. Requires iPhone/PWA testing."
 }

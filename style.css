@@ -695,3 +695,6 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
     width:clamp(132px, calc(100dvh - 160px), 215px)!important;
   }
 }
+
+/* v1.33 — subtle note for visually scaled celestial markers */
+.astro-info .astro-note{display:inline-block;margin-top:5px;color:rgba(195,210,225,.72);font-size:.88em;line-height:1.35}

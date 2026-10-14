@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const panel=$('astroPanel'),button=$('lightingBtn'),close=$('astroClose'),sunTab=$('sunTab'),moonTab=$('moonTab');
 const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'),simOnly=$('astroSimOnly'),pastFutureBtn=$('pastFutureBtn'),scrubber=$('astroTimeScrubber');
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
-let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null;
+let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],celestialEntity=null,liveTimer=null,lastOverlayBucket=null;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
 function wrap360(v){return ((v%360)+360)%360;}
 function sinD(v){return Math.sin(v*DEG);}
@@ -20,8 +20,21 @@ function sunPosition(date){
  return {ra,dec,latitude:dec,longitude:((ra-gmstDeg(date)+540)%360)-180};
 }
 function moonPosition(date){
- if(window.EarthLiveMoon&&typeof window.EarthLiveMoon.calculate==='function'){const m=window.EarthLiveMoon.calculate(date);return {ra:m.rightAscensionDeg,dec:m.declinationDeg,illumination:m.illuminationPercent,phase:m.phaseName,distance:m.distanceKm};}
+ if(window.EarthLiveMoon&&typeof window.EarthLiveMoon.calculate==='function'){const m=window.EarthLiveMoon.calculate(date);return {ra:m.rightAscensionDeg,dec:m.declinationDeg,longitude:((m.rightAscensionDeg-gmstDeg(date)+540)%360)-180,illumination:m.illuminationPercent,phase:m.phaseName,distance:m.distanceKm,phaseAngle:m.phaseAngleDeg};}
  return null;
+}
+function svgData(svg){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);}
+function sunIcon(){return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><radialGradient id="g"><stop stop-color="#fffbd5"/><stop offset=".28" stop-color="#ffe99a"/><stop offset=".62" stop-color="#ffb83d"/><stop offset="1" stop-color="#ff8a22" stop-opacity="0"/></radialGradient></defs><circle cx="48" cy="48" r="47" fill="url(#g)"/><circle cx="48" cy="48" r="19" fill="#fff2b2" stroke="#ffffff" stroke-opacity=".85" stroke-width="2"/></svg>');}
+function moonIcon(illumination){const lit=Math.max(0,Math.min(1,illumination/100));const offset=(1-lit)*34;const shadow=lit<0.04?'<circle cx="48" cy="48" r="34" fill="#101b2b"/>':lit>0.96?'':'<ellipse cx="'+(48-offset)+'" cy="48" rx="'+Math.max(1,34*(1-lit))+'" ry="34" fill="#101b2b"/>';return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><radialGradient id="m" cx="35%" cy="28%"><stop stop-color="#ffffff"/><stop offset=".62" stop-color="#dce8f4"/><stop offset="1" stop-color="#9aaaba"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3"/></filter></defs><circle cx="48" cy="48" r="43" fill="#7fcfff" opacity=".22" filter="url(#glow)"/><circle cx="48" cy="48" r="34" fill="#101b2b" stroke="#8b9baa" stroke-width="2"/><circle cx="48" cy="48" r="34" fill="url(#m)"/>'+shadow+'</svg>');}
+function clearCelestial(){if(viewer&&celestialEntity){viewer.entities.remove(celestialEntity);}celestialEntity=null;}
+function renderCelestial(which,date,data){
+ if(!viewer||!window.Cesium||!data)return;
+ clearCelestial();
+ const lon=data.longitude,lat=which==='sun'?data.latitude:data.dec;
+ // Distances are deliberately visually scaled for this globe camera; coordinates track the calculated celestial direction.
+ const height=which==='sun'?1600000:3500000;
+ celestialEntity=viewer.entities.add({id:'earth-live-'+which+'-visual',position:Cesium.Cartesian3.fromDegrees(lon,lat,height),billboard:{image:which==='sun'?sunIcon():moonIcon(data.illumination),width:which==='sun'?54:46,height:which==='sun'?54:46,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,scaleByDistance:new Cesium.NearFarScalar(7000000,1.15,45000000,0.58),disableDepthTestDistance:0},label:{text:which==='sun'?'SUN':'MOON',font:'600 12px sans-serif',fillColor:which==='sun'?Cesium.Color.fromCssColorString('#ffe8a6'):Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.BLACK,outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,35),scaleByDistance:new Cesium.NearFarScalar(7000000,1,45000000,0.6)}});
+ viewer.scene.requestRender();
 }
 function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
 function currentLocalTime(){return new Date(Date.now());}
@@ -42,16 +55,16 @@ function update(){
  if(!viewer)return;
  const date=simulation?new Date(simTime):new Date();setClock(date);
  if(simulation)readout.textContent=fmt(date);
- if(!activeObject){info.hidden=true;clearOverlay();lastOverlayBucket=null;return;}
+ if(!activeObject){info.hidden=true;clearOverlay();clearCelestial();lastOverlayBucket=null;return;}
  info.hidden=false;
  if(activeObject==='sun'){
   const sun=sunPosition(date);title.textContent='SUN';summary.textContent='Live Sun tracking';
-  info.innerHTML='<strong>Sun position</strong><br>Subsolar point: '+sun.latitude.toFixed(1)+'° latitude, '+sun.longitude.toFixed(1)+'° longitude';
-  clearOverlay();lastOverlayBucket=null;
+  info.innerHTML='<strong>Sun position</strong><br>Subsolar point: '+sun.latitude.toFixed(1)+'° latitude, '+sun.longitude.toFixed(1)+'° longitude<br><span class="astro-note">Directional marker is visually scaled; Earth lighting follows the selected time.</span>';
+  renderCelestial('sun',date,sun);clearOverlay();lastOverlayBucket=null;
  }else{
   const moon=moonPosition(date);title.textContent='MOON';summary.textContent='Live Moon tracking';
-  if(moon){info.innerHTML='<strong>'+moon.phase+'</strong> · '+moon.illumination.toFixed(0)+'% illuminated<br>Approx. distance: '+Math.round(moon.distance).toLocaleString()+' km';renderMoonOverlay(date,moon);}
-  else info.textContent='Moon calculator unavailable.';
+  if(moon){info.innerHTML='<strong>'+moon.phase+'</strong> · '+moon.illumination.toFixed(0)+'% illuminated<br>Approx. distance: '+Math.round(moon.distance).toLocaleString()+' km<br><span class="astro-note">Moon marker is visually scaled for this globe view.</span>';renderCelestial('moon',date,moon);renderMoonOverlay(date,moon);}
+  else {info.textContent='Moon calculator unavailable.';clearCelestial();}
  }
  syncObjectButtons();
 }
@@ -68,7 +81,7 @@ function enterSimulation(){
 function returnLive(){
  simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;
  activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;
- clearOverlay();lastOverlayBucket=null;syncObjectButtons();
+ clearOverlay();clearCelestial();lastOverlayBucket=null;syncObjectButtons();
 }
 function scrubTo(value){
  const raw=Number(value);
@@ -80,7 +93,7 @@ function scrubTo(value){
  update();
 }
 function openPanel(){panel.hidden=false;button.classList.add('active');returnLive();summary.textContent='Choose Sun or Moon';}
-function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();}
+function closePanel(){panel.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();clearCelestial();lastOverlayBucket=null;syncObjectButtons();}
 button.addEventListener('click',()=>panel.hidden?openPanel():closePanel());
 close.addEventListener('click',closePanel);
 sunTab.addEventListener('click',()=>chooseLiveObject('sun'));
@@ -89,7 +102,7 @@ pastFutureBtn.addEventListener('click',enterSimulation);
 scrubber.addEventListener('input',()=>scrubTo(scrubber.value));
 scrubber.addEventListener('change',()=>scrubTo(scrubber.value));
 $('backToLive').addEventListener('click',returnLive);
-window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;syncObjectButtons();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
+window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;clearCelestial();syncObjectButtons();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
 window.addEventListener('earthlive:foreground',()=>{if(!simulation&&activeObject)update();});
 window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();});
 })();
