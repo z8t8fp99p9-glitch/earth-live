@@ -1,8 +1,8 @@
-EARTH // LIVE v1.40 — Integration Status
+EARTH // LIVE v1.42 — Celestial Dock Candidate
 
-- Source: v1.39 Moon Orbit Preview package.
-- Changes: increased display orbit radius for visibility; diagnostic path dots are visible through Earth; app version and service-worker cache bumped to v1.40.
-- Moon positions: sampled from the existing local lightweight lunar calculator at 6-hour intervals across a 10-day window.
-- Important: this is an illustrative preview. Orbital radius is visually scaled and the lunar calculator is approximate; do not treat this as a precision ephemeris.
-- Existing Earth UI, globe textures, and controls are otherwise unchanged.
-- JavaScript syntax and ZIP integrity checks passed; runtime testing on iPhone/PWA remains outstanding.
+- Built from the current main source (read-only inspection; no GitHub writes).
+- Added static generated glass-style icon assets for Earth Basic, Earth HD, Live Location, Sun Observer, Moon Observer, and Stacks, plus Sun/Moon scroller handles.
+- Added a Basic/HD segmented selector, on-demand location refresh with a 20-second automatic expiry, Sun day/night shading with a 24-hour local-time scroller, Moon Sky View with locally calculated Moonrise/Moonset interval, and future-feed Stacks buttons.
+- Main dock remains centered; time scroller is horizontal in portrait and vertical on the right in landscape. Sun track is a straight gold beam; Moon track is a static electric-blue line.
+- No pulsing/continuous decorative animation. Future feed buttons are display-only and do not connect to datasets.
+- JavaScript syntax, CSS parse, asset references, and ZIP integrity should be checked before delivery. Runtime testing on iPhone/PWA and astronomical validation have not been performed.

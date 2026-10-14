@@ -1,37 +1,65 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#030509"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><title>EARTH // LIVE</title>
+<meta name="theme-color" content="#030509"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes">
+<title>EARTH // LIVE</title>
 <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
 <link rel="stylesheet" href="./style.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-</head><body><main id="app"><div id="globe" aria-label="Interactive Earth globe"></div><div class="edge-gesture-guard edge-top" aria-hidden="true"></div><div class="edge-gesture-guard edge-right" aria-hidden="true"></div><div class="edge-gesture-guard edge-bottom" aria-hidden="true"></div><div class="edge-gesture-guard edge-left" aria-hidden="true"></div><div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
-<section class="astro-panel glass" id="astroPanel" hidden aria-label="Sun and Moon tracker">
-  <div class="astro-head" id="astroNormalHeader"><div><div class="astro-title" id="astroTitle">SUN / MOON</div><div class="astro-subtitle" id="astroSummary">Choose Sun or Moon</div></div><button class="astro-close" id="astroClose" aria-label="Close tracker">×</button></div>
-  <div id="astroNormalControls">
-    <div class="astro-row astro-tabs" id="astroObjectRow" role="group" aria-label="Sun and Moon live tracking">
-      <button class="astro-choice astro-glass-toggle" id="sunTab" aria-pressed="false"><span class="astro-glass-knob" aria-hidden="true">☼</span><span class="astro-glass-label">Sun</span></button><button class="astro-choice astro-glass-toggle" id="moonTab" aria-pressed="false"><span class="astro-glass-knob" aria-hidden="true">☾</span><span class="astro-glass-label">Moon</span></button>
+</head>
+<body>
+<main id="app">
+  <div id="globe" aria-label="Interactive Earth globe"></div>
+  <div class="edge-gesture-guard edge-top" aria-hidden="true"></div><div class="edge-gesture-guard edge-right" aria-hidden="true"></div><div class="edge-gesture-guard edge-bottom" aria-hidden="true"></div><div class="edge-gesture-guard edge-left" aria-hidden="true"></div>
+  <section id="moonSky" class="moon-sky" hidden aria-label="Moon sky view">
+    <div class="sky-stars" aria-hidden="true"></div><div class="sky-haze" aria-hidden="true"></div>
+    <div class="sky-heading"><span class="sky-eyebrow">EARTH // LIVE</span><strong>MOON SKY VIEW</strong><span id="skyStatus">Finding your Moon window…</span></div>
+    <div class="sky-compass" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
+    <div class="sky-horizon" aria-hidden="true"><div class="horizon-mountains"></div><div class="horizon-glow"></div></div>
+    <div id="skyMoon" class="sky-moon" aria-hidden="true"><div class="sky-moon-crater crater-one"></div><div class="sky-moon-crater crater-two"></div><div class="sky-moon-crater crater-three"></div></div>
+    <div class="sky-direction" id="skyDirection">—</div>
+  </section>
+  <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
+
+  <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun time scroller">
+    <div class="time-panel-heading"><div><span class="panel-kicker">SOLAR TIME</span><strong>Sun Journey</strong></div><output id="sunTimeReadout">—</output></div>
+    <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">00:00</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1439" step="1" value="720" aria-label="Sun time across 24 hours"><span class="timeline-bound end-bound" id="sunEndLabel">24:00</span></div>
+    <div class="timeline-caption"><span>LOCAL DAY</span><span>Drag the Sun along the light beam</span></div>
+  </section>
+
+  <section id="moonPanel" class="time-panel moon-panel" hidden aria-label="Moon visibility scroller">
+    <div class="time-panel-heading"><div><span class="panel-kicker">LUNAR TIME</span><strong>Moon Journey</strong></div><output id="moonTimeReadout">—</output></div>
+    <div class="timeline-shell moon-timeline"><span class="timeline-bound start-bound" id="moonRiseLabel">MOONRISE</span><input id="moonTimeRange" class="time-range moon-range" type="range" min="0" max="1" step="1" value="0" aria-label="Moonrise to moonset timeline"><span class="timeline-bound end-bound" id="moonSetLabel">MOONSET</span></div>
+    <div class="timeline-caption"><span id="moonWindowLabel">CALCULATED VISIBILITY WINDOW</span><span>Drag the Moon along its electric trail</span></div>
+  </section>
+
+  <section id="stacksPanel" class="stacks-panel glass" hidden aria-label="Future data feeds">
+    <div class="stacks-heading"><div><span class="panel-kicker">MORE OPTIONS</span><strong>Data Stacks</strong></div><span class="future-tag">UPCOMING</span></div>
+    <div class="feed-grid">
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☁</span><span>Clouds</span><small>Future feed</small></button>
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◉</span><span>Satellites</span><small>Future feed</small></button>
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">✈</span><span>Flights</span><small>Future feed</small></button>
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◌</span><span>Weather</span><small>Future feed</small></button>
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">⌁</span><span>Ocean Data</span><small>Future feed</small></button>
+      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☾</span><span>Moon Data</span><small>Future feed</small></button>
     </div>
-    <div class="astro-row astro-mode" id="astroPastFutureRow">
-      <button class="astro-choice astro-past-future" id="pastFutureBtn">Past / Future Position</button>
+  </section>
+
+  <div class="bottom-ui glass" aria-label="Main dock">
+    <div class="quality-group" role="group" aria-label="Earth quality selector">
+      <button class="quality-segment active" id="basicBtn" aria-pressed="true"><img src="./icon-earth-basic.webp" alt=""><span>Basic</span></button>
+      <button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button>
     </div>
-    <div class="astro-info" id="astroInfo" hidden></div>
+    <button class="dock-item" id="locateBtn" aria-label="Refresh live location" title="Live Location"><span class="dock-art"><img src="./icon-location.webp" alt=""></span><span class="dock-label">Live Location</span></button>
+    <button class="dock-item dock-sun" id="sunBtn" aria-label="Activate Sun day and night shading" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
+    <button class="dock-item dock-moon" id="moonBtn" aria-label="Open Moon Sky View" title="Moon View" aria-pressed="false"><span class="dock-art"><img src="./icon-moon-observer.webp" alt=""></span><span class="dock-label">Moon</span></button>
+    <button class="dock-item" id="layersBtn" aria-label="Open More Options" title="More Options" aria-pressed="false"><span class="dock-art"><img src="./icon-stacks.webp" alt=""></span><span class="dock-label">Stacks</span></button>
   </div>
-  <div class="astro-sim-only" id="astroSimOnly" hidden aria-label="Time simulation">
-    <div class="astro-slider-area">
-      <div class="astro-rail-labels"><span>−12h</span><span>NOW</span><span>+12h</span></div>
-      <input id="astroTimeScrubber" type="range" min="-720" max="720" step="5" value="0" aria-label="Simulate up to 12 hours before or after now">
-    </div>
-    <div class="astro-sim-footer"><span id="astroTimeReadout">Now</span><button id="backToLive" aria-label="Return to live tracking">LIVE</button></div>
-  </div>
-</section>
-<div class="bottom-ui" aria-label="Map controls">
-<div class="quality glass" role="group" aria-label="Map quality"><button class="quality-btn active" id="basicBtn" aria-pressed="true">Basic</button><button class="quality-btn" id="hdBtn" aria-pressed="false">HD</button></div>
-<button class="icon-btn glass" id="locateBtn" aria-label="Location feature not enabled yet" title="Location"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
-<button class="icon-btn glass" id="lightingBtn" aria-label="Sun and Moon tracker" title="Sun / Moon">☼</button>
-<button class="icon-btn glass" id="layersBtn" aria-label="Data layers not enabled yet" title="Data layers"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></svg></button>
-</div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div></main>
+  <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div>
+  <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
+</main>
 <script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>

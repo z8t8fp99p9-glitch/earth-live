@@ -695,3 +695,99 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
     width:clamp(132px, calc(100dvh - 160px), 215px)!important;
   }
 }
+
+/* v1.42 — approved celestial dock and static icon treatment */
+:root{--dock-blue:#57c6ff;--dock-blue-soft:rgba(67,166,235,.24);--dock-gold:#ffd16a;--dock-glass:rgba(7,14,25,.78)}
+#app{isolation:isolate}
+.bottom-ui{z-index:8;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);transform:translateX(-50%);display:flex;align-items:stretch;justify-content:center;gap:clamp(3px,1vw,8px);width:max-content;max-width:calc(100vw - 10px);padding:7px 8px;border-radius:25px;background:linear-gradient(145deg,rgba(24,37,54,.88),rgba(5,11,21,.91));border:1px solid rgba(184,216,246,.28);box-shadow:0 14px 38px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(86,151,206,.18);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%)}
+.quality-group{flex:0 0 auto;display:flex;align-items:stretch;gap:3px;padding:4px;border-radius:19px;border:1px solid rgba(190,218,245,.18);background:rgba(2,8,17,.46)}
+.quality-segment{width:clamp(42px,11.5vw,54px);min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 3px;border-radius:14px;color:rgba(221,235,250,.62);background:transparent;font-size:clamp(8px,2.2vw,10px);font-weight:700;box-shadow:inset 0 0 0 1px transparent;transition:background-color .12s,border-color .12s}
+.quality-segment img{width:clamp(24px,6.2vw,31px);height:clamp(24px,6.2vw,31px);border-radius:50%;object-fit:cover;opacity:.62;filter:saturate(.65);box-shadow:0 2px 7px rgba(0,0,0,.3)}
+.quality-segment.active{color:#fff;background:linear-gradient(145deg,rgba(100,183,242,.3),rgba(35,89,135,.23));box-shadow:inset 0 0 0 1px rgba(133,207,255,.58),0 0 14px rgba(38,152,244,.17)}
+.quality-segment.active img{opacity:1;filter:saturate(1.12);box-shadow:0 0 10px rgba(69,177,255,.4)}
+.dock-item{width:clamp(43px,13.5vw,59px);min-width:0;flex:0 1 59px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;padding:2px 0 1px;background:transparent;color:rgba(232,241,252,.82);border-radius:15px;font-size:9px;font-weight:650;line-height:1.05;}
+.dock-art{width:clamp(31px,8.5vw,43px);height:clamp(31px,8.5vw,43px);display:block;position:relative;border-radius:50%;border:1px solid rgba(190,217,245,.34);padding:2px;background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(6,15,28,.65));box-shadow:inset 0 1px 3px rgba(255,255,255,.17),0 4px 12px rgba(0,0,0,.28);transition:border-color .12s,box-shadow .12s}
+.dock-art img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:.7;filter:saturate(.72) brightness(.82);transition:opacity .12s,filter .12s}
+.dock-label{display:block;max-width:100%;min-height:18px;text-align:center;white-space:normal;overflow-wrap:anywhere;letter-spacing:-.12px}
+.dock-item.active .dock-art{border-color:rgba(103,203,255,.96);box-shadow:0 0 0 1px rgba(71,177,255,.36),0 0 15px rgba(0,151,255,.3),inset 0 1px 4px rgba(255,255,255,.26)}
+.dock-item.active .dock-art img{opacity:1;filter:saturate(1.12) brightness(1.04)}
+.dock-item.active .dock-label{color:#f7fbff;text-shadow:0 0 8px rgba(70,175,255,.28)}
+.dock-item.dock-sun.active .dock-art{border-color:#ffd16a;box-shadow:0 0 0 1px rgba(255,203,77,.36),0 0 17px rgba(255,166,22,.34),inset 0 1px 4px rgba(255,255,255,.24)}
+.dock-item.dock-sun.active .dock-label{color:#ffe09a;text-shadow:0 0 8px rgba(255,184,56,.36)}
+.dock-item.dock-moon.active .dock-art{border-color:#b4ddff;box-shadow:0 0 0 1px rgba(105,190,255,.35),0 0 16px rgba(51,147,255,.36),inset 0 1px 4px rgba(255,255,255,.24)}
+.dock-item:focus-visible,.quality-segment:focus-visible,.feed-card:focus-visible{outline:2px solid #a9dcff;outline-offset:3px}
+.dock-item:active,.quality-segment:active{transform:none}
+
+.time-panel,.stacks-panel{position:absolute;z-index:7;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 111px);transform:translateX(-50%);width:min(440px,calc(100vw - 20px));padding:13px 15px 11px;border-radius:20px;border:1px solid rgba(180,218,249,.25);background:linear-gradient(145deg,rgba(18,31,48,.91),rgba(4,10,20,.91));box-shadow:0 14px 42px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.13);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);color:#f4f8ff}
+.time-panel[hidden],.stacks-panel[hidden],.moon-sky[hidden]{display:none!important}
+.time-panel-heading,.stacks-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.time-panel-heading>div,.stacks-heading>div{display:flex;flex-direction:column;gap:2px}
+.time-panel-heading strong,.stacks-heading strong{font-size:14px;letter-spacing:.15px}
+.panel-kicker{font-size:9px;font-weight:800;letter-spacing:1.35px;color:rgba(205,226,247,.66)}
+.time-panel output{font-size:13px;font-weight:750;font-variant-numeric:tabular-nums;color:#f5f9ff;white-space:nowrap}
+.sun-panel output{color:#ffe09a}.moon-panel output{color:#c9e5ff}
+.timeline-shell{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:7px;min-height:44px}
+.timeline-bound{font-size:9px;line-height:1.2;color:rgba(218,232,248,.72);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:center}
+.time-range{appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:42px;margin:0;background:transparent;cursor:grab;touch-action:pan-x;outline:none}
+.time-range:active{cursor:grabbing}
+.time-range::-webkit-slider-runnable-track{height:5px;border-radius:999px;background:linear-gradient(90deg,rgba(255,192,67,.45),#ffd46b 50%,rgba(255,192,67,.45));box-shadow:0 0 7px rgba(255,182,42,.18)}
+.time-range::-moz-range-track{height:5px;border-radius:999px;background:linear-gradient(90deg,rgba(255,192,67,.45),#ffd46b 50%,rgba(255,192,67,.45));box-shadow:0 0 7px rgba(255,182,42,.18)}
+.sun-range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:39px;height:39px;margin-top:-17px;border:0;border-radius:50%;background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;filter:drop-shadow(0 0 5px rgba(255,189,54,.28))}
+.sun-range::-moz-range-thumb{width:39px;height:39px;border:0;border-radius:50%;background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;filter:drop-shadow(0 0 5px rgba(255,189,54,.28))}
+.moon-range::-webkit-slider-runnable-track{height:5px;border-radius:999px;background:#365e87 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8' viewBox='0 0 160 8'%3E%3Cpath d='M0 4 L8 3 L13 5 L20 1 L26 6 L34 3 L41 4 L47 0 L54 6 L61 3 L69 5 L76 2 L82 6 L90 1 L97 4 L104 2 L111 6 L119 2 L126 4 L133 1 L140 5 L148 3 L160 4' fill='none' stroke='%2388cfff' stroke-width='1.7'/%3E%3C/svg%3E") center/100% 8px repeat-x;box-shadow:0 0 8px rgba(70,165,255,.25)}
+.moon-range::-moz-range-track{height:5px;border-radius:999px;background:#365e87 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8' viewBox='0 0 160 8'%3E%3Cpath d='M0 4 L8 3 L13 5 L20 1 L26 6 L34 3 L41 4 L47 0 L54 6 L61 3 L69 5 L76 2 L82 6 L90 1 L97 4 L104 2 L111 6 L119 2 L126 4 L133 1 L140 5 L148 3 L160 4' fill='none' stroke='%2388cfff' stroke-width='1.7'/%3E%3C/svg%3E") center/100% 8px repeat-x;box-shadow:0 0 8px rgba(70,165,255,.25)}
+.moon-range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:39px;height:39px;margin-top:-17px;border:0;border-radius:50%;background:transparent url('./icon-moon-dragger.svg') center/contain no-repeat;filter:drop-shadow(0 0 5px rgba(91,179,255,.32))}
+.moon-range::-moz-range-thumb{width:39px;height:39px;border:0;border-radius:50%;background:transparent url('./icon-moon-dragger.svg') center/contain no-repeat;filter:drop-shadow(0 0 5px rgba(91,179,255,.32))}
+.timeline-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:1px;font-size:9px;color:rgba(212,230,249,.6)}
+.sun-panel .timeline-caption span:first-child{color:#e8c56f;letter-spacing:.8px;font-weight:800}.moon-panel .timeline-caption span:first-child{color:#a8d5ff;letter-spacing:.5px;font-weight:800}
+.moon-panel.no-window .timeline-caption{color:#ffcf9b}
+.stacks-panel{width:min(430px,calc(100vw - 20px));bottom:calc(env(safe-area-inset-bottom,0px) + 111px)}
+.future-tag{font-size:9px;font-weight:800;letter-spacing:1px;color:#9ccfff;border:1px solid rgba(113,188,247,.27);background:rgba(47,125,187,.13);border-radius:999px;padding:5px 7px}
+.feed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.feed-card{min-width:0;min-height:72px;padding:9px 5px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:13px;border:1px solid rgba(172,208,239,.17);background:linear-gradient(145deg,rgba(39,57,78,.45),rgba(5,13,24,.5));color:rgba(231,241,252,.85);font-size:11px;font-weight:650}
+.feed-card[aria-disabled=true]{cursor:default;opacity:.78}
+.feed-symbol{font-size:20px;line-height:1.1;color:#9ed5ff}.feed-card small{font-size:8px;color:rgba(197,220,243,.52);font-weight:500}
+.status-message{position:absolute;z-index:10;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);width:max-content;max-width:calc(100vw - 28px);padding:10px 14px;border-radius:13px;border:1px solid rgba(148,202,244,.24);background:rgba(6,15,28,.88);color:#eff7ff;font-size:12px;line-height:1.4;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.status-message[hidden]{display:none!important}
+
+/* Sky View is a static, location-based sky simulation; only the Moon position changes when the user drags time. */
+.moon-sky{position:absolute;inset:0;z-index:2;overflow:hidden;background:linear-gradient(180deg,#030916 0%,#071a31 46%,#18334d 76%,#07111e 100%);color:#edf6ff;pointer-events:none}
+.sky-stars{position:absolute;inset:0;background-image:radial-gradient(1.2px 1.2px at 12% 19%,rgba(232,244,255,.9) 50%,transparent 70%),radial-gradient(1px 1px at 29% 11%,rgba(208,229,255,.8) 50%,transparent 70%),radial-gradient(1.4px 1.4px at 71% 22%,rgba(235,245,255,.9) 50%,transparent 70%),radial-gradient(1px 1px at 83% 15%,rgba(208,229,255,.8) 50%,transparent 70%),radial-gradient(1px 1px at 54% 31%,rgba(235,245,255,.8) 50%,transparent 70%),radial-gradient(1.2px 1.2px at 39% 24%,rgba(235,245,255,.8) 50%,transparent 70%),radial-gradient(1px 1px at 92% 37%,rgba(208,229,255,.7) 50%,transparent 70%),radial-gradient(1px 1px at 18% 43%,rgba(235,245,255,.7) 50%,transparent 70%);opacity:.78}
+.sky-haze{position:absolute;left:-10%;right:-10%;top:36%;height:30%;background:radial-gradient(ellipse at 50% 50%,rgba(54,113,164,.18),transparent 68%);}
+.sky-heading{position:absolute;top:calc(env(safe-area-inset-top,0px) + 20px);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;width:calc(100% - 40px);text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.45)}
+.sky-eyebrow{font-size:9px;letter-spacing:2px;color:rgba(184,216,245,.65);font-weight:800}.sky-heading strong{font-size:clamp(17px,4vw,24px);letter-spacing:2px;font-weight:750}.sky-heading>span:last-child{font-size:11px;color:rgba(213,231,248,.76);font-variant-numeric:tabular-nums}
+.sky-compass{position:absolute;top:31%;left:50%;transform:translateX(-50%);width:min(84vw,620px);display:flex;justify-content:space-between;color:rgba(206,227,247,.6);font-size:9px;letter-spacing:1px}
+.sky-horizon{position:absolute;left:-15%;right:-15%;bottom:-3%;height:34%;overflow:hidden;border-top:1px solid rgba(118,188,236,.38);background:linear-gradient(180deg,rgba(54,98,132,.3),rgba(3,9,17,.98) 72%)}
+.horizon-mountains{position:absolute;inset:0;background:#07111e;clip-path:polygon(0 48%,8% 42%,15% 51%,23% 30%,30% 45%,39% 26%,46% 46%,54% 34%,61% 49%,69% 22%,76% 44%,85% 31%,92% 45%,100% 36%,100% 100%,0 100%);opacity:.82}
+.horizon-glow{position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,rgba(114,191,245,.58),transparent);box-shadow:0 0 24px rgba(61,158,224,.3)}
+.sky-moon{position:absolute;left:50%;bottom:48%;width:clamp(42px,10vw,72px);height:clamp(42px,10vw,72px);transform:translate(-50%,50%);border-radius:50%;overflow:hidden;border:1px solid rgba(224,240,255,.65);background:radial-gradient(circle at 31% 28%,#e9f2fc 0%,#c9d8e8 38%,#8b9caf 68%,#536579 100%);box-shadow:0 0 22px rgba(168,208,247,.25),inset -8px -7px 15px rgba(19,36,56,.55),inset 4px 4px 8px rgba(255,255,255,.35);transition:none}
+.sky-moon-crater{position:absolute;border-radius:50%;border:1px solid rgba(67,86,108,.3);background:rgba(92,109,128,.2);box-shadow:inset 2px 2px 4px rgba(40,56,75,.2)}.crater-one{width:23%;height:23%;left:23%;top:29%}.crater-two{width:17%;height:17%;right:21%;top:47%}.crater-three{width:12%;height:12%;left:49%;bottom:18%}
+.sky-direction{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 226px);transform:translateX(-50%);padding:6px 10px;border-radius:999px;border:1px solid rgba(168,211,247,.17);background:rgba(4,12,22,.56);font-size:10px;color:rgba(221,238,255,.82);white-space:nowrap}
+#app.moon-active #globe{visibility:hidden;pointer-events:none}
+#app.moon-active .app-stamp{background:rgba(4,12,22,.56)}
+
+@media(max-width:370px){
+ .bottom-ui{gap:3px;padding:5px 5px;border-radius:20px}
+ .quality-group{padding:3px;gap:2px}.quality-segment{width:38px;padding:3px 2px;font-size:8px}.quality-segment img{width:23px;height:23px}
+ .dock-item{width:42px;flex-basis:42px;font-size:8px;gap:3px}.dock-art{width:30px;height:30px}.dock-label{min-height:17px}
+ .time-panel{width:calc(100vw - 14px);padding:11px 10px 9px;bottom:calc(env(safe-area-inset-bottom,0px) + 103px)}.timeline-shell{grid-template-columns:43px minmax(0,1fr) 43px;gap:4px}.time-panel output{font-size:11px}.timeline-caption{font-size:8px}
+}
+@media(orientation:landscape){
+ .bottom-ui{bottom:calc(env(safe-area-inset-bottom,0px) + 9px);}
+ #app.time-panel-active .bottom-ui{max-width:calc(100vw - 142px)}
+ .time-panel{left:auto;right:calc(env(safe-area-inset-right,0px) + 10px);top:50%;bottom:auto;transform:translateY(-50%);width:116px;max-width:116px;padding:12px 9px;border-radius:18px}
+ .time-panel-heading{flex-direction:column;align-items:flex-start;gap:5px;margin-bottom:7px}.time-panel-heading strong{font-size:12px}.time-panel output{font-size:11px}
+ .timeline-shell{display:block;width:100%;height:clamp(135px,37vh,215px);min-height:0}
+ .timeline-bound{position:absolute;left:50%;transform:translateX(-50%);z-index:1;font-size:8px}.start-bound{bottom:0;top:auto}.end-bound{top:0;bottom:auto}
+ .time-range{position:absolute;left:50%;top:50%;width:clamp(125px,35vh,195px);height:38px;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;touch-action:pan-y}
+ .sun-range::-webkit-slider-thumb,.moon-range::-webkit-slider-thumb{width:38px;height:38px;margin-top:-16.5px}.sun-range::-moz-range-thumb,.moon-range::-moz-range-thumb{width:38px;height:38px}.moon-range::-webkit-slider-thumb{background-image:url('./icon-moon-dragger-vertical.svg')}.moon-range::-moz-range-thumb{background-image:url('./icon-moon-dragger-vertical.svg')}
+ .timeline-caption{flex-direction:column;align-items:flex-start;gap:5px;font-size:8px;margin-top:7px}.timeline-caption span:last-child{line-height:1.25}
+ .stacks-panel{left:auto;right:calc(env(safe-area-inset-right,0px) + 12px);top:50%;bottom:auto;transform:translateY(-50%);width:min(310px,calc(100vw - 150px))}
+ .sky-heading{top:calc(env(safe-area-inset-top,0px) + 12px)}.sky-compass{top:25%}.sky-horizon{height:38%}.sky-direction{bottom:calc(env(safe-area-inset-bottom,0px) + 92px)}
+}
+@media(orientation:landscape) and (max-height:430px){
+ .bottom-ui{padding:4px 5px;gap:3px}.quality-segment{width:36px}.quality-segment img{width:22px;height:22px}.dock-item{width:39px;flex-basis:39px;font-size:8px}.dock-art{width:28px;height:28px}
+ .time-panel{padding:8px 7px;width:103px;max-width:103px}.timeline-shell{height:clamp(110px,34vh,145px)}.time-range{width:clamp(105px,31vh,135px);height:34px}.sun-range::-webkit-slider-thumb,.moon-range::-webkit-slider-thumb{width:34px;height:34px;margin-top:-14.5px}.sun-range::-moz-range-thumb,.moon-range::-moz-range-thumb{width:34px;height:34px}.moon-range::-webkit-slider-thumb{background-image:url('./icon-moon-dragger-vertical.svg')}.moon-range::-moz-range-thumb{background-image:url('./icon-moon-dragger-vertical.svg')}
+ .time-panel-heading strong{font-size:11px}.time-panel output{font-size:10px}.timeline-caption{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){.dock-art,.dock-art img,.quality-segment{transition:none!important}}
