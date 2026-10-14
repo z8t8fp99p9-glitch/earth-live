@@ -1,14 +1,14 @@
 {
   "project": "EARTH // LIVE",
   "package": "Celestial Dock",
-  "version": "1.43",
-  "filename": "EARTH-LIVE-Celestial-Dock-v1.43-LARGER-ICONS-FLAT.zip",
+  "version": "1.42",
+  "filename": "EARTH-LIVE-Celestial-Dock-v1.42.zip",
   "base": "EARTH-LIVE-Map-Restored-v1.41.zip and current main source",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
   "ui_scope": "Approved Basic/HD dock selector, Live Location refresh with 20-second auto-off, Sun day/night shading and 24-hour local-time scroller, Moon Sky View with locally calculated Moonrise/Moonset timeline, future-feed Stacks, and static app icon assets.",
   "performance": "No pulsing or continuous decorative animations; static generated WebP button artwork and SVG scroller handles.",
-  "title": "EARTH // LIVE — Celestial Dock v1.43 — Larger Icons",
+  "title": "EARTH // LIVE — Celestial Dock v1.42",
   "description": "Adds the approved glass-style celestial dock, Basic/HD selector, on-demand Live Location, Sun and Moon time controls, and future-feed Stacks. Candidate for manual upload and iPhone verification."
 }
