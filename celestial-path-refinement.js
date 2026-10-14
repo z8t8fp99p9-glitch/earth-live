@@ -1,22 +1,22 @@
-/* EARTH // LIVE v1.53  - natural broad arc alignment. Astronomical altitude remains controlled by the celestial calculators. */
+/* EARTH // LIVE v1.55 — astronomical sky arcs. The visible path and the orb share one projection. */
 (()=>{'use strict';
- const moon=document.getElementById('skyMoon'),dir=document.getElementById('skyDirection');
- if(!moon||!dir)return;
- const apply=()=>{
-   const m=dir.textContent.match(/(\d+(?:\.\d+)?)°/);if(!m)return;
-   const az=Number(m[1]);
-   // Map the visible southern-sky sweep from east (90°) through south (180°) to west (270°).
-   // Outside that sweep, smoothly ease toward the nearest edge instead of jumping across the screen.
-   let progress=(az-90)/180;
-   if(progress<0)progress=0;
-   if(progress>1)progress=1;
-   const x=6+88*progress;
-   const altMatch=dir.textContent.match(/·\s*(\d+(?:\.\d+)?)° altitude/);
-   const altitude=altMatch?Number(altMatch[1]):0;
-   moon.style.left=x+'%';
-   moon.style.bottom=(34+Math.max(0,Math.min(65,altitude))*.75)+'%';
- };
- new MutationObserver(apply).observe(dir,{childList:true,characterData:true,subtree:true});
- window.addEventListener('resize',apply,{passive:true});
- apply();
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',DEG=Math.PI/180,RAD=180/Math.PI,HORIZON=-0.833;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),wrap360=v=>((v%360)+360)%360,wrap180=v=>((v+180)%360+360)%360-180;
+let loc=null,raf=0;
+function gmst(date){const jd=date.getTime()/86400000+2440587.5,T=(jd-2451545)/36525;return wrap360(280.46061837+360.98564736629*(jd-2451545)+.000387933*T*T-T*T*T/38710000)}
+function solar(date){const n=date.getTime()/86400000+2440587.5-2451545,g=(357.529+.98560028*n)*DEG,q=(280.459+.98564736*n)*DEG,L=q+(1.915*Math.sin(g)+.020*Math.sin(2*g))*DEG,e=(23.439-.00000036*n)*DEG,ra=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L))*RAD,dec=Math.asin(Math.sin(e)*Math.sin(L))*RAD,jd=date.getTime()/86400000+2440587.5,T=(jd-2451545)/36525,lat=loc.latitude*DEG,d=dec*DEG,H=wrap180(gmst(date)+loc.longitude-ra)*DEG;return horizontal(lat,d,H)}
+function horizontal(lat,dec,H){const altitude=Math.asin(clamp(Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(H),-1,1))*RAD,azimuth=wrap360(Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(lat)-Math.tan(dec)*Math.cos(lat))*RAD+180);return {altitude,azimuth}}
+function lunar(date){if(!window.EarthLiveMoon||typeof window.EarthLiveMoon.calculate!=='function')return null;const m=window.EarthLiveMoon.calculate(date),lat=loc.latitude*DEG,dec=m.declinationDeg*DEG,H=wrap180(gmst(date)+loc.longitude-m.rightAscensionDeg)*DEG;const p=horizontal(lat,dec,H),parallax=Math.asin(Math.min(1,6378.14/Math.max(1,m.distanceKm)))*RAD;p.altitude-=parallax*Math.cos(p.altitude*DEG);return p}
+// A single screen projection is used for both sampled arc points and the moving object.
+function project(p){return {x:6+88*clamp((p.azimuth-90)/180,0,1),bottom:34+clamp(p.altitude,0,75)*.48}}
+function getSvg(sky,id){let svg=$(id);if(svg)return svg;svg=document.createElementNS(NS,'svg');svg.id=id;svg.setAttribute('viewBox','0 0 1000 1000');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');svg.classList.add('celestial-real-trajectory');sky.insertBefore(svg,sky.querySelector('.sky-horizon'));return svg}
+function makePath(skyId,pathId,kind,start,end){const sky=$(skyId);if(!sky||!loc||!start||!end||end<=start)return;const svg=getSvg(sky,pathId);svg.replaceChildren();const pts=[];const span=end-start,step=Math.max(60000,Math.min(180000,span/100));for(let t=start;t<=end+1;t+=step){const p=kind==='sun'?solar(new Date(Math.min(t,end))):lunar(new Date(Math.min(t,end)));if(!p)continue;if(p.altitude<HORIZON) {if(pts.length)pts.push(null);continue;}const q=project(p);pts.push({x:q.x*10,y:(100-q.bottom)*10});}const chunks=[];let chunk=[];for(const p of pts){if(!p){if(chunk.length>1)chunks.push(chunk);chunk=[]}else chunk.push(p)}if(chunk.length>1)chunks.push(chunk);for(const points of chunks){const d=points.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join(' ');const glow=document.createElementNS(NS,'path');glow.setAttribute('d',d);glow.setAttribute('class','trajectory-glow');const line=document.createElementNS(NS,'path');line.setAttribute('d',d);line.setAttribute('class','trajectory-line '+kind);svg.append(glow,line)}}
+function parseClock(el){if(!el)return null;const m=el.textContent.trim().match(/(\d{1,2}):(\d{2})/);if(!m)return null;return {h:Number(m[1]),m:Number(m[2])}}
+function windowDates(startId,endId,rangeId,moon){const s=parseClock($(startId)),e=parseClock($(endId)),range=$(rangeId);if(!s||!e||!range)return null;const start=new Date();start.setHours(s.h,s.m,0,0);const end=new Date(start);end.setHours(e.h,e.m,0,0);if(end<=start)end.setDate(end.getDate()+1);if(moon){const now=new Date();if(start>now)start.setDate(start.getDate()-1);if(end<now)end.setDate(end.getDate()+1);}return {start,end}}
+function refresh(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(!loc)return;const sun=$('sunSky'),moon=$('moonSky');if(sun&&!sun.hidden){const w=windowDates('sunStartLabel','sunEndLabel','sunTimeRange',false);if(w)makePath('sunSky','sunRealTrajectory','sun',w.start.getTime(),w.end.getTime());const r=$('sunTimeRange'),o=$('skySun');if(r&&o&&w){const d=new Date(w.start.getTime()+Number(r.value)*60000),p=solar(d);if(p){const q=project(p);o.style.left=q.x+'%';o.style.bottom=q.bottom+'%';}}}if(moon&&!moon.hidden){const w=windowDates('moonRiseLabel','moonSetLabel','moonTimeRange',true);if(w)makePath('moonSky','moonRealTrajectory','moon',w.start.getTime(),w.end.getTime());const r=$('moonTimeRange'),o=$('skyMoon');if(r&&o&&w){const d=new Date(w.start.getTime()+Number(r.value)*60000),p=lunar(d);if(p){const q=project(p);o.style.left=q.x+'%';o.style.bottom=q.bottom+'%';}}}})}
+async function init(){try{if(window.EarthLiveLocation&&typeof window.EarthLiveLocation.getCurrentLocation==='function')loc=await window.EarthLiveLocation.getCurrentLocation({refresh:false});}catch(_){}if(!loc)return;refresh()}
+const mo=new MutationObserver(()=>{if((!loc)&&window.EarthLiveLocation)init();else refresh()});
+['sunSky','moonSky'].forEach(id=>{const n=$(id);if(n)mo.observe(n,{attributes:true,attributeFilter:['hidden']})});
+['sunStartLabel','sunEndLabel','moonRiseLabel','moonSetLabel','skyDirection','sunSkyDirection'].forEach(id=>{const n=$(id);if(n)mo.observe(n,{childList:true,characterData:true})});
+['sunTimeRange','moonTimeRange'].forEach(id=>{const r=$(id);if(r)r.addEventListener('input',refresh,{passive:true})});window.addEventListener('resize',refresh,{passive:true});window.addEventListener('orientationchange',refresh,{passive:true});window.addEventListener('earthlive:foreground',refresh);init();
 })();
