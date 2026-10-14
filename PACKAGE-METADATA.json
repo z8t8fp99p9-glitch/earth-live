@@ -1,37 +1,26 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Celestial View Prototype",
-  "version": "v1.36",
-  "filename": "EARTH-LIVE-Celestial-View-Prototype-v1.36.zip",
-  "base": "Exact user-tested EARTH-LIVE-Sun-Moon-Screen-Lock-v1.35.zip",
+  "package": "Burning Sun Celestial Scene",
+  "version": "v1.37",
+  "filename": "EARTH-LIVE-Burning-Sun-Celestial-Scene-v1.37.zip",
+  "base": "Exact EARTH-LIVE-Celestial-View-Prototype-v1.36.zip candidate",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Dedicated persistent celestial scene prototype: fixed Sun direction, time-driven Earth camera rotation, moving Moon, automatic close-up exit",
-  "moon_visibility_threshold_degrees": 40,
-  "live_refresh_seconds": 30,
-  "simulation_window_minutes": [
-    -720,
-    720
-  ],
-  "ui_changes": [
-    "portrait mode uses a horizontal glowing circular-thumb slider",
-    "landscape mode uses a vertical slider on the right side, with +12h at the top and \u221212h at the bottom to match upward-forward movement",
-    "slider input uses a fixed simulation anchor so drag values map consistently to time",
-    "Sun/Moon tracker icon starts inactive and panel stays closed on launch",
-    "controls remain above the bottom safe-area inset"
-  ],
+  "ui_scope": "Celestial View opens by default with spherical Sun and Moon, dotted lunar orbit, and existing Earth/time controls preserved",
   "changes": [
-    "Selecting either Sun or Moon enters a shared Celestial View with both bodies visible.",
-    "Anchor the Sun direction and freeze Cesium lighting time at scene entry.",
-    "Rotate the camera around Earth\u2019s polar axis as the \u00b112-hour time scroller changes to represent Earth rotation under fixed sunlight.",
-    "Update Moon direction and approximate phase from the selected simulation time.",
-    "Keep Celestial View active until the main Sun/Moon panel closes or zoom reaches the automatic Earth-view exit threshold.",
-    "Automatically exit Celestial View on close-up zoom while preserving the current close-up camera view.",
-    "Suppress the old blocky Moon visibility overlay while Celestial View is active.",
-    "Preserve existing HTML, CSS, base app, data store, Moon calculator, centred dock, and adaptive scroller.",
-    "Candidate requires iPhone/PWA visual and interaction testing; no runtime validation claim."
+    "Open Celestial View on app startup with Sun selected.",
+    "Render Sun as a visually scaled ellipsoid with a locally generated plasma texture and soft corona halo.",
+    "Render Moon as a visually scaled ellipsoid with a locally generated crater texture.",
+    "Add a subtle dotted orbital path around Earth as a visual guide.",
+    "Preserve existing local Moon calculation, time scroller, camera interaction, and auto-exit logic."
   ],
-  "title": "EARTH // LIVE \u2014 Celestial View Prototype v1.36",
-  "description": "Introduces a dedicated Celestial View prototype with a fixed Sun direction, Earth rotation driven by the \u00b112-hour scroller, and a Moon that changes position with time. Both bodies remain visible while the Sun/Moon panel is open. Zooming close to Earth exits the celestial scene while preserving the close-up view. Existing layout and Earth assets are preserved. Requires iPhone/PWA testing; Moon model remains approximate."
+  "limitations": [
+    "Sun/Moon textures are procedural and not NASA imagery.",
+    "Celestial sizes and distances are visually scaled.",
+    "Moon calculation and dotted orbital path are approximate.",
+    "Requires iPhone/PWA runtime and performance testing."
+  ],
+  "title": "EARTH // LIVE \u2014 Burning Sun Celestial Scene v1.37",
+  "description": "Opens EARTH // LIVE directly into Celestial View with a visually scaled spherical burning Sun, textured lunar globe, and subtle dotted Moon-orbit guide. Retains the existing Earth assets, time scroller, centred dock, and responsive layout. Sun/Moon scale and orbit are illustrative; Moon calculation remains approximate. Requires iPhone/PWA testing."
 }

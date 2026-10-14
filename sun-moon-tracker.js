@@ -7,7 +7,8 @@ const $=id=>document.getElementById(id);
 const panel=$('astroPanel'),button=$('lightingBtn'),close=$('astroClose'),sunTab=$('sunTab'),moonTab=$('moonTab');
 const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'),simOnly=$('astroSimOnly'),pastFutureBtn=$('pastFutureBtn'),scrubber=$('astroTimeScrubber');
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
-let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],celestialEntities={sun:null,moon:null},liveTimer=null,lastOverlayBucket=null;
+let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],celestialEntities={sun:null,moon:null,sunGlow:null,orbit:null},liveTimer=null,lastOverlayBucket=null;
+let sunTexture=null,moonTexture=null,sceneTextureFrame=null;
 let celestialActive=false,celestialAnchor=null,lastSceneTime=null,savedCamera=null,sceneAutoExit=false,sceneCameraGuard=false;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
 function wrap360(v){return ((v%360)+360)%360;}
@@ -25,8 +26,24 @@ function moonPosition(date){
  return null;
 }
 function svgData(svg){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);}
-function sunIcon(){return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><radialGradient id="g"><stop stop-color="#fffbd5"/><stop offset=".28" stop-color="#ffe99a"/><stop offset=".62" stop-color="#ffb83d"/><stop offset="1" stop-color="#ff8a22" stop-opacity="0"/></radialGradient></defs><circle cx="48" cy="48" r="47" fill="url(#g)"/><circle cx="48" cy="48" r="19" fill="#fff2b2" stroke="#ffffff" stroke-opacity=".85" stroke-width="2"/></svg>');}
-function moonIcon(illumination){const lit=Math.max(0,Math.min(1,illumination/100));const offset=(1-lit)*34;const shadow=lit<0.04?'<circle cx="48" cy="48" r="34" fill="#101b2b"/>':lit>0.96?'':'<ellipse cx="'+(48-offset)+'" cy="48" rx="'+Math.max(1,34*(1-lit))+'" ry="34" fill="#101b2b"/>';return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><radialGradient id="m" cx="35%" cy="28%"><stop stop-color="#ffffff"/><stop offset=".62" stop-color="#dce8f4"/><stop offset="1" stop-color="#9aaaba"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3"/></filter></defs><circle cx="48" cy="48" r="43" fill="#7fcfff" opacity=".22" filter="url(#glow)"/><circle cx="48" cy="48" r="34" fill="#101b2b" stroke="#8b9baa" stroke-width="2"/><circle cx="48" cy="48" r="34" fill="url(#m)"/>'+shadow+'</svg>');}
+function makeSunTexture(){
+ if(sunTexture)return sunTexture;
+ const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');
+ const g=x.createLinearGradient(0,0,0,512);g.addColorStop(0,'#ff9b26');g.addColorStop(.22,'#ffca48');g.addColorStop(.5,'#fff08a');g.addColorStop(.72,'#ffb12e');g.addColorStop(1,'#f04b0a');x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
+ // Deterministic turbulent plasma granulation, baked locally without network assets.
+ let seed=713;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+ for(let i=0;i<5200;i++){const px=rand()*c.width,py=rand()*c.height,r=2+rand()*15;x.beginPath();x.ellipse(px,py,r*1.5,r*.7,rand()*Math.PI,0,Math.PI*2);x.fillStyle=rand()>.47?'rgba(255,246,145,'+(0.06+rand()*.28)+')':'rgba(166,28,0,'+(0.05+rand()*.24)+')';x.fill();}
+ for(let i=0;i<42;i++){const px=rand()*c.width,py=rand()*c.height,r=5+rand()*12;x.beginPath();x.arc(px,py,r,0,Math.PI*2);x.fillStyle='rgba(113,25,0,.58)';x.fill();x.beginPath();x.arc(px-r*.22,py-r*.16,r*.42,0,Math.PI*2);x.fillStyle='rgba(255,224,83,.65)';x.fill();}
+ sunTexture=c;return c;
+}
+function makeMoonTexture(){
+ if(moonTexture)return moonTexture;
+ const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');x.fillStyle='#8e9298';x.fillRect(0,0,c.width,c.height);let seed=90210;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+ for(let i=0;i<950;i++){const px=rand()*c.width,py=rand()*c.height,r=2+rand()*25;x.beginPath();x.arc(px,py,r,0,Math.PI*2);x.fillStyle='rgba(34,39,45,'+(0.05+rand()*.22)+')';x.fill();x.beginPath();x.arc(px-r*.12,py-r*.12,r*.78,0,Math.PI*2);x.strokeStyle='rgba(225,228,231,'+(0.06+rand()*.24)+')';x.lineWidth=1+rand()*3;x.stroke();}
+ moonTexture=c;return c;
+}
+function sunIcon(){return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs><radialGradient id="g"><stop stop-color="#fff7c2" stop-opacity=".05"/><stop offset=".38" stop-color="#ffd34d" stop-opacity=".22"/><stop offset=".67" stop-color="#ff8a16" stop-opacity=".3"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient></defs><circle cx="128" cy="128" r="126" fill="url(#g)"/></svg>');}
+function moonIcon(illumination){const lit=Math.max(0,Math.min(1,illumination/100));const offset=(1-lit)*34;const shadow=lit<0.04?'<circle cx="48" cy="48" r="34" fill="#101b2b"/>':lit>0.96?'':'<ellipse cx="'+(48-offset)+'" cy="48" rx="'+Math.max(1,34*(1-lit))+'" ry="34" fill="#101b2b"/>';return svgData('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><radialGradient id="m" cx="35%" cy="28%"><stop stop-color="#ffffff"/><stop offset=".62" stop-color="#dce8f4"/><stop offset="1" stop-color="#9aaaba"/></radialGradient></defs><circle cx="48" cy="48" r="34" fill="#101b2b" stroke="#8b9baa" stroke-width="2"/><circle cx="48" cy="48" r="34" fill="url(#m)"/>'+shadow+'</svg>');}
 function saveCamera(){
  if(!viewer)return null;
  const c=viewer.camera;
@@ -39,22 +56,27 @@ function restoreCamera(state){
 function clearCelestial(){
  if(viewer){Object.keys(celestialEntities).forEach(k=>{if(celestialEntities[k])viewer.entities.remove(celestialEntities[k]);celestialEntities[k]=null;});}
 }
-function celestialImage(which,data){return which==='sun'?sunIcon():moonIcon(data.illumination);}
+function makeOrbit(){
+ if(!viewer||celestialEntities.orbit)return;
+ const pts=[];for(let i=0;i<=180;i++){const a=i/180*Math.PI*2;const lon=wrap360(20+Math.cos(a)*28)-180;const lat=Math.sin(a)*13;pts.push(Cesium.Cartesian3.fromDegrees(lon,lat,3600000));}
+ celestialEntities.orbit=viewer.entities.add({polyline:{positions:pts,width:2,material:new Cesium.PolylineDashMaterialProperty({color:Cesium.Color.fromCssColorString('#bfe7ff').withAlpha(.58),dashLength:9}),clampToGround:false}});
+}
 function upsertCelestial(which,date,data){
  if(!viewer||!window.Cesium||!data)return;
- const id='earth-live-'+which+'-visual';
  const lon=data.longitude,lat=which==='sun'?data.latitude:data.dec;
- // In Celestial View these are intentionally visually scaled, but their directions follow the astronomy model.
- // Sun is fixed at the scene's anchor time; Moon follows the selected simulation time.
  const altitude=which==='sun'?24000000:3500000;
  const position=Cesium.Cartesian3.fromDegrees(lon,lat,altitude);
- const image=celestialImage(which,data);
  let entity=celestialEntities[which];
  if(!entity){
-  entity=viewer.entities.add({id,position,billboard:{image,width:which==='sun'?112:88,height:which==='sun'?112:88,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,scaleByDistance:new Cesium.NearFarScalar(12000000,1.0,90000000,0.85),disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:which==='sun'?'SUN':'MOON',font:'600 13px sans-serif',fillColor:which==='sun'?Cesium.Color.fromCssColorString('#ffe7a0'):Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,60),scaleByDistance:new Cesium.NearFarScalar(12000000,1.0,90000000,0.85),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+  if(which==='sun'){
+   entity=viewer.entities.add({id:'earth-live-sun-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(1450000,1450000,1450000),material:new Cesium.ImageMaterialProperty({image:makeSunTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#ffb443').withAlpha(.75)},billboard:{image:sunIcon(),width:260,height:260,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:'SUN',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#ffe7a0'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,96),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+  }else{
+   entity=viewer.entities.add({id:'earth-live-moon-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(680000,680000,680000),material:new Cesium.ImageMaterialProperty({image:makeMoonTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#d8e5f5').withAlpha(.45)},label:{text:'MOON',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,54),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+  }
   celestialEntities[which]=entity;
  }else{
-  entity.position=position;entity.billboard.image=image;entity.label.text=which==='sun'?'SUN':'MOON';
+  entity.position=position;
+  if(which==='moon'&&entity.ellipsoid)entity.ellipsoid.material=new Cesium.ImageMaterialProperty({image:makeMoonTexture(),transparent:false});
  }
 }
 function beginCelestialScene(){
@@ -84,6 +106,7 @@ function updateCelestialScene(date,sun,moon){
  const fixedSun=sunPosition(celestialAnchor||date);
  upsertCelestial('sun',celestialAnchor||date,fixedSun);
  if(moon)upsertCelestial('moon',date,moon);
+ makeOrbit();
  // Rotate the view by elapsed sidereal time, preserving camera gesture changes between scrub events.
  // This creates the visual impression of Earth rotating beneath a stationary Sun.
  const previous=lastSceneTime||date,deltaMs=date.getTime()-previous.getTime();
@@ -182,7 +205,7 @@ pastFutureBtn.addEventListener('click',enterSimulation);
 scrubber.addEventListener('input',()=>scrubTo(scrubber.value));
 scrubber.addEventListener('change',()=>scrubTo(scrubber.value));
 $('backToLive').addEventListener('click',returnLive);
-window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;clearCelestial();syncObjectButtons();viewer.camera.changed.addEventListener(checkZoomExit);liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
+window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=false;simOnly.hidden=true;button.classList.add('active');activeObject='sun';simulation=false;clearCelestial();syncObjectButtons();viewer.camera.changed.addEventListener(checkZoomExit);beginCelestialScene();update();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
 window.addEventListener('earthlive:foreground',()=>{if(!simulation&&activeObject)update();});
 window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();clearCelestial();});
 })();
