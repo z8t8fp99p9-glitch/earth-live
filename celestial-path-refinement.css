@@ -1,7 +1,7 @@
 /* EARTH // LIVE v1.56 — a single, cached astronomical trajectory per sky. */
 .celestial-real-trajectory {
   position:absolute; inset:0; width:100%; height:100%;
-  z-index:2; overflow:hidden; pointer-events:none; clip-path:inset(0);
+  z-index:2; overflow:hidden; pointer-events:none;
 }
 .celestial-real-trajectory path {
   fill:none; vector-effect:non-scaling-stroke;
@@ -12,9 +12,3 @@
 .celestial-real-trajectory path.moon { stroke:#8bd6ff; }
 .sky-sun,.sky-moon { z-index:3; }
 .sky-direction { z-index:4; }
-
-/* Landscape: sky remains a separate viewport; celestial panels never overlay its object area. */
-@media (orientation: landscape) and (min-width: 700px) {
-  .sun-sky, .moon-sky { overflow: hidden; }
-  .celestial-real-trajectory { overflow: hidden; }
-}
