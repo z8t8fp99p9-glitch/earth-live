@@ -638,3 +638,36 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
   #astroPanel.simulation-mode .astro-slider-area{height:clamp(94px,25dvh,118px)}
   #astroPanel.simulation-mode #astroTimeScrubber{width:clamp(88px,23dvh,112px)}
 }
+
+/* v1.30 — landscape balance polish. The dock remains the fixed horizontal-centre anchor. */
+@media (orientation:landscape){
+  .bottom-ui{
+    z-index:10;
+    background:linear-gradient(145deg,rgba(222,242,255,.15),rgba(74,133,176,.075) 42%,rgba(3,9,18,.82) 100%),rgba(4,10,19,.78);
+    border:1px solid rgba(220,241,255,.32);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(117,190,235,.14),0 8px 24px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.035);
+    -webkit-backdrop-filter:blur(22px) saturate(170%);
+    backdrop-filter:blur(22px) saturate(170%);
+  }
+  .bottom-ui .quality{
+    background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(6,17,30,.58));
+    border-color:rgba(221,241,255,.30);
+  }
+  .bottom-ui .icon-btn{
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.17),inset 0 -1px 0 rgba(113,182,226,.10),0 3px 8px rgba(0,0,0,.22);
+  }
+  #astroPanel:not(.simulation-mode),#astroPanel.simulation-mode{
+    z-index:8;
+    background:linear-gradient(145deg,rgba(19,31,43,.94),rgba(3,8,16,.96) 60%,rgba(8,22,38,.95));
+    border-color:rgba(203,229,246,.40);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.17),inset 0 -1px 0 rgba(100,171,219,.12),0 12px 30px rgba(0,0,0,.34);
+    -webkit-backdrop-filter:blur(22px) saturate(160%);
+    backdrop-filter:blur(22px) saturate(160%);
+  }
+}
+/* Compact landscape viewports: protect dock width and keep its centre invariant. */
+@media (orientation:landscape) and (max-height:430px){
+  .bottom-ui{max-width:calc(100vw - 16px);gap:4px;padding:4px}
+  .bottom-ui .quality-btn{padding:6px 8px}
+  .bottom-ui .icon-btn{width:34px;height:34px;flex-basis:34px}
+}

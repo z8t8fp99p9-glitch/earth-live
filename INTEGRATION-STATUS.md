@@ -1,8 +1,8 @@
-# Integration status — v1.29
+# Integration Status — EARTH // LIVE v1.30
 
-- Base: supplied `EARTH-LIVE-Responsive-Glass-UI-v1.28.zip` candidate.
-- Changed: `style.css`, `app-version.js`, `service-worker.js`, package metadata/docs.
-- Protected application files and HTML remain unchanged.
-- Landscape dock is explicitly horizontally centred regardless of orientation or panel state.
-- Landscape panels are compacted; portrait rules are not overridden by the v1.29 layer.
-- ZIP integrity and JavaScript syntax checks required; no iPhone runtime test has been performed.
+- Candidate only; not runtime-tested on iPhone.
+- Based on the user-tested v1.29 candidate.
+- Centre dock remains horizontally centred in portrait and landscape.
+- CSS-only landscape glass contrast and compact viewport refinement.
+- Portrait design, HTML, application JavaScript, data store, tracker calculations, globe/camera/gesture logic remain unchanged.
+- ZIP and JavaScript syntax checks are not a substitute for device testing.
