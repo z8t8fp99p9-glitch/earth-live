@@ -1,10 +1,8 @@
-# Integration status — v1.25
+# Integration status — v1.26
 
-- Package: Glass Interface Prototype
-- Scope: CSS-only visual treatment of existing controls and panels.
-- HTML unchanged from v1.24.
-- Application JavaScript unchanged from v1.24.
-- Cesium camera and gesture handlers unchanged.
-- Portrait/landscape layout rules preserved.
+- Scope: compact signature glass UI controls.
+- Changed: `index.html` Sun/Moon button markup (visual spans only), `style.css`, version/cache and package documentation/metadata.
+- Unchanged: `app.js`, `data-store.js`, `sun-moon-tracker.js`, `moon-dataset.js`.
+- No Cesium canvas, camera, or gesture handler changes.
 - ZIP integrity passed.
-- Requires iPhone visual and gesture testing before approval.
+- Requires iPhone portrait/landscape visual and interaction testing.

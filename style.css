@@ -379,3 +379,124 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
 @media(prefers-reduced-motion:reduce){
   .quality-btn,.astro-choice{transition:none}
 }
+
+
+/* v1.26 — Stage 2 signature glass controls + compact proportional sizing.
+   Only existing UI elements are styled. Globe canvas, camera and gesture code are untouched. */
+.astro-panel:not(.simulation-mode){
+  padding:clamp(10px,2.5vw,14px);
+  border-radius:clamp(16px,3.2vw,21px);
+}
+.astro-panel:not(.simulation-mode) .astro-title{font-size:clamp(11px,2.8vw,13px)}
+.astro-panel:not(.simulation-mode) .astro-subtitle{font-size:clamp(10px,2.4vw,11px)}
+.astro-panel:not(.simulation-mode) .astro-close{
+  flex:0 0 auto;
+  width:clamp(28px,7vw,34px);
+  height:clamp(28px,7vw,34px);
+  border-radius:11px;
+}
+.astro-panel:not(.simulation-mode) .astro-row{gap:8px;margin-top:7px}
+.astro-panel:not(.simulation-mode) .astro-glass-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:clamp(8px,2vw,12px);
+  min-height:clamp(42px,8.5vw,50px);
+  padding:5px 12px 5px 6px;
+  border-radius:999px;
+  text-align:left;
+  overflow:hidden;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.015) 48%,rgba(70,151,224,.08)),
+    rgba(5,11,22,.50);
+  border:1px solid rgba(226,244,255,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(150,210,255,.12),0 5px 16px rgba(0,0,0,.16);
+  -webkit-backdrop-filter:blur(18px) saturate(175%);
+  backdrop-filter:blur(18px) saturate(175%);
+}
+.astro-glass-knob{
+  width:clamp(30px,7vw,38px);
+  height:clamp(30px,7vw,38px);
+  flex:0 0 clamp(30px,7vw,38px);
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  color:#fff;
+  font-size:clamp(16px,4vw,20px);
+  line-height:1;
+  background:
+    radial-gradient(circle at 32% 24%,rgba(255,255,255,.96) 0,rgba(231,249,255,.82) 9%,rgba(167,224,255,.38) 29%,rgba(66,164,232,.12) 56%,rgba(255,255,255,.035) 72%),
+    linear-gradient(145deg,rgba(255,255,255,.20),rgba(255,255,255,.025)),
+    rgba(9,20,36,.55);
+  border:1px solid rgba(245,252,255,.72);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 -2px 4px rgba(94,176,235,.24),0 0 0 2px rgba(255,255,255,.10),0 0 12px rgba(97,193,255,.12);
+  text-shadow:0 0 8px rgba(255,255,255,.38);
+  transition:box-shadow .18s ease,background .18s ease,transform .18s ease;
+}
+.astro-glass-label{
+  min-width:0;
+  font-size:clamp(12px,3vw,14px);
+  font-weight:700;
+  letter-spacing:.1px;
+}
+.astro-panel:not(.simulation-mode) .astro-glass-toggle.active{
+  background:
+    radial-gradient(120% 150% at 0% 50%,rgba(103,204,255,.25),transparent 58%),
+    linear-gradient(145deg,rgba(255,255,255,.16),rgba(75,164,231,.10)),
+    rgba(7,22,39,.58);
+  border-color:rgba(179,230,255,.68);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(133,207,255,.18),0 0 16px rgba(73,171,255,.15);
+}
+.astro-panel:not(.simulation-mode) .astro-glass-toggle.active .astro-glass-knob{
+  background:
+    radial-gradient(circle at 32% 25%,#fff 0,rgba(226,248,255,.98) 24%,rgba(139,218,255,.96) 54%,rgba(51,164,232,.92) 78%,rgba(17,98,168,.92) 100%);
+  border-color:rgba(255,255,255,.98);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -2px 4px rgba(9,80,135,.32),0 0 0 2px rgba(255,255,255,.13),0 0 16px rgba(82,190,255,.62);
+}
+#pastFutureBtn{
+  min-height:clamp(38px,8vw,46px);
+  border-radius:999px;
+  background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.015) 52%,rgba(77,159,229,.09)),rgba(5,11,22,.50);
+  border:1px solid rgba(226,244,255,.30);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.23),inset 0 -1px 0 rgba(153,207,255,.12),0 5px 14px rgba(0,0,0,.13);
+  -webkit-backdrop-filter:blur(16px) saturate(165%);
+  backdrop-filter:blur(16px) saturate(165%);
+}
+#pastFutureBtn:active,.astro-glass-toggle:active{transform:scale(.99)}
+/* Portrait remains in its approved bottom position, with compact sizing and room above the dock. */
+@media (orientation:portrait){
+  #astroPanel:not(.simulation-mode){
+    left:clamp(10px,3vw,16px);
+    right:clamp(10px,3vw,16px);
+    width:auto;
+    max-width:430px;
+    bottom:calc(var(--safe-bottom) + 88px);
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 170px);
+  }
+  #astroPanel:not(.simulation-mode) #astroObjectRow{gap:7px}
+  #astroPanel:not(.simulation-mode) .astro-glass-toggle{min-height:44px}
+}
+/* Landscape choices are compact, edge-aware, and vertically arranged like the reference concept. */
+@media (orientation:landscape) and (min-width:600px){
+  #astroPanel:not(.simulation-mode){
+    width:min(258px,calc(100vw - 32px));
+    max-width:258px;
+    right:calc(env(safe-area-inset-right,0px) + 18px);
+    padding:10px;
+    max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 30px);
+  }
+  #astroPanel:not(.simulation-mode) #astroObjectRow{flex-direction:column;gap:7px}
+  #astroPanel:not(.simulation-mode) .astro-glass-toggle{min-height:39px}
+  #astroPanel:not(.simulation-mode) .astro-glass-knob{width:31px;height:31px;flex-basis:31px}
+  #astroPanel:not(.simulation-mode) .astro-glass-label{font-size:12px}
+  #astroPanel:not(.simulation-mode) #pastFutureBtn{min-height:37px;font-size:11px}
+}
+@media (orientation:landscape) and (max-height:430px){
+  #astroPanel:not(.simulation-mode){padding:8px;max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 22px)}
+  #astroPanel:not(.simulation-mode) .astro-head{margin-bottom:4px}
+  #astroPanel:not(.simulation-mode) .astro-row{margin-top:5px}
+  #astroPanel:not(.simulation-mode) .astro-glass-toggle{min-height:33px}
+  #astroPanel:not(.simulation-mode) .astro-glass-knob{width:27px;height:27px;flex-basis:27px}
+  #astroPanel:not(.simulation-mode) #pastFutureBtn{min-height:31px}
+}
+@media(prefers-reduced-motion:reduce){.astro-glass-knob{transition:none}}

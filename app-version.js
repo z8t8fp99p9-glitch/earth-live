@@ -1,1 +1,1 @@
-window.EARTH_LIVE_APP_VERSION = '1.25';
+window.EARTH_LIVE_APP_VERSION = '1.26';
