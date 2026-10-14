@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./landscape-dock.css">
+<link rel="stylesheet" href="./sun-sky.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
 </head>
@@ -22,12 +23,20 @@
     <div id="skyMoon" class="sky-moon" aria-hidden="true"><div class="sky-moon-crater crater-one"></div><div class="sky-moon-crater crater-two"></div><div class="sky-moon-crater crater-three"></div></div>
     <div class="sky-direction" id="skyDirection">—</div>
   </section>
+  <section id="sunSky" class="sun-sky" hidden aria-label="Sun sky view">
+    <div class="sky-stars" aria-hidden="true"></div><div class="sky-haze" aria-hidden="true"></div>
+    <div class="sky-heading"><span class="sky-eyebrow">EARTH // LIVE</span><strong>SUN SKY VIEW</strong><span id="sunSkyStatus">Finding your daylight window…</span></div>
+    <div class="sky-compass" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
+    <div class="sky-horizon" aria-hidden="true"><div class="horizon-mountains"></div><div class="horizon-glow"></div></div>
+    <div id="skySun" class="sky-sun" aria-hidden="true"></div>
+    <div class="sky-direction" id="sunSkyDirection">—</div>
+  </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
   <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun time scroller">
     <div class="time-panel-heading"><div><span class="panel-kicker">SOLAR TIME</span><strong>Sun Journey</strong></div><output id="sunTimeReadout">—</output></div>
     <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">00:00</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1439" step="1" value="720" aria-label="Sun time across 24 hours"><span class="timeline-bound end-bound" id="sunEndLabel">24:00</span></div>
-    <div class="timeline-caption"><span>LOCAL DAY</span><span>Drag the Sun along the light beam</span></div>
+    <div class="timeline-caption"><span id="sunSkyWindowLabel">LOCAL DAY</span><span>Drag the Sun along the light beam</span></div>
   </section>
 
   <section id="moonPanel" class="time-panel moon-panel" hidden aria-label="Moon visibility scroller">
@@ -54,13 +63,13 @@
       <button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button>
     </div>
     <button class="dock-item" id="locateBtn" aria-label="Refresh live location" title="Live Location"><span class="dock-art"><img src="./icon-location.webp" alt=""></span><span class="dock-label">Live Location</span></button>
-    <button class="dock-item dock-sun" id="sunBtn" aria-label="Activate Sun day and night shading" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
+    <button class="dock-item dock-sun" id="sunBtn" aria-label="Open Sun Sky View" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
     <button class="dock-item dock-moon" id="moonBtn" aria-label="Open Moon Sky View" title="Moon View" aria-pressed="false"><span class="dock-art"><img src="./icon-moon-observer.webp" alt=""></span><span class="dock-label">Moon</span></button>
     <button class="dock-item" id="layersBtn" aria-label="Open More Options" title="More Options" aria-pressed="false"><span class="dock-art"><img src="./icon-stacks.webp" alt=""></span><span class="dock-label">Stacks</span></button>
   </div>
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div>
   <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./app.js"></script>
+<script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>

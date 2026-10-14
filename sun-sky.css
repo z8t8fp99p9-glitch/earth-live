@@ -1,0 +1,22 @@
+/* EARTH // LIVE v1.50 — warm Silent Mountains Sun Sky View; static, no water/shadows/animation. */
+.sun-sky{position:absolute;inset:0;z-index:2;overflow:hidden;background:linear-gradient(180deg,#18283b 0%,#b46b43 43%,#f0b56e 69%,#342a2b 100%);color:#fff5e8;pointer-events:none}
+.sun-sky .sky-stars{opacity:.12;background-image:radial-gradient(1px 1px at 12% 19%,rgba(255,244,218,.9) 50%,transparent 70%),radial-gradient(1px 1px at 29% 11%,rgba(255,244,218,.8) 50%,transparent 70%),radial-gradient(1.2px 1.2px at 71% 22%,rgba(255,244,218,.9) 50%,transparent 70%),radial-gradient(1px 1px at 83% 15%,rgba(255,244,218,.8) 50%,transparent 70%),radial-gradient(1px 1px at 54% 31%,rgba(255,244,218,.8) 50%,transparent 70%)}
+.sun-sky .sky-haze{background:radial-gradient(ellipse at 50% 50%,rgba(255,202,132,.34),transparent 68%)}
+.sun-sky .sky-eyebrow{color:rgba(255,229,190,.76)}.sun-sky .sky-heading>span:last-child{color:rgba(255,242,222,.88)}
+.sun-sky .sky-compass{color:rgba(255,235,207,.68)}
+.sun-sky .sky-horizon{border-top-color:rgba(255,211,151,.48);background:linear-gradient(180deg,rgba(111,66,53,.25),rgba(20,19,24,.98) 72%)}
+.sun-sky .horizon-mountains{background:#211d24;clip-path:polygon(0 55%,8% 40%,15% 50%,23% 28%,30% 44%,39% 21%,46% 47%,54% 34%,61% 48%,69% 18%,76% 42%,85% 27%,92% 44%,100% 31%,100% 100%,0 100%);opacity:.9}
+.sun-sky .horizon-glow{background:linear-gradient(90deg,transparent,rgba(255,198,118,.7),transparent);box-shadow:0 0 26px rgba(255,174,83,.32)}
+.sky-sun{position:absolute;left:50%;bottom:48%;width:clamp(42px,10vw,72px);height:clamp(42px,10vw,72px);transform:translate(-50%,50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8d7 0%,#ffe7a1 38%,#ffc15d 70%,#e88b38 100%);box-shadow:0 0 18px rgba(255,203,112,.7),0 0 48px rgba(255,172,70,.35);transition:none}
+.sun-sky .sky-direction{border-color:rgba(255,211,151,.2);background:rgba(33,19,18,.5);color:rgba(255,242,222,.9)}
+#app.sun-active #globe{visibility:hidden;pointer-events:none}#app.sun-active .app-stamp{background:rgba(33,19,18,.48)}
+.sun-panel .sun-timeline .time-range{accent-color:#f4b95f}
+.sun-panel .timeline-shell{background:rgba(42,25,19,.24);border-color:rgba(255,211,151,.16)}
+.sun-panel .sun-range::-webkit-slider-thumb{background:#ffd477;box-shadow:0 0 0 5px rgba(255,199,101,.16),0 0 18px rgba(255,183,77,.7)}
+.sun-panel .sun-range::-moz-range-thumb{background:#ffd477;box-shadow:0 0 0 5px rgba(255,199,101,.16),0 0 18px rgba(255,183,77,.7)}
+#sunSky[hidden]{display:none!important}
+@media (max-height:430px){.sun-sky .sky-heading{top:calc(env(safe-area-inset-top,0px) + 12px)}.sun-sky .sky-compass{top:25%}.sun-sky .sky-horizon{height:38%}.sun-sky .sky-direction{bottom:calc(env(safe-area-inset-bottom,0px) + 92px)}}
+
+/* Solar Silk: a restrained curved gold path; only the Sun thumb moves. */
+.sun-range::-webkit-slider-runnable-track{height:7px;border-radius:999px;background:rgba(112,68,24,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.18'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 9px rgba(255,183,77,.25)}
+.sun-range::-moz-range-track{height:7px;border-radius:999px;background:rgba(112,68,24,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.18'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 9px rgba(255,183,77,.25)}
