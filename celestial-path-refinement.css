@@ -1,11 +1,14 @@
-/* EARTH // LIVE v1.55 — restrained, real astronomical trajectories; no decorative fixed arc. */
-.celestial-real-trajectory{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible;pointer-events:none}
-.celestial-real-trajectory path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
-.celestial-real-trajectory .trajectory-glow{stroke-width:9;opacity:.18;filter:blur(4px)}
-.celestial-real-trajectory .trajectory-line{stroke-width:1.7;opacity:.9;stroke-dasharray:2 5}
-.celestial-real-trajectory .trajectory-line.sun{stroke:#ffe0a0}
-.celestial-real-trajectory .trajectory-line.moon{stroke:#8bd6ff}
-.celestial-real-trajectory .trajectory-glow.sun{stroke:#ffc96e}
-.celestial-real-trajectory .trajectory-glow.moon{stroke:#58baff}
-.sky-sun,.sky-moon{z-index:3}
-.sky-direction{z-index:4}
+/* EARTH // LIVE v1.56 — a single, cached astronomical trajectory per sky. */
+.celestial-real-trajectory {
+  position:absolute; inset:0; width:100%; height:100%;
+  z-index:2; overflow:hidden; pointer-events:none;
+}
+.celestial-real-trajectory path {
+  fill:none; vector-effect:non-scaling-stroke;
+  stroke-linecap:round; stroke-linejoin:round;
+  stroke-width:1.8; opacity:.92; stroke-dasharray:2 5;
+}
+.celestial-real-trajectory path.sun { stroke:#ffe0a0; }
+.celestial-real-trajectory path.moon { stroke:#8bd6ff; }
+.sky-sun,.sky-moon { z-index:3; }
+.sky-direction { z-index:4; }
