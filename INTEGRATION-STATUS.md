@@ -7,4 +7,8 @@ EARTH // LIVE v1.42 — Celestial Dock Candidate
 - No pulsing/continuous decorative animation. Future feed buttons are display-only and do not connect to datasets.
 - JavaScript syntax, CSS parse, asset references, and ZIP integrity should be checked before delivery. Runtime testing on iPhone/PWA and astronomical validation have not been performed.
 
-Focused v1.44: icon-only celestial controls (Basic/HD labels retained) and Moon location anchoring without camera fly-to. Requires user iPhone testing; not deployed or runtime-verified here.
+Focused v1.45: icon-only celestial controls (Basic/HD labels retained) and Moon location anchoring without camera fly-to. Requires user iPhone testing; not deployed or runtime-verified here.
+
+
+## v1.45 focused change
+The Live Location camera fly-to now preserves the camera's current orientation and altitude (minimum 1,400 km) while centering the detected location. The previous hard-coded 1,800 km altitude and -55-degree pitch were the direct cause of the abrupt zoom/tilt. Moon anchoring and icon-only dock from v1.44 are retained. Needs iPhone verification.
