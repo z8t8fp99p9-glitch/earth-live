@@ -1,11 +1,8 @@
-# Integration status — v1.39
+EARTH // LIVE v1.40 — Integration Status
 
-- Source base: `EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip` (known-good visual baseline)
-- Changed: `sun-moon-tracker.js` (adds automatic temporary dotted 10-day lunar orbital arc), `app-version.js`, `service-worker.js`, package metadata, README, integration status
-- Unchanged: `index.html`, `app.js`, `style.css`, `data-store.js`, `moon-dataset.js`
-- Orbit window: current time ±5 days, samples every 6 hours (41 expected points)
-- Orbit path uses the existing Moon dataset's RA/declination and distance variation; radius is visually scaled inward
-- User interaction required: none; path is added when the globe initializes
-- ZIP integrity and JS syntax: to be checked after packaging
-- iPhone/PWA runtime test: not performed
-- Astronomy precision validation: not performed; existing Moon model remains approximate
+- Source: v1.39 Moon Orbit Preview package.
+- Changes: increased display orbit radius for visibility; diagnostic path dots are visible through Earth; app version and service-worker cache bumped to v1.40.
+- Moon positions: sampled from the existing local lightweight lunar calculator at 6-hour intervals across a 10-day window.
+- Important: this is an illustrative preview. Orbital radius is visually scaled and the lunar calculator is approximate; do not treat this as a precision ephemeris.
+- Existing Earth UI, globe textures, and controls are otherwise unchanged.
+- JavaScript syntax and ZIP integrity checks passed; runtime testing on iPhone/PWA remains outstanding.

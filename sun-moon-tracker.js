@@ -23,10 +23,10 @@ function moonPosition(date){
  if(window.EarthLiveMoon&&typeof window.EarthLiveMoon.calculate==='function'){const m=window.EarthLiveMoon.calculate(date);return {ra:m.rightAscensionDeg,dec:m.declinationDeg,illumination:m.illuminationPercent,phase:m.phaseName,distance:m.distanceKm};}
  return null;
 }
-// Temporary visual diagnostic: a fixed 10-day Moon orbital arc, sampled from the
-// existing local lunar calculator. The path is anchored to the sky orientation at
-// creation time and scaled inward so it can be inspected around the globe.
-// It is intentionally always visible without opening the Sun/Moon panel.
+// Temporary visual diagnostic: a 10-day Moon orbital arc sampled from the
+// existing local lunar calculator. Positions are expressed in one fixed inertial
+// orientation anchored at the current time, so the orbit does not rotate with Earth's texture.
+// The radius is deliberately enlarged for inspection; this is a visual preview, not scale.
 function clearMoonOrbitPath(){
  if(!viewer)return;
  for(const entity of moonOrbitEntities)viewer.entities.remove(entity);
@@ -44,7 +44,7 @@ function renderMoonOrbitPath(){
   const latitude=moon.dec;
   // Keep the real calculated orbital direction and distance variation, but use a
   // display radius suitable for the existing globe camera rather than true scale.
-  const displayRadius=10500000*(moon.distance/384400);
+  const displayRadius=19000000*(moon.distance/384400);
   const altitude=Math.max(250000,displayRadius-6378137);
   const position=Cesium.Cartesian3.fromDegrees(longitude,latitude,altitude);
   points.push({position,offset});
@@ -53,7 +53,7 @@ function renderMoonOrbitPath(){
   const current=points[i],isNow=Math.abs(current.offset)<stepMs/2;
   moonOrbitEntities.push(viewer.entities.add({
    position:current.position,
-   point:{pixelSize:isNow?9:4,color:isNow?Cesium.Color.fromCssColorString('#e8f7ff'):Cesium.Color.fromCssColorString('#9bd8ff').withAlpha(0.76),outlineColor:Cesium.Color.fromCssColorString('#14364d'),outlineWidth:isNow?2:1,disableDepthTestDistance:0},
+   point:{pixelSize:isNow?9:4,color:isNow?Cesium.Color.fromCssColorString('#e8f7ff'):Cesium.Color.fromCssColorString('#9bd8ff').withAlpha(0.76),outlineColor:Cesium.Color.fromCssColorString('#14364d'),outlineWidth:isNow?2:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},
    properties:{earthLiveMoonOrbit:true,offsetHours:current.offset/3600000}
   }));
  }

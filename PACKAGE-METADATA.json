@@ -1,8 +1,8 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Temporary 10-Day Moon Orbit Path",
-  "version": "1.39",
-  "filename": "EARTH-LIVE-Moon-Orbit-Preview-v1.39.zip",
+  "package": "Moon Orbit Preview",
+  "version": "1.40",
+  "filename": "EARTH-LIVE-Moon-Orbit-Preview-v1.40.zip",
   "base": "EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
@@ -14,5 +14,5 @@
   "orbit_distance": "visually scaled inward; not to scale",
   "calculation_source": "existing local moon-dataset.js approximation",
   "title": "EARTH // LIVE \u2014 Moon Orbit Preview v1.39",
-  "description": "Adds a temporary dotted 10-day Moon orbital path automatically on the existing Earth view, with a brighter dot marking the current-time sample. Uses the existing local Moon calculation and keeps the path visible without any clicks. Orbit distance is visually scaled for readability; the lunar model is approximate. Existing Earth UI and controls are preserved. Requires iPhone/PWA testing."
+  "description": "Temporary 10-day Moon orbital arc preview with a more visible radius and diagnostic dots drawn through the globe for inspection. Uses existing local approximate Moon calculations; not a precision ephemeris. Existing Earth UI preserved. Requires iPhone/PWA testing."
 }
