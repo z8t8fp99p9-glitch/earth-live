@@ -1,0 +1,97 @@
+name: Validate, organize, and deploy EARTH LIVE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# The organizer must publish the Assets branch and remove only approved,
+# verified non-runtime assets from main. Deployment permissions stay job-scoped.
+permissions:
+  contents: write
+
+concurrency:
+  group: earth-live-pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate, organize, and stage release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Validate the uploaded source before the organizer makes any Git change.
+      - name: Validate uploaded source
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for file in *.js; do
+            node --check "$file"
+          done
+          node scripts/validate-release.mjs
+
+      # This script only moves its explicit allowlist, after checking runtime references.
+      - name: Organize approved non-runtime assets
+        run: node scripts/organize-assets.mjs
+
+      # Keep the full source/history in Git, but deploy only site files.
+      - name: Build runtime-only Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          mkdir -p dist
+          rsync -a \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/scripts/' \
+            --exclude='/dist/' \
+            --exclude='*.md' \
+            --exclude='*.txt' \
+            --exclude='*.patch' \
+            --exclude='*.zip' \
+            --exclude='viewport-diagnostic.js' \
+            --exclude='PACKAGE-METADATA.json' \
+            --exclude='ASSET-ORGANIZER-SETUP.md' \
+            ./ dist/
+          shopt -s nullglob
+          for file in dist/*.js; do
+            node --check "$file"
+          done
+          (cd dist && node ../scripts/validate-release.mjs)
+
+      - name: Upload validated site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy validated site
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy validated site artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
