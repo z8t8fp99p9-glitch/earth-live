@@ -21,43 +21,50 @@
   background-image:url('./lunar-atmosphere.svg');
   background-position:center; background-size:cover; background-repeat:no-repeat;
 }
-
-/* Restore the original mountain artwork geometry; remove prior custom portrait
-   enlargement. The SVG wallpaper remains transparent above the ridge. */
 .sun-sky .horizon-mountains,.moon-sky .horizon-mountains {
-  position:absolute;
-  inset:0;
-  clip-path:none;
-  background-color:transparent;
-  background-position:center bottom;
-  background-size:100% 100%;
-  background-repeat:no-repeat;
-  opacity:1;
-  z-index:1;
+  position:absolute; inset:0; clip-path:none; background-color:transparent;
+  background-position:center bottom; background-size:100% 100%;
+  background-repeat:no-repeat; opacity:1; z-index:1;
 }
 .sun-sky .horizon-mountains { background-image:url('./mountains-warm.svg'); }
 .moon-sky .horizon-mountains { background-image:url('./mountains-night.svg'); }
 
-/* v1.73: portrait only — remove the Horizon Belt fill entirely.
-   Preserve the horizon's original position and thin reference line.
-   No height/position change to the sky container or astronomical coordinates.
-   Landscape remains on its existing stylesheet rules. */
+/* v1.74: portrait-only actual fix.
+   Keep the horizon container and its numerical position fixed, remove its
+   colored belt fill, retain a separate thin horizon line, and lift the
+   mountain wallpaper within the transparent container so the ridge comes up.
+   Astronomical object/trajectory coordinate calculations are untouched.
+   Landscape remains unchanged. */
 @media (orientation:portrait) {
   .sun-sky .sky-horizon,
   .moon-sky .sky-horizon {
     height:34%;
-    overflow:hidden;
-    background:transparent !important;
-    border-top:1px solid rgba(255,255,255,.24);
+    overflow:visible;
+    background:none !important;
+    border-top:0;
+    position:absolute;
     z-index:0;
+  }
+  /* Draw only the horizon marker as a separate line at the original boundary. */
+  .sun-sky .sky-horizon::before,
+  .moon-sky .sky-horizon::before {
+    content:"";
+    position:absolute;
+    top:0; left:-15%; right:-15%;
+    height:1px;
+    background:rgba(255,255,255,.28);
+    pointer-events:none;
+    z-index:3;
   }
   .sun-sky .horizon-mountains,
   .moon-sky .horizon-mountains {
-    inset:0;
-    height:auto;
-    background-size:100% 100%;
+    position:absolute;
+    inset:auto 0 0;
+    height:155%;
+    background-size:auto 100%;
     background-position:center bottom;
     background-repeat:no-repeat;
+    pointer-events:none;
     z-index:1;
   }
   .sun-sky .horizon-glow,
