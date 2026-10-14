@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Responsive Glass Sizing Patch",
-  "version": "1.28",
-  "filename": "EARTH-LIVE-Responsive-Glass-UI-v1.28.zip",
+  "package": "Landscape Composition Refinement",
+  "version": "1.29",
+  "filename": "EARTH-LIVE-Landscape-Composition-v1.29.zip",
   "base": "User-uploaded EARTH-LIVE-Verification-v1.27 ZIP",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "CSS-only responsive sizing/spacing patch plus version/cache bump",
+  "ui_scope": "CSS-only landscape composition refinement plus version/cache bump; portrait composition intentionally unchanged",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -22,16 +22,15 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Use the exact user-uploaded v1.27 package as the base.",
-    "Add viewport-aware maximum sizing and safe-area constraints for panels.",
-    "Preserve the approved portrait panel placement and horizontal simulation slider.",
-    "Refine landscape option panel sizing and spacing.",
-    "Reserve separate layout rows for the landscape vertical slider, date/time readout, and LIVE button to prevent overlap.",
-    "Keep bottom controls within narrow viewport bounds without changing their IDs or behavior.",
-    "Do not change app.js, data-store.js, sun-moon-tracker.js, moon-dataset.js, index.html, or globe/camera/gesture logic.",
-    "Update version stamp and service-worker cache to v1-28.",
-    "Not runtime-tested on iPhone; visual and interaction testing required."
+    "Use the supplied v1.28 candidate ZIP as the source base.",
+    "Lock the bottom glass dock to horizontal screen centre in both portrait and landscape orientations.",
+    "Refine landscape dock dimensions and safe-area spacing without changing its controls or behavior.",
+    "Compact the landscape Sun/Moon choice panel and vertical simulation rail for a more balanced composition.",
+    "Preserve the approved portrait layout and horizontal simulation slider.",
+    "Do not change application JavaScript, data store, astronomy tracker calculations, HTML structure, or globe/camera/gesture logic.",
+    "Update version stamp and service-worker cache to v1-29.",
+    "Not runtime-tested on iPhone; on-device verification required."
   ],
-  "title": "EARTH // LIVE \u2014 Responsive Glass UI v1.28",
-  "description": "Focused responsive-sizing refinement based on the supplied v1.27 source. Keeps portrait Sun/Moon and horizontal-slider layout visually unchanged; improves landscape panel sizing and separates the vertical slider rail, date/time readout, and LIVE button to prevent overlap. Uses viewport and safe-area-aware limits. Does not modify application JavaScript, Cesium globe/camera/gesture logic, tracker calculations, or data store. Requires on-device testing; not runtime-tested on iPhone."
+  "title": "EARTH // LIVE \u2014 Landscape Composition Refinement v1.29",
+  "description": "Focused landscape-only composition refinement based on the supplied v1.28 candidate. Locks the glass dock to the horizontal centre of the screen in both orientations, makes landscape dock proportions more compact, and refines the landscape Sun/Moon and vertical time panels. Preserves the approved portrait layout and horizontal slider. Does not modify app logic, astronomy calculations, globe/camera/gesture code, or HTML structure. Requires on-device testing; not runtime-tested on iPhone."
 }
