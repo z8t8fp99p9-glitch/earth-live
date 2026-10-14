@@ -45,13 +45,13 @@
   background-image: url('./mountains-night.svg');
 }
 
-/* v1.69 Layer 2: portrait scenery lift.
-   Keep the actual horizon border and celestial coordinate system fixed.
-   Extend only the mountain artwork above the horizon container; landscape
-   retains its existing approved sizing and crop. */
+/* v1.70: reduce the Horizon Belt itself in portrait.
+   Landscape sizing is untouched. The celestial trajectory calculations
+   and fixed viewport coordinate system are not changed. */
 @media (orientation: portrait) {
   .sun-sky .sky-horizon,
   .moon-sky .sky-horizon {
+    height: 20%;
     overflow: visible;
   }
   .sun-sky .horizon-mountains,
