@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1600" preserveAspectRatio="xMidYMid slice"><defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0.000" stop-color="#020817"/><stop offset="0.250" stop-color="#0b2340"/><stop offset="0.500" stop-color="#194263"/><stop offset="0.750" stop-color="#346080"/><stop offset="1.000" stop-color="#a3c6d8"/></linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0.000" stop-color="#080d22"/><stop offset="0.250" stop-color="#142044"/><stop offset="0.500" stop-color="#24365a"/><stop offset="0.750" stop-color="#52617d"/><stop offset="1.000" stop-color="#b3c4d9"/></linearGradient>
     <radialGradient id="glow"><stop stop-color="#91c7e8" stop-opacity=".48"/><stop offset="1" stop-color="#91c7e8" stop-opacity="0"/></radialGradient>
-    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#194263" stop-opacity=".55"/><stop offset="1" stop-color="#020817" stop-opacity=".95"/></linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#24365a" stop-opacity=".55"/><stop offset="1" stop-color="#080d22" stop-opacity=".95"/></linearGradient>
     <linearGradient id="reflection"><stop stop-color="#91c7e8" stop-opacity="0"/><stop offset=".5" stop-color="#91c7e8" stop-opacity=".16"/><stop offset="1" stop-color="#91c7e8" stop-opacity="0"/></linearGradient>
     </defs><rect width="1000" height="1600" fill="url(#sky)"/>
     <ellipse cx="510" cy="720" rx="540" ry="440" fill="url(#glow)" opacity=".78"/>
