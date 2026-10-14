@@ -27,9 +27,7 @@
   background-repeat: no-repeat;
 }
 
-/* v1.62 Layer 2: replace the temporary polygon silhouettes with layered
-   static vector scenery. Keep the horizon container, its placement, and all
-   celestial positioning and controls unchanged. */
+/* v1.62 Layer 2: layered static vector scenery. */
 .sun-sky .horizon-mountains,
 .moon-sky .horizon-mountains {
   inset: 0;
@@ -45,4 +43,16 @@
 }
 .moon-sky .horizon-mountains {
   background-image: url('./mountains-night.svg');
+}
+
+/* v1.68 Layer 2 portrait correction:
+   Keep the horizon and sky-object geometry fixed, but enlarge the mountain
+   artwork upward from the bottom edge on portrait screens. Landscape keeps
+   the current approved framing. */
+@media (orientation: portrait) {
+  .sun-sky .horizon-mountains,
+  .moon-sky .horizon-mountains {
+    background-size: 100% 155%;
+    background-position: center bottom;
+  }
 }
