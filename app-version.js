@@ -1,2 +1,2 @@
-/* EARTH // LIVE — portrait Horizon Belt reduction — v1.70 */
-(function(){const version='v1.70';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
+/* EARTH // LIVE — 1% portrait Horizon Belt tint; restore horizon position — v1.71 */
+(function(){const version='v1.71';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();

@@ -45,14 +45,23 @@
   background-image: url('./mountains-night.svg');
 }
 
-/* v1.70: reduce the Horizon Belt itself in portrait.
-   Landscape sizing is untouched. The celestial trajectory calculations
-   and fixed viewport coordinate system are not changed. */
+/* v1.71: restore the original horizon height; reduce only the belt tint.
+   Keep the horizon border/position and celestial coordinate system fixed.
+   The atmosphere wallpaper remains visible behind the horizon region.
+   Portrait mountains keep the established 155% placement; landscape is
+   unchanged. */
 @media (orientation: portrait) {
   .sun-sky .sky-horizon,
   .moon-sky .sky-horizon {
-    height: 20%;
+    height: 34%;
     overflow: visible;
+    background: linear-gradient(
+      180deg,
+      rgba(111,66,53,.22) 0%,
+      rgba(111,66,53,.08) 1%,
+      rgba(20,19,24,0) 4%,
+      rgba(20,19,24,0) 100%
+    );
   }
   .sun-sky .horizon-mountains,
   .moon-sky .horizon-mountains {
