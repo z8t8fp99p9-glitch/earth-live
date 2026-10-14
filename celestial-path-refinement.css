@@ -21,36 +21,43 @@
   background-image:url('./lunar-atmosphere.svg');
   background-position:center; background-size:cover; background-repeat:no-repeat;
 }
+
+/* Restore the original mountain artwork geometry; remove prior custom portrait
+   enlargement. The SVG wallpaper remains transparent above the ridge. */
 .sun-sky .horizon-mountains,.moon-sky .horizon-mountains {
-  inset:0; clip-path:none; background-color:transparent;
-  background-position:center bottom; background-size:100% 100%;
-  background-repeat:no-repeat; opacity:1;
+  position:absolute;
+  inset:0;
+  clip-path:none;
+  background-color:transparent;
+  background-position:center bottom;
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  opacity:1;
+  z-index:1;
 }
 .sun-sky .horizon-mountains { background-image:url('./mountains-warm.svg'); }
 .moon-sky .horizon-mountains { background-image:url('./mountains-night.svg'); }
 
-/* v1.72 Layer 2: portrait-only belt behind the wallpaper.
-   Keep the 34% horizon reference and trajectory coordinate system fixed.
-   The belt is made transparent and placed behind the lifted mountain art;
-   landscape styles are untouched. */
+/* v1.73: portrait only — remove the Horizon Belt fill entirely.
+   Preserve the horizon's original position and thin reference line.
+   No height/position change to the sky container or astronomical coordinates.
+   Landscape remains on its existing stylesheet rules. */
 @media (orientation:portrait) {
   .sun-sky .sky-horizon,
   .moon-sky .sky-horizon {
     height:34%;
-    overflow:visible;
+    overflow:hidden;
     background:transparent !important;
-    border-top-color:rgba(255,255,255,.20);
+    border-top:1px solid rgba(255,255,255,.24);
     z-index:0;
   }
   .sun-sky .horizon-mountains,
   .moon-sky .horizon-mountains {
-    position:absolute;
-    inset:auto 0 0;
-    height:185%;
-    background-size:auto 100%;
+    inset:0;
+    height:auto;
+    background-size:100% 100%;
     background-position:center bottom;
     background-repeat:no-repeat;
-    pointer-events:none;
     z-index:1;
   }
   .sun-sky .horizon-glow,
