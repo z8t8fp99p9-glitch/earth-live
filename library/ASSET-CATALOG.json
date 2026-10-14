@@ -1,0 +1,85 @@
+{
+  "project": "EARTH // LIVE",
+  "branch": "Assets",
+  "policy": "Copy-only; never delete original files from main.",
+  "assets": [
+    {
+      "file": "earth-relief-bump.jpg",
+      "purpose": "Alternate Earth relief texture reference.",
+      "bytes": 7878234,
+      "sha256": "8a0f3fbb1670526d2d274f35a953ef044f7630997d53566991fe991769905943"
+    },
+    {
+      "file": "earth-relief-skin.jpg",
+      "purpose": "Earth surface texture reference.",
+      "bytes": 6893381,
+      "sha256": "3845cb1e04b6b6a464a74444b9ab2601c12c69ee300233304bd8b84820776285"
+    },
+    {
+      "file": "moon-phase-01-new-moon.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1038,
+      "sha256": "4a05a7b76cb8b837d0b91e801bfdc536cf43f3012eea0632a6940bf0a118a6cd"
+    },
+    {
+      "file": "moon-phase-02-waxing-crescent.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1068,
+      "sha256": "ce9d0bdb9cb3fc51ee8a4169a46c4da27312f4cff895f69a5a5f8f55cb869d45"
+    },
+    {
+      "file": "moon-phase-03-first-quarter.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1066,
+      "sha256": "d8621ee8ff4e14a6139810e29888578e22087d759a27a0ee1a67f7f296478e4a"
+    },
+    {
+      "file": "moon-phase-04-waxing-gibbous.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1068,
+      "sha256": "0c5c6d04c63b225761b8dc6bbd0257382a164aa1c025416bbb2642ad09530e8b"
+    },
+    {
+      "file": "moon-phase-05-full-moon.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 984,
+      "sha256": "ee85e60ac33b3b5b3a5f33e96eaff3bce402084710ccbac574f6520880989122"
+    },
+    {
+      "file": "moon-phase-06-waning-gibbous.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1068,
+      "sha256": "32ac17033e8f980dba8819739b368b5e6ed252aacb0cf669285d4e5ee8e91905"
+    },
+    {
+      "file": "moon-phase-07-last-quarter.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1066,
+      "sha256": "2f999cd148ece70818d4daa74b6b204b9789453a6c76f7452676a1b6766d063f"
+    },
+    {
+      "file": "moon-phase-08-waning-crescent.svg",
+      "purpose": "Moon phase reference artwork.",
+      "bytes": 1068,
+      "sha256": "6b21ac9f4a867c1915ee4e3621f2c6168ec30f88cc61ecc53822458e33c64d8f"
+    },
+    {
+      "file": "moon-texture.svg",
+      "purpose": "Moon texture reference artwork.",
+      "bytes": 984,
+      "sha256": "ee85e60ac33b3b5b3a5f33e96eaff3bce402084710ccbac574f6520880989122"
+    },
+    {
+      "file": "sun-object.svg",
+      "purpose": "Alternate Sun artwork reference.",
+      "bytes": 753,
+      "sha256": "fbdbab5da7904852244efaf31955afc0d6d27a57afc456e4649b803250be3f66"
+    },
+    {
+      "file": "celestial-vector-manifest.json",
+      "purpose": "Celestial vector reference manifest.",
+      "bytes": 1925,
+      "sha256": "e90e12bcf15dceb1bc663690f2cdef22ed146c5ec1b67c876e8a43853c75be81"
+    }
+  ]
+}

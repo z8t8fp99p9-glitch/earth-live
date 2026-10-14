@@ -1,0 +1,74 @@
+{
+  "project": "EARTH // LIVE",
+  "version": "v1.60",
+  "visual_direction": {
+    "realism": "cinematic",
+    "mountains": "layered",
+    "horizon": "low",
+    "moon_stars": "subtle"
+  },
+  "assets": {
+    "solar-atmosphere.svg": {
+      "type": "SVG",
+      "role": "solar atmosphere"
+    },
+    "lunar-atmosphere.svg": {
+      "type": "SVG",
+      "role": "lunar atmosphere"
+    },
+    "mountains-warm.svg": {
+      "type": "SVG",
+      "role": "mountain horizon"
+    },
+    "mountains-night.svg": {
+      "type": "SVG",
+      "role": "mountain horizon"
+    },
+    "moon-phase-01-new-moon.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-02-waxing-crescent.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-03-first-quarter.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-04-waxing-gibbous.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-05-full-moon.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-06-waning-gibbous.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-07-last-quarter.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "moon-phase-08-waning-crescent.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    },
+    "sun-object.svg": {
+      "type": "SVG",
+      "role": "sun object"
+    },
+    "moon-texture.svg": {
+      "type": "SVG",
+      "role": "moon surface/phase reference"
+    }
+  },
+  "notes": [
+    "Standalone SVG files, not a composite sheet.",
+    "Phase SVGs are visual references, not accurate daily phase calculations.",
+    "Do not enable backgrounds until tested in the real app.",
+    "Keep app UI and astronomical calculations unchanged."
+  ]
+}
