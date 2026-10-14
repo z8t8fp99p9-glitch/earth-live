@@ -1,26 +1,18 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Burning Sun Celestial Scene — Spacing and Zoom Refinement",
-  "version": "v1.38",
-  "filename": "EARTH-LIVE-Burning-Sun-Celestial-Scene-v1.38.zip",
-  "base": "Exact EARTH-LIVE-Celestial-View-Prototype-v1.36.zip candidate",
+  "package": "Temporary 10-Day Moon Orbit Path",
+  "version": "1.39",
+  "filename": "EARTH-LIVE-Moon-Orbit-Preview-v1.39.zip",
+  "base": "EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Celestial View opens by default with spherical Sun and Moon, dotted lunar orbit, and existing Earth/time controls preserved",
-  "changes": [
-    "Open Celestial View on app startup with Sun selected.",
-    "Render Sun as a visually scaled ellipsoid with a locally generated plasma texture and soft corona halo.",
-    "Render Moon as a visually scaled ellipsoid with a locally generated crater texture.",
-    "Add a subtle dotted orbital path around Earth as a visual guide.",
-    "Preserve existing local Moon calculation, time scroller, camera interaction, and auto-exit logic."
-  ],
-  "limitations": [
-    "Sun/Moon textures are procedural and not NASA imagery.",
-    "Celestial sizes and distances are visually scaled.",
-    "Moon calculation and dotted orbital path are approximate.",
-    "Requires iPhone/PWA runtime and performance testing."
-  ],
-  "title": "EARTH // LIVE \u2014 Burning Sun Celestial Scene — Spacing and Zoom Refinement v1.38",
-  "description": "Opens EARTH // LIVE directly into Celestial View with a visually scaled spherical burning Sun, textured lunar globe, and subtle dotted Moon-orbit guide. Retains the existing Earth assets, time scroller, centred dock, and responsive layout. Sun/Moon scale and orbit are illustrative; Moon calculation remains approximate. Requires iPhone/PWA testing."
+  "ui_scope": "Adds an always-on temporary dotted Moon orbital arc to the known-good Earth view; no controls or layout changed.",
+  "orbit_window_days": 10,
+  "orbit_sample_hours": 6,
+  "samples_expected": 41,
+  "orbit_distance": "visually scaled inward; not to scale",
+  "calculation_source": "existing local moon-dataset.js approximation",
+  "title": "EARTH // LIVE \u2014 Moon Orbit Preview v1.39",
+  "description": "Adds a temporary dotted 10-day Moon orbital path automatically on the existing Earth view, with a brighter dot marking the current-time sample. Uses the existing local Moon calculation and keeps the path visible without any clicks. Orbit distance is visually scaled for readability; the lunar model is approximate. Existing Earth UI and controls are preserved. Requires iPhone/PWA testing."
 }
