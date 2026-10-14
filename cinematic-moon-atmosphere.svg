@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1600" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#020817"/><stop offset=".32" stop-color="#09203e"/><stop offset=".55" stop-color="#173d60"/><stop offset=".72" stop-color="#20384f"/><stop offset=".84" stop-color="#101f31"/><stop offset="1" stop-color="#050b14"/></linearGradient>
+ <radialGradient id="blueGlow"><stop stop-color="#83c9ff" stop-opacity=".22"/><stop offset=".48" stop-color="#4d9ee9" stop-opacity=".09"/><stop offset="1" stop-color="#4d9ee9" stop-opacity="0"/></radialGradient>
+ <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173550"/><stop offset=".3" stop-color="#0b2036"/><stop offset="1" stop-color="#030812"/></linearGradient>
+ <linearGradient id="reflection" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9bd8ff" stop-opacity=".26"/><stop offset="1" stop-color="#70baff" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="1000" height="1600" fill="url(#sky)"/>
+<ellipse cx="500" cy="560" rx="490" ry="500" fill="url(#blueGlow)"/>
+<g fill="#d8eaff">
+ <circle cx="88" cy="110" r="1.5" opacity=".55"/><circle cx="205" cy="195" r="1.1" opacity=".5"/><circle cx="365" cy="90" r="1.4" opacity=".4"/><circle cx="610" cy="150" r="1.1" opacity=".6"/><circle cx="810" cy="95" r="1.5" opacity=".45"/><circle cx="915" cy="245" r="1" opacity=".5"/><circle cx="720" cy="320" r="1" opacity=".35"/><circle cx="130" cy="380" r="1" opacity=".4"/><circle cx="460" cy="260" r="1.2" opacity=".38"/><circle cx="555" cy="420" r="1" opacity=".4"/><circle cx="850" cy="465" r="1.1" opacity=".35"/><circle cx="300" cy="500" r="1" opacity=".35"/>
+</g>
+<path d="M0 1030 Q170 1000 330 1032 T650 1020 T1000 1035 V1600 H0Z" fill="url(#lake)"/>
+<path d="M455 1030 Q500 1015 545 1030 L610 1600 H390Z" fill="url(#reflection)" opacity=".65"/>
+<g fill="none" stroke="#9bd8ff" stroke-linecap="round" opacity=".18">
+ <path d="M420 1110 Q500 1103 580 1110"/><path d="M370 1160 Q500 1147 630 1160"/><path d="M415 1215 Q500 1207 585 1215"/><path d="M335 1280 Q500 1267 665 1280"/><path d="M390 1360 Q500 1349 610 1360"/><path d="M300 1450 Q500 1437 700 1450"/>
+</g>
+</svg>

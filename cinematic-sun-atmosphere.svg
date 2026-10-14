@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1600" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#202b42"/><stop offset=".25" stop-color="#775064"/><stop offset=".49" stop-color="#e88a4b"/><stop offset=".68" stop-color="#ffc16d"/><stop offset=".82" stop-color="#60404a"/><stop offset="1" stop-color="#101923"/></linearGradient>
+ <radialGradient id="warmGlow"><stop stop-color="#ffd38a" stop-opacity=".68"/><stop offset=".4" stop-color="#ff9d56" stop-opacity=".22"/><stop offset="1" stop-color="#ff9d56" stop-opacity="0"/></radialGradient>
+ <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6b4650"/><stop offset=".25" stop-color="#2c2938"/><stop offset="1" stop-color="#0c131e"/></linearGradient>
+ <linearGradient id="reflection" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffd07a" stop-opacity=".3"/><stop offset="1" stop-color="#ffad50" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="1000" height="1600" fill="url(#sky)"/>
+<ellipse cx="500" cy="610" rx="480" ry="390" fill="url(#warmGlow)"/>
+<path d="M0 1030 Q170 1000 330 1032 T650 1020 T1000 1035 V1600 H0Z" fill="url(#lake)"/>
+<path d="M435 1030 Q500 1010 565 1030 L630 1600 H365Z" fill="url(#reflection)" opacity=".7"/>
+<g fill="none" stroke="#ffd08a" stroke-linecap="round" opacity=".2">
+ <path d="M390 1110 Q500 1102 610 1110"/><path d="M350 1160 Q500 1147 650 1160"/><path d="M405 1215 Q500 1206 595 1215"/><path d="M320 1280 Q500 1267 680 1280"/><path d="M380 1360 Q500 1349 620 1360"/><path d="M280 1450 Q500 1437 720 1450"/>
+</g>
+</svg>

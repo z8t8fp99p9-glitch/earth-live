@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+<defs><linearGradient id="ridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#62404a"/><stop offset="1" stop-color="#151923"/></linearGradient><linearGradient id="forest" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#342833"/><stop offset="1" stop-color="#0c141c"/></linearGradient></defs>
+<path d="M0 495 L70 425 108 451 170 350 214 408 280 315 330 393 390 335 440 420 500 370 550 424 610 326 660 400 715 348 765 420 825 335 875 394 930 355 1000 415 V1000 H0Z" fill="url(#ridge)"/>
+<path d="M0 625 L70 570 120 590 185 525 235 570 300 500 360 558 425 520 490 575 555 515 615 568 690 500 750 558 815 510 880 560 940 520 1000 555 V1000 H0Z" fill="url(#forest)"/>
+<g fill="#0a121a" opacity=".95"><path d="M0 690 L35 635 58 685 85 620 112 690 145 640 173 700 205 645 240 700 270 650 302 705 340 650 372 705 410 660 445 710 480 655 515 710 550 650 585 710 620 655 655 710 690 650 725 710 760 650 795 710 830 655 865 710 900 650 935 710 970 655 1000 700 V1000 H0Z"/></g>
+</svg>
