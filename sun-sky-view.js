@@ -40,7 +40,7 @@ function findSunWindow(loc){
 }
 function setTime(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);viewer.clock.shouldAnimate=false;viewer.scene.requestRender();}}
 function compass(az){return ['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];}
-function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=50-44*Math.sin(p.azimuth*DEG),y=18+clamp(p.altitude,0,90)*0.48;
+function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=6+88*clamp((p.azimuth-90)/180,0,1),y=34+clamp(p.altitude,0,75)*0.48;
   const orb=$('skySun');orb.style.left=x+'%';orb.style.bottom=y+'%';orb.style.opacity=p.altitude>=HORIZON?'1':'.3';
   $('sunSkyDirection').textContent=`${Math.round(p.azimuth)}° ${compass(p.azimuth)} · ${Math.max(0,p.altitude).toFixed(0)}° altitude`;
   $('sunSkyStatus').textContent=`${fmt(date)} · ${p.altitude>=HORIZON?'SUN ABOVE HORIZON':'SUN BELOW HORIZON'}`;

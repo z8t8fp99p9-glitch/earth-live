@@ -11,7 +11,10 @@
    if(progress<0)progress=0;
    if(progress>1)progress=1;
    const x=6+88*progress;
+   const altMatch=dir.textContent.match(/·\s*(\d+(?:\.\d+)?)° altitude/);
+   const altitude=altMatch?Number(altMatch[1]):0;
    moon.style.left=x+'%';
+   moon.style.bottom=(34+Math.max(0,Math.min(65,altitude))*.75)+'%';
  };
  new MutationObserver(apply).observe(dir,{childList:true,characterData:true,subtree:true});
  window.addEventListener('resize',apply,{passive:true});
