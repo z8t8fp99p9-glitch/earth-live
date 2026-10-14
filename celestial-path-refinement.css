@@ -12,3 +12,18 @@
 .celestial-real-trajectory path.moon { stroke:#8bd6ff; }
 .sky-sun,.sky-moon { z-index:3; }
 .sky-direction { z-index:4; }
+
+/* v1.61 Layer 1: static atmosphere artwork only. Foreground objects, paths,
+   horizon layers, controls, and astronomy positioning remain untouched. */
+.sun-sky {
+  background-image: url('./solar-atmosphere.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.moon-sky {
+  background-image: url('./lunar-atmosphere.svg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
