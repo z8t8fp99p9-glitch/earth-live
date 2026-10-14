@@ -1,4 +1,4 @@
-const CACHE='earth-live-shell-v1-50';
+const CACHE='earth-live-shell-v1-51';
 const SHELL=['./','./index.html','./style.css','./landscape-dock.css','./sun-sky.css','./app-version.js','./data-store.js','./moon-dataset.js','./sun-moon-tracker.js','./sun-sky-view.js','./app.js','./icon-earth-basic.webp','./icon-earth-hd.webp','./icon-location.webp','./icon-sun-observer.webp','./icon-moon-observer.webp','./icon-stacks.webp','./icon-sun-dragger.svg','./icon-moon-dragger.svg','./icon-moon-dragger-vertical.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).catch(error=>console.warn('EARTH // LIVE shell cache skipped:',error)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('earth-live-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});

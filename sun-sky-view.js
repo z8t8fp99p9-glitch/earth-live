@@ -63,7 +63,7 @@ sunBtn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagatio
 sunRange.addEventListener('input',e=>{if(!active||!sunWindow)return;e.stopImmediatePropagation();const date=new Date(sunWindow.start.getTime()+Number(sunRange.value)*60000);updateSun(date);},true);
 moonBtn.addEventListener('click',()=>{if(active)closeSun();},true);
 layersBtn.addEventListener('click',()=>{if(active)closeSun();},true);
-window.addEventListener('earthlive:viewer-ready',e=>{viewer=e.detail.viewer;});
+window.addEventListener('earthlive:viewer-ready',e=>{viewer=e.detail.viewer;if(viewer&&viewer.scene&&viewer.scene.globe){viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.requestRender();}});
 window.addEventListener('earthlive:foreground',()=>{if(active&&sunWindow)updateSun(new Date(sunWindow.start.getTime()+Number(sunRange.value)*60000));});
 window.EarthLiveSunSky={isActive:()=>active,close:closeSun};
 })();

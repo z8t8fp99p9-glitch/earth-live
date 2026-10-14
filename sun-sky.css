@@ -20,3 +20,24 @@
 /* Solar Silk: a restrained curved gold path; only the Sun thumb moves. */
 .sun-range::-webkit-slider-runnable-track{height:7px;border-radius:999px;background:rgba(112,68,24,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.18'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 9px rgba(255,183,77,.25)}
 .sun-range::-moz-range-track{height:7px;border-radius:999px;background:rgba(112,68,24,.55) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C18 1 31 2 47 5 S76 9 91 5 S124 1 140 5 S164 8 180 3' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.18'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 9px rgba(255,183,77,.25)}
+
+
+/* v1.51 — approved shared Silent Mountains treatment and restrained glass scrollers. */
+.moon-sky{background:linear-gradient(180deg,#030916 0%,#08182d 39%,#18334b 72%,#070d17 100%)}
+.moon-sky .sky-haze{background:radial-gradient(ellipse at 50% 50%,rgba(69,127,176,.16),rgba(34,75,115,.06) 38%,transparent 70%)}
+.moon-sky .sky-horizon{background:linear-gradient(180deg,rgba(54,98,132,.22),rgba(3,9,17,.98) 72%);border-top-color:rgba(118,188,236,.28)}
+.moon-sky .horizon-mountains{background:#07111e;opacity:.9}
+/* Both panels are slimmer and more transparent; keep the existing responsive orientation rules. */
+.time-panel{padding:10px 13px 8px;border-radius:17px;background:linear-gradient(145deg,rgba(18,31,48,.72),rgba(4,10,20,.76));border-color:rgba(180,218,249,.19);box-shadow:0 10px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.10);-webkit-backdrop-filter:blur(15px) saturate(125%);backdrop-filter:blur(15px) saturate(125%)}
+.time-panel-heading{margin-bottom:5px}
+.timeline-shell{min-height:38px;gap:5px}
+.time-range{height:36px}
+.time-range::-webkit-slider-thumb{width:35px;height:35px;margin-top:-15px}
+.sun-range::-webkit-slider-thumb,.moon-range::-webkit-slider-thumb{width:35px;height:35px;margin-top:-15px}
+.sun-range::-moz-range-thumb,.moon-range::-moz-range-thumb{width:35px;height:35px}
+.timeline-caption{font-size:8px;color:rgba(224,235,246,.62)}
+/* Moonlit Silk: a soft organic blue curve with restrained glow; no animation. */
+.moon-range::-webkit-slider-runnable-track{height:7px;border-radius:999px;background:#294967 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C14 1 24 2 39 5 S61 9 77 5 S101 1 118 5 S145 9 160 4 S171 2 180 3' fill='none' stroke='%2388cfff' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C14 1 24 2 39 5 S61 9 77 5 S101 1 118 5 S145 9 160 4 S171 2 180 3' fill='none' stroke='%2354b5ff' stroke-width='5' stroke-linecap='round' opacity='.16'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 8px rgba(70,165,255,.22)}
+.moon-range::-moz-range-track{height:7px;border-radius:999px;background:#294967 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='10' viewBox='0 0 180 10'%3E%3Cpath d='M0 6 C14 1 24 2 39 5 S61 9 77 5 S101 1 118 5 S145 9 160 4 S171 2 180 3' fill='none' stroke='%2388cfff' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M0 6 C14 1 24 2 39 5 S61 9 77 5 S101 1 118 5 S145 9 160 4 S171 2 180 3' fill='none' stroke='%2354b5ff' stroke-width='5' stroke-linecap='round' opacity='.16'/%3E%3C/svg%3E") center/100% 10px repeat-x;box-shadow:0 0 8px rgba(70,165,255,.22)}
+@media (orientation:landscape){.time-panel{padding:9px 8px}.timeline-shell{height:clamp(125px,35vh,205px)}.time-range{height:35px}}
+@media (orientation:landscape) and (max-height:430px){.time-panel{padding:7px 6px}.timeline-shell{height:clamp(105px,32vh,138px)}.sun-range::-webkit-slider-thumb,.moon-range::-webkit-slider-thumb{width:32px;height:32px;margin-top:-13.5px}.sun-range::-moz-range-thumb,.moon-range::-moz-range-thumb{width:32px;height:32px}}
