@@ -9,7 +9,7 @@ const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
 let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],celestialEntities={sun:null,moon:null,sunGlow:null,orbit:null},liveTimer=null,lastOverlayBucket=null;
 let sunTexture=null,moonTexture=null,sceneTextureFrame=null;
-let celestialActive=false,celestialAnchor=null,lastSceneTime=null,savedCamera=null,sceneAutoExit=false,sceneCameraGuard=false;
+let celestialActive=false,celestialAnchor=null,lastSceneTime=null,savedCamera=null,sceneAutoExit=false,sceneCameraGuard=false,savedZoomFactor=null;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
 function wrap360(v){return ((v%360)+360)%360;}
 function sinD(v){return Math.sin(v*DEG);}
@@ -58,20 +58,20 @@ function clearCelestial(){
 }
 function makeOrbit(){
  if(!viewer||celestialEntities.orbit)return;
- const pts=[];for(let i=0;i<=180;i++){const a=i/180*Math.PI*2;const lon=wrap360(20+Math.cos(a)*28)-180;const lat=Math.sin(a)*13;pts.push(Cesium.Cartesian3.fromDegrees(lon,lat,3600000));}
+ const pts=[];for(let i=0;i<=180;i++){const a=i/180*Math.PI*2;const lon=wrap360(20+Math.cos(a)*28)-180;const lat=Math.sin(a)*13;pts.push(Cesium.Cartesian3.fromDegrees(lon,lat,7800000));}
  celestialEntities.orbit=viewer.entities.add({polyline:{positions:pts,width:2,material:new Cesium.PolylineDashMaterialProperty({color:Cesium.Color.fromCssColorString('#bfe7ff').withAlpha(.58),dashLength:9}),clampToGround:false}});
 }
 function upsertCelestial(which,date,data){
  if(!viewer||!window.Cesium||!data)return;
  const lon=data.longitude,lat=which==='sun'?data.latitude:data.dec;
- const altitude=which==='sun'?24000000:3500000;
+ const altitude=which==='sun'?43000000:8000000;
  const position=Cesium.Cartesian3.fromDegrees(lon,lat,altitude);
  let entity=celestialEntities[which];
  if(!entity){
   if(which==='sun'){
-   entity=viewer.entities.add({id:'earth-live-sun-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(1450000,1450000,1450000),material:new Cesium.ImageMaterialProperty({image:makeSunTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#ffb443').withAlpha(.75)},billboard:{image:sunIcon(),width:260,height:260,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:'SUN',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#ffe7a0'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,96),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+   entity=viewer.entities.add({id:'earth-live-sun-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(2050000,2050000,2050000),material:new Cesium.ImageMaterialProperty({image:makeSunTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#ffb443').withAlpha(.75)},billboard:{image:sunIcon(),width:190,height:190,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:'SUN',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#ffe7a0'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,96),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
   }else{
-   entity=viewer.entities.add({id:'earth-live-moon-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(680000,680000,680000),material:new Cesium.ImageMaterialProperty({image:makeMoonTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#d8e5f5').withAlpha(.45)},label:{text:'MOON',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,54),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+   entity=viewer.entities.add({id:'earth-live-moon-globe',position,ellipsoid:{radii:new Cesium.Cartesian3(820000,820000,820000),material:new Cesium.ImageMaterialProperty({image:makeMoonTexture(),transparent:false}),outline:true,outlineColor:Cesium.Color.fromCssColorString('#d8e5f5').withAlpha(.45)},label:{text:'MOON',font:'600 14px sans-serif',fillColor:Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.fromCssColorString('#030509'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,54),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
   }
   celestialEntities[which]=entity;
  }else{
@@ -82,12 +82,14 @@ function upsertCelestial(which,date,data){
 function beginCelestialScene(){
  if(!viewer||celestialActive)return;
  celestialActive=true;sceneAutoExit=false;celestialAnchor=new Date();lastSceneTime=new Date(celestialAnchor);savedCamera=saveCamera();
+ // Use finer zoom steps only in Celestial View, so users can explore without jumping past the scene.
+ try{savedZoomFactor=viewer.scene.screenSpaceCameraController.zoomFactor;viewer.scene.screenSpaceCameraController.zoomFactor=3.2;}catch(e){savedZoomFactor=null;}
  // Freeze Cesium's lighting clock at scene entry. The camera then moves around the globe as time is scrubbed,
  // making the Earth visibly rotate under a fixed Sun rather than moving the Sun around the screen.
  setClock(celestialAnchor);
  try{
   const anchorSun=sunPosition(celestialAnchor);
-  viewer.camera.lookAt(Cesium.Cartesian3.ZERO,new Cesium.HeadingPitchRange(Cesium.Math.toRadians(wrap360(anchorSun.longitude+90)),Cesium.Math.toRadians(-12),40000000));
+  viewer.camera.lookAt(Cesium.Cartesian3.ZERO,new Cesium.HeadingPitchRange(Cesium.Math.toRadians(wrap360(anchorSun.longitude+90)),Cesium.Math.toRadians(-12),52000000));
   viewer.scene.requestRender();
  }catch(e){console.warn('Celestial camera framing fallback',e);}
 }
@@ -97,7 +99,7 @@ function endCelestialScene(restore){
  clearCelestial();
  if(restore&&savedCamera)restoreCamera(savedCamera);
  savedCamera=null;
- if(viewer){setClock(new Date());viewer.scene.requestRender();}
+ if(viewer){if(savedZoomFactor!==null){viewer.scene.screenSpaceCameraController.zoomFactor=savedZoomFactor;savedZoomFactor=null;}setClock(new Date());viewer.scene.requestRender();}
 }
 function updateCelestialScene(date,sun,moon){
  if(!celestialActive||!viewer)return;
@@ -121,7 +123,7 @@ function checkZoomExit(){
  if(!celestialActive||!viewer||sceneAutoExit||sceneCameraGuard)return;
  // Close the celestial layer when the camera is close enough to Earth for normal globe exploration.
  const distance=Cesium.Cartesian3.magnitude(viewer.camera.positionWC);
- if(Number.isFinite(distance)&&distance<10500000){
+ if(Number.isFinite(distance)&&distance<8200000){
   sceneAutoExit=true;const currentCamera=saveCamera();endCelestialScene(false);restoreCamera(currentCamera);activeObject=null;simulation=false;panel.hidden=true;button.classList.remove('active');panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;info.hidden=true;clearOverlay();lastOverlayBucket=null;syncObjectButtons();
  }
 }
@@ -159,12 +161,12 @@ function update(){
  const sun=sunPosition(date),moon=moonPosition(date);
  if(activeObject==='sun'){
   const fixedSun=sunPosition(celestialAnchor||date);title.textContent='SUN';summary.textContent='Fixed Sun · rotating Earth';
-  info.innerHTML='<strong>Sun position</strong><br>Fixed light source · Earth rotates with the selected time<br><span class="astro-note">Sun is visually scaled; lighting is held to the scene direction.</span>';
+  info.innerHTML='<strong>Sun position</strong><br>Fixed light source · Earth rotates with the selected time<br><span class="astro-note">Sun is visually scaled; spacing is exaggerated for clarity.</span>';
   if(celestialActive)updateCelestialScene(date,fixedSun,moon);else renderCelestial('sun',date,fixedSun);
   clearOverlay();lastOverlayBucket=null;
  }else{
   title.textContent='MOON';summary.textContent='Moon orbit · rotating Earth';
-  if(moon){info.innerHTML='<strong>'+moon.phase+'</strong> · '+moon.illumination.toFixed(0)+'% illuminated<br>Approx. distance: '+Math.round(moon.distance).toLocaleString()+' km<br><span class="astro-note">Moon is visually scaled; orbital direction follows the selected time.</span>';if(celestialActive){updateCelestialScene(date,sunPosition(celestialAnchor||date),moon);clearOverlay();lastOverlayBucket=null;}else {renderCelestial('moon',date,moon);renderMoonOverlay(date,moon);}}
+  if(moon){info.innerHTML='<strong>'+moon.phase+'</strong> · '+moon.illumination.toFixed(0)+'% illuminated<br>Approx. distance: '+Math.round(moon.distance).toLocaleString()+' km<br><span class="astro-note">Moon is visually scaled; position follows the selected time.</span>';if(celestialActive){updateCelestialScene(date,sunPosition(celestialAnchor||date),moon);clearOverlay();lastOverlayBucket=null;}else {renderCelestial('moon',date,moon);renderMoonOverlay(date,moon);}}
   else {info.textContent='Moon calculator unavailable.';clearCelestial();}
  }
  syncObjectButtons();

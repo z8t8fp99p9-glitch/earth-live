@@ -1,8 +1,8 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Burning Sun Celestial Scene",
-  "version": "v1.37",
-  "filename": "EARTH-LIVE-Burning-Sun-Celestial-Scene-v1.37.zip",
+  "package": "Burning Sun Celestial Scene — Spacing and Zoom Refinement",
+  "version": "v1.38",
+  "filename": "EARTH-LIVE-Burning-Sun-Celestial-Scene-v1.38.zip",
   "base": "Exact EARTH-LIVE-Celestial-View-Prototype-v1.36.zip candidate",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
@@ -21,6 +21,6 @@
     "Moon calculation and dotted orbital path are approximate.",
     "Requires iPhone/PWA runtime and performance testing."
   ],
-  "title": "EARTH // LIVE \u2014 Burning Sun Celestial Scene v1.37",
+  "title": "EARTH // LIVE \u2014 Burning Sun Celestial Scene — Spacing and Zoom Refinement v1.38",
   "description": "Opens EARTH // LIVE directly into Celestial View with a visually scaled spherical burning Sun, textured lunar globe, and subtle dotted Moon-orbit guide. Retains the existing Earth assets, time scroller, centred dock, and responsive layout. Sun/Moon scale and orbit are illustrative; Moon calculation remains approximate. Requires iPhone/PWA testing."
 }
