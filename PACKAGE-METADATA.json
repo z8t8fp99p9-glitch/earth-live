@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Sun / Moon Tracker Integration",
-  "version": "1.26",
-  "filename": "EARTH-LIVE-Glass-Controls-v1.26.zip",
+  "package": "Sun / Moon Verification Patch",
+  "version": "1.27",
+  "filename": "EARTH-LIVE-Verification-v1.27.zip",
   "base": "v1.21 with explicit range-direction reset and local-now anchoring",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "HTML/CSS UI-only refinement; tracker behavior and Cesium globe logic unchanged",
+  "ui_scope": "Version-stamp reliability patch only; visual UI and tracker/globe behavior preserved",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -22,15 +22,11 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Turn the existing Sun/Moon choice buttons into thick translucent glass capsule controls with circular luminous knobs, matching the user's exact visual reference more closely.",
-    "Keep the same Sun/Moon button IDs, aria-pressed behavior, and tracker event handlers.",
-    "Compact the initial option panel and add viewport/safe-area constraints to reduce overlap risk.",
-    "Use a compact vertical stack of glass capsule controls in landscape and preserve side-by-side selection in portrait.",
-    "Preserve existing Cosmic Glow time slider markup and behavior.",
-    "Do not change app.js, data-store.js, sun-moon-tracker.js, moon-dataset.js, or Cesium globe/camera/gesture logic.",
-    "Bump service-worker cache to v1-26.",
-    "Not runtime-tested on iPhone; visual/interaction testing required."
+    "Fix the app badge so it replaces \u201cLoading version\u2026\u201d with the actual v1.27 label.",
+    "Bump the service-worker cache name to v1-27 so the corrected version script is not hidden behind the previous shell cache.",
+    "Keep the existing v1.26 glass controls, slider CSS, tracker JavaScript, Moon dataset, data store, and globe/camera/gesture logic unchanged.",
+    "This patch does not claim the slider direction is fixed; that requires a deliberate interaction test on the device."
   ],
-  "title": "EARTH // LIVE \u2014 Signature Glass Controls v1.26",
-  "description": "Stage 2 compact glass-controls prototype for EARTH // LIVE. Adds capsule-shaped Sun/Moon selectors with luminous circular glass knobs, refines the Past/Future button, and tightens panel sizing with portrait/landscape-aware constraints. Keeps the approved portrait slider design and existing time-slider behavior. Globe, camera and gesture JavaScript remain unchanged. Test on a separate branch; not runtime-tested on iPhone."
+  "title": "EARTH // LIVE \u2014 Verification Patch v1.27",
+  "description": "Small verification patch for EARTH // LIVE. Fixes the version badge stuck on \u201cLoading version\u2026\u201d and updates the service-worker cache name. Preserves the current glass controls, slider layout, Sun/Moon tracker logic, and globe/camera/gesture code. Slider direction and astronomy behavior still require on-device testing."
 }

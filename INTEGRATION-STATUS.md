@@ -1,8 +1,8 @@
-# Integration status — v1.26
+# Integration status — v1.27
 
-- Scope: compact signature glass UI controls.
-- Changed: `index.html` Sun/Moon button markup (visual spans only), `style.css`, version/cache and package documentation/metadata.
-- Unchanged: `app.js`, `data-store.js`, `sun-moon-tracker.js`, `moon-dataset.js`.
-- No Cesium canvas, camera, or gesture handler changes.
-- ZIP integrity passed.
-- Requires iPhone portrait/landscape visual and interaction testing.
+- Scope: version badge and service-worker cache fix only.
+- Changed: `app-version.js`, service-worker cache key, package documentation/metadata.
+- Unchanged: `app.js`, `data-store.js`, `moon-dataset.js`, `sun-moon-tracker.js`, `index.html`, and `style.css`.
+- No Cesium canvas, camera, globe, or gesture handler changes.
+- Slider direction is not declared fixed; it remains an explicit on-device test.
+- ZIP integrity and JavaScript syntax checks passed locally; not runtime-tested on iPhone.
