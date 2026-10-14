@@ -1,0 +1,46 @@
+/* EARTH // LIVE v1.49 — landscape dock sizing correction */
+@media (orientation: landscape) {
+  .bottom-ui {
+    gap: clamp(5px, 1.1vw, 10px);
+    padding: 6px 9px;
+  }
+  .dock-item {
+    width: clamp(45px, 6.5vh, 54px);
+    flex: 0 0 clamp(45px, 6.5vh, 54px);
+    min-height: clamp(44px, 7.8vh, 54px);
+    padding: 2px 0;
+  }
+  .dock-art {
+    width: clamp(34px, 6.3vh, 45px);
+    height: clamp(34px, 6.3vh, 45px);
+  }
+  .quality-segment {
+    width: clamp(40px, 5.8vh, 48px);
+  }
+  .quality-segment img {
+    width: clamp(25px, 4.8vh, 32px);
+    height: clamp(25px, 4.8vh, 32px);
+  }
+}
+@media (orientation: landscape) and (max-height: 430px) {
+  .bottom-ui {
+    gap: 4px;
+    padding: 5px 7px;
+  }
+  .dock-item {
+    width: 46px;
+    flex-basis: 46px;
+    min-height: 42px;
+  }
+  .dock-art {
+    width: 34px;
+    height: 34px;
+  }
+  .quality-segment {
+    width: 38px;
+  }
+  .quality-segment img {
+    width: 24px;
+    height: 24px;
+  }
+}
