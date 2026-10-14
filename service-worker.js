@@ -1,4 +1,4 @@
-const CACHE='earth-live-shell-v1-31';
+const CACHE='earth-live-shell-v1-32';
 const SHELL=['./','./index.html','./style.css','./app-version.js','./data-store.js','./moon-dataset.js','./sun-moon-tracker.js','./app.js'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).catch(error=>console.warn('EARTH // LIVE shell cache skipped:',error)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('earth-live-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});

@@ -1,6 +1,6 @@
-/* EARTH // LIVE version stamp — v1.31 */
+/* EARTH // LIVE version stamp — v1.32 */
 (function(){
-  const version = 'v1.31';
+  const version = 'v1.32';
   const label = document.getElementById('appVersion');
   if (label) label.textContent = version;
 })();
