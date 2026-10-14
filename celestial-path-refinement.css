@@ -45,14 +45,22 @@
   background-image: url('./mountains-night.svg');
 }
 
-/* v1.68 Layer 2 portrait correction:
-   Keep the horizon and sky-object geometry fixed, but enlarge the mountain
-   artwork upward from the bottom edge on portrait screens. Landscape keeps
-   the current approved framing. */
+/* v1.69 Layer 2: portrait scenery lift.
+   Keep the actual horizon border and celestial coordinate system fixed.
+   Extend only the mountain artwork above the horizon container; landscape
+   retains its existing approved sizing and crop. */
 @media (orientation: portrait) {
+  .sun-sky .sky-horizon,
+  .moon-sky .sky-horizon {
+    overflow: visible;
+  }
   .sun-sky .horizon-mountains,
   .moon-sky .horizon-mountains {
-    background-size: 100% 155%;
+    inset: auto 0 0;
+    height: 155%;
+    background-size: auto 100%;
     background-position: center bottom;
+    background-repeat: no-repeat;
+    pointer-events: none;
   }
 }
