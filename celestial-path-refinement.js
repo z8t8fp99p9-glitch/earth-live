@@ -40,11 +40,35 @@ function lunar(date, loc) {
   return p;
 }
 /* Same projection as the visible celestial objects. East is left, west is right. */
-function project(p) {
-  return {
-    x: 6 + 88*clamp((p.azimuth-90)/180,0,1),
-    bottom: 34 + clamp(p.altitude,0,75)*.48
-  };
+function project(p, sky) {
+  const box = sky ? sky.getBoundingClientRect() : {width:1200,height:800,left:0,top:0};
+  const panelId = sky && sky.id === 'sunSky' ? 'sunPanel' : 'moonPanel';
+  const panel = document.getElementById(panelId);
+  const panelBox = panel && !panel.hidden ? panel.getBoundingClientRect() : null;
+  const horizonEl = sky && sky.querySelector('.sky-horizon');
+  const horizonBox = horizonEl ? horizonEl.getBoundingClientRect() : null;
+  const width = Math.max(320, box.width || 1200), height = Math.max(240, box.height || 800);
+  const landscape = window.matchMedia && window.matchMedia('(orientation: landscape)').matches;
+  const horizonY = horizonBox && horizonBox.height ? (horizonBox.top - box.top) + Math.min(horizonBox.height * .12, 12) : height * .68;
+  const safeTopY = Math.max(height * .12, 40);
+  let minX = 6, maxX = 94, safeBottomY = height * .94;
+  if (panelBox) {
+    if (landscape && panelBox.left > box.left + width * .5) {
+      // Landscape panel is docked on the right: reserve its width horizontally,
+      // not vertically, so the Sun/Moon can still travel down to the horizon.
+      maxX = clamp(((panelBox.left - box.left - 18) / width) * 100, 52, 94);
+    } else {
+      // Portrait panel spans the lower sky: stop the trajectory above it.
+      const panelTop = panelBox.top - box.top;
+      safeBottomY = Math.min(safeBottomY, panelTop - 20);
+    }
+  }
+  const altitude = clamp(p.altitude, 0, 85);
+  const skyY = horizonY - (altitude / 85) * Math.max(80, horizonY - safeTopY);
+  const y = clamp(skyY, safeTopY, Math.max(safeTopY, safeBottomY));
+  const azFraction = clamp((p.azimuth - 90) / 180, 0, 1);
+  const x = minX + (maxX - minX) * azFraction;
+  return {x, bottom: 100 * (1 - y / height)};
 }
 function locationKey(loc) {
   if (!loc || !Number.isFinite(Number(loc.latitude)) || !Number.isFinite(Number(loc.longitude))) return '';
@@ -70,7 +94,7 @@ function makePath(skyId,pathId,kind,startMs,endMs,loc) {
   const sky=$(skyId);
   if (!sky || !loc || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs<=startMs) return;
   const locKey=locationKey(loc);
-  const key=[kind,locKey,new Date(startMs).toISOString().slice(0,10),startMs,endMs].join('|');
+  const key=[kind,locKey,new Date(startMs).toISOString().slice(0,10),startMs,endMs,Math.round(sky.clientWidth),Math.round(sky.clientHeight)].join('|');
   let chunks=pathCache.get(key);
   if (!chunks) {
     const horizon=kind==='sun'?SUN_HORIZON:MOON_HORIZON;
@@ -82,7 +106,7 @@ function makePath(skyId,pathId,kind,startMs,endMs,loc) {
         if(chunk.length>1) chunks.push(chunk);
         chunk=[]; continue;
       }
-      const q=project(p); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
+      const q=project(p,sky); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
     }
     if(chunk.length>1) chunks.push(chunk);
     pathCache.set(key,chunks);
@@ -147,5 +171,6 @@ const observer=new MutationObserver(records=>{
 window.addEventListener('resize',refresh,{passive:true});
 window.addEventListener('orientationchange',refresh,{passive:true});
 window.addEventListener('earthlive:foreground',refresh);
+window.addEventListener('earthlive:trajectory-update',refresh);
 init();
 })();

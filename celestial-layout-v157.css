@@ -1,0 +1,37 @@
+/* EARTH // LIVE v1.57 — responsive celestial composition. Portrait styling intentionally unchanged. */
+.celestial-real-trajectory{contain:layout paint;clip-path:inset(0);pointer-events:none}
+@media (orientation:landscape) and (min-width:600px) {
+  #sunSky,#moonSky { overflow:hidden; isolation:isolate; }
+  #sunSky .sky-heading,#moonSky .sky-heading { width:calc(100% - 150px); left:calc((100% - 116px)/2); }
+  #sunSky .sky-compass,#moonSky .sky-compass { width:calc(100% - 150px); }
+  #sunSky .sky-horizon,#moonSky .sky-horizon { right:116px; }
+  #sunSky .sky-direction,#moonSky .sky-direction { left:calc((100% - 116px)/2); max-width:calc(100% - 145px); }
+  #sunPanel,#moonPanel {
+    left:auto!important; right:calc(env(safe-area-inset-right,0px) + 10px)!important;
+    top:50%!important; bottom:auto!important; transform:translateY(-50%)!important;
+    width:116px!important; max-width:116px!important; padding:10px 8px!important;
+  }
+  #sunPanel .timeline-shell,#moonPanel .timeline-shell {
+    display:flex; flex-direction:column; align-items:stretch; gap:5px; height:auto!important;
+  }
+  #sunPanel .time-range,#moonPanel .time-range {
+    width:100%!important; height:30px!important; transform:none!important;
+  }
+  #sunPanel .time-panel-heading,#moonPanel .time-panel-heading {
+    flex-direction:column; align-items:flex-start; gap:4px;
+  }
+  #sunPanel .timeline-caption,#moonPanel .timeline-caption {
+    display:flex; flex-direction:column; gap:5px; font-size:8px; line-height:1.3;
+  }
+  #sunPanel .time-panel-heading strong,#moonPanel .time-panel-heading strong {font-size:12px}
+  #sunPanel output,#moonPanel output {font-size:10px;white-space:normal}
+  #statusMessage { top:calc(env(safe-area-inset-top,0px) + 8px); max-width:calc(100vw - 150px); }
+}
+@media (orientation:landscape) and (max-height:430px) and (min-width:600px) {
+  #sunPanel,#moonPanel { width:106px!important; max-width:106px!important; padding:7px 6px!important; }
+  #sunSky .sky-heading,#moonSky .sky-heading { width:calc(100% - 130px); left:calc((100% - 106px)/2); }
+  #sunSky .sky-compass,#moonSky .sky-compass { width:calc(100% - 130px); top:25%; }
+  #sunSky .sky-horizon,#moonSky .sky-horizon { right:106px; height:38%; }
+  #sunSky .sky-direction,#moonSky .sky-direction { left:calc((100% - 106px)/2); max-width:calc(100% - 130px); }
+  #statusMessage { max-width:calc(100vw - 130px); }
+}

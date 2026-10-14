@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="./landscape-dock.css">
 <link rel="stylesheet" href="./sun-sky.css">
 <link rel="stylesheet" href="./celestial-path-refinement.css">
+<link rel="stylesheet" href="./celestial-layout-v157.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
 </head>
@@ -33,43 +34,28 @@
     <div class="sky-direction" id="sunSkyDirection">—</div>
   </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
-
   <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun time scroller">
     <div class="time-panel-heading"><div><span class="panel-kicker">SOLAR TIME</span><strong>Sun Journey</strong></div><output id="sunTimeReadout">—</output></div>
     <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">00:00</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1439" step="1" value="720" aria-label="Sun time across 24 hours"><span class="timeline-bound end-bound" id="sunEndLabel">24:00</span></div>
     <div class="timeline-caption"><span id="sunSkyWindowLabel">LOCAL DAY</span><span>Drag the Sun along the light beam</span></div>
   </section>
-
   <section id="moonPanel" class="time-panel moon-panel" hidden aria-label="Moon visibility scroller">
     <div class="time-panel-heading"><div><span class="panel-kicker">LUNAR TIME</span><strong>Moon Journey</strong></div><output id="moonTimeReadout">—</output></div>
     <div class="timeline-shell moon-timeline"><span class="timeline-bound start-bound" id="moonRiseLabel">MOONRISE</span><input id="moonTimeRange" class="time-range moon-range" type="range" min="0" max="1" step="1" value="0" aria-label="Moonrise to moonset timeline"><span class="timeline-bound end-bound" id="moonSetLabel">MOONSET</span></div>
     <div class="timeline-caption"><span id="moonWindowLabel">CALCULATED VISIBILITY WINDOW</span><span>Drag the Moon along its electric trail</span></div>
   </section>
-
   <section id="stacksPanel" class="stacks-panel glass" hidden aria-label="Future data feeds">
     <div class="stacks-heading"><div><span class="panel-kicker">MORE OPTIONS</span><strong>Data Stacks</strong></div><span class="future-tag">UPCOMING</span></div>
-    <div class="feed-grid">
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☁</span><span>Clouds</span><small>Future feed</small></button>
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◉</span><span>Satellites</span><small>Future feed</small></button>
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">✈</span><span>Flights</span><small>Future feed</small></button>
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◌</span><span>Weather</span><small>Future feed</small></button>
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">⌁</span><span>Ocean Data</span><small>Future feed</small></button>
-      <button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☾</span><span>Moon Data</span><small>Future feed</small></button>
-    </div>
+    <div class="feed-grid"><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☁</span><span>Clouds</span><small>Future feed</small></button><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◉</span><span>Satellites</span><small>Future feed</small></button><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">✈</span><span>Flights</span><small>Future feed</small></button><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">◌</span><span>Weather</span><small>Future feed</small></button><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">⌁</span><span>Ocean Data</span><small>Future feed</small></button><button class="feed-card" type="button" aria-disabled="true"><span class="feed-symbol">☾</span><span>Moon Data</span><small>Future feed</small></button></div>
   </section>
-
   <div class="bottom-ui glass" aria-label="Main dock">
-    <div class="quality-group" role="group" aria-label="Earth quality selector">
-      <button class="quality-segment active" id="basicBtn" aria-pressed="true"><img src="./icon-earth-basic.webp" alt=""><span>Basic</span></button>
-      <button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button>
-    </div>
+    <div class="quality-group" role="group" aria-label="Earth quality selector"><button class="quality-segment active" id="basicBtn" aria-pressed="true"><img src="./icon-earth-basic.webp" alt=""><span>Basic</span></button><button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button></div>
     <button class="dock-item" id="locateBtn" aria-label="Refresh live location" title="Live Location"><span class="dock-art"><img src="./icon-location.webp" alt=""></span><span class="dock-label">Live Location</span></button>
     <button class="dock-item dock-sun" id="sunBtn" aria-label="Open Sun Sky View" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
     <button class="dock-item dock-moon" id="moonBtn" aria-label="Open Moon Sky View" title="Moon View" aria-pressed="false"><span class="dock-art"><img src="./icon-moon-observer.webp" alt=""></span><span class="dock-label">Moon</span></button>
     <button class="dock-item" id="layersBtn" aria-label="Open More Options" title="More Options" aria-pressed="false"><span class="dock-art"><img src="./icon-stacks.webp" alt=""></span><span class="dock-label">Stacks</span></button>
   </div>
-  <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div>
-  <div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
+  <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
 <script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
