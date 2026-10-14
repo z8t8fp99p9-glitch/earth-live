@@ -241,3 +241,141 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
     transform:none;
   }
 }
+
+
+/* v1.25 — shared glass interface prototype.
+   Intentionally styles only existing UI controls/panels; no Cesium canvas or gesture handlers. */
+:root{
+  --glass:rgba(7,14,27,.48);
+  --glass-rim:rgba(224,244,255,.42);
+  --glass-rim-soft:rgba(184,220,255,.2);
+  --glass-blue:rgba(91,190,255,.28);
+  --glass-text:rgba(250,253,255,.97);
+}
+.glass{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.025) 24%,rgba(30,76,125,.10) 62%,rgba(255,255,255,.045) 100%),
+    var(--glass);
+  border:1px solid var(--glass-rim-soft);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.27),
+    inset 0 1.5px 0 rgba(255,255,255,.22),
+    inset 0 -1px 0 rgba(160,210,255,.10);
+  -webkit-backdrop-filter:blur(24px) saturate(165%);
+  backdrop-filter:blur(24px) saturate(165%);
+}
+.bottom-ui{
+  background:
+    linear-gradient(150deg,rgba(255,255,255,.10),rgba(255,255,255,.015) 45%,rgba(80,160,235,.08)),
+    rgba(5,10,19,.52);
+  border:1px solid rgba(220,241,255,.28);
+  box-shadow:0 10px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(170,215,255,.12);
+}
+.quality{
+  background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.025)),rgba(4,9,18,.42);
+  border:1px solid rgba(222,241,255,.2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.17);
+}
+.quality-btn{
+  position:relative;
+  border:1px solid transparent;
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.quality-btn.active{
+  background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(112,177,228,.11)),rgba(205,231,255,.09);
+  border-color:rgba(233,248,255,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(150,204,255,.16),0 0 13px rgba(104,190,255,.08);
+}
+.icon-btn{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 35% 22%,rgba(255,255,255,.20),transparent 45%),
+    linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.015) 55%,rgba(77,161,237,.10)),
+    rgba(5,11,21,.56);
+  border:1px solid rgba(224,243,255,.30);
+  box-shadow:0 5px 18px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.30),inset 0 -1px 0 rgba(160,211,255,.12);
+  -webkit-backdrop-filter:blur(18px) saturate(170%);
+  backdrop-filter:blur(18px) saturate(170%);
+}
+.icon-btn::after{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:inherit;
+  border-top:1px solid rgba(255,255,255,.13);
+  pointer-events:none;
+}
+.icon-btn.active{
+  background:
+    radial-gradient(circle at 38% 25%,rgba(193,237,255,.28),transparent 48%),
+    linear-gradient(145deg,rgba(91,190,255,.28),rgba(24,83,132,.16)),
+    rgba(6,23,40,.58);
+  border-color:rgba(158,221,255,.7);
+  box-shadow:0 0 18px rgba(75,177,255,.20),inset 0 1px 0 rgba(255,255,255,.43),inset 0 -1px 0 rgba(145,215,255,.23);
+}
+.app-stamp{
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.015) 45%,rgba(82,160,236,.07)),rgba(5,10,19,.52);
+  border-color:rgba(222,242,255,.24);
+  box-shadow:0 7px 20px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(20px) saturate(165%);
+  backdrop-filter:blur(20px) saturate(165%);
+}
+.astro-panel{
+  background:
+    radial-gradient(120% 90% at 0% 0%,rgba(113,206,255,.17),transparent 52%),
+    linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.018) 40%,rgba(60,142,219,.08)),
+    rgba(4,9,18,.62);
+  border:1px solid rgba(220,242,255,.36);
+  box-shadow:0 18px 48px rgba(0,0,0,.38),inset 0 1.5px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(158,211,255,.16),0 0 22px rgba(74,165,255,.06);
+  -webkit-backdrop-filter:blur(28px) saturate(175%);
+  backdrop-filter:blur(28px) saturate(175%);
+}
+.astro-close{
+  background:linear-gradient(145deg,rgba(255,255,255,.19),rgba(255,255,255,.035)),rgba(5,10,20,.55);
+  border:1px solid rgba(230,246,255,.27);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 4px 12px rgba(0,0,0,.18);
+}
+.astro-choice{
+  position:relative;
+  isolation:isolate;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.018) 48%,rgba(81,161,236,.08)),
+    rgba(6,12,23,.52);
+  border:1px solid rgba(226,244,255,.27);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(153,207,255,.11),0 5px 15px rgba(0,0,0,.12);
+  -webkit-backdrop-filter:blur(16px) saturate(170%);
+  backdrop-filter:blur(16px) saturate(170%);
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+.astro-choice.active{
+  background:
+    radial-gradient(circle at 18% 50%,rgba(155,223,255,.22),transparent 48%),
+    linear-gradient(145deg,rgba(255,255,255,.18),rgba(72,164,236,.12)),
+    rgba(12,33,53,.56);
+  border-color:rgba(160,224,255,.58);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(140,210,255,.20),0 0 16px rgba(73,171,255,.12);
+}
+.astro-past-future{
+  border-color:rgba(222,243,255,.32);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(157,210,255,.14),0 6px 18px rgba(0,0,0,.16);
+}
+.astro-info{
+  background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.015)),rgba(3,8,17,.36);
+  border:1px solid rgba(220,241,255,.14);
+}
+#backToLive{
+  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(91,184,245,.10)),rgba(12,38,58,.65);
+  border:1px solid rgba(157,221,255,.60);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(133,207,255,.18),0 0 14px rgba(77,174,255,.10);
+}
+.astro-panel button:focus-visible,.bottom-ui button:focus-visible{
+  outline:2px solid rgba(157,222,255,.95);
+  outline-offset:2px;
+}
+/* Interaction safety: only the actual controls receive pointer input; no new full-screen overlay. */
+.bottom-ui,.astro-panel,.app-stamp{pointer-events:auto}
+.app-stamp{pointer-events:none}
+@media(prefers-reduced-motion:reduce){
+  .quality-btn,.astro-choice{transition:none}
+}

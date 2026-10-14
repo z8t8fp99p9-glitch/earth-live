@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun / Moon Tracker Integration",
-  "version": "1.24",
-  "filename": "EARTH-LIVE-Sun-Moon-v1.24.zip",
+  "version": "1.25",
+  "filename": "EARTH-LIVE-Glass-Interface-v1.25.zip",
   "base": "v1.21 with explicit range-direction reset and local-now anchoring",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "fix reversed range input mapping and establish simulation at device current time",
+  "ui_scope": "CSS-only shared glass interface prototype; no globe or gesture logic changes",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -22,12 +22,13 @@
     "controls remain above the bottom safe-area inset"
   ],
   "changes": [
-    "Make the initial Sun/Moon options panel respond to available viewport size and orientation.",
-    "Portrait initial panel placement preserved.",
-    "Landscape initial options panel becomes compact and sits on the right side, clear of the bottom control dock.",
-    "Respect dynamic viewport height and iPhone safe-area insets; constrain panel overflow on short screens.",
-    "Approved Cosmic Glow simulation slider styling and all application JavaScript retained from v1.23."
+    "Add a shared translucent glass visual language with layered highlights, reflective rims, subtle blue glow, and restrained motion.",
+    "Apply visual styling to existing Sun/Moon panel, choices, Cosmic Glow time panel, app stamp, and bottom controls.",
+    "Keep portrait layout rules and all existing application HTML/JavaScript unchanged.",
+    "Do not add full-screen overlays or modify Cesium canvas, camera, or gesture handlers.",
+    "Bump service-worker cache to v1-25.",
+    "Not runtime-tested on iPhone; visual prototype only."
   ],
-  "title": "EARTH // LIVE \u2014 Sun / Moon Options Layout v1.24",
-  "description": "Responsive layout refinement for the initial Sun/Moon choice panel. Portrait placement and approved Cosmic Glow simulation slider remain unchanged. In landscape, the initial options panel becomes a compact side panel, sizes controls to the available viewport, and respects safe-area insets. No direct GitHub edits."
+  "title": "EARTH // LIVE \u2014 Glass Interface Prototype v1.25",
+  "description": "Visual-only shared glass interface prototype for EARTH // LIVE. Adds reflective translucent glass styling to existing floating Sun/Moon panels, slider panel, app stamp, and bottom controls. Preserves portrait layout, existing application logic, globe, camera, and gesture handlers. No direct GitHub edits; requires iPhone visual and interaction testing."
 }
