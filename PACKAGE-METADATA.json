@@ -1,18 +1,15 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Moon Orbit Preview",
-  "version": "1.40",
-  "filename": "EARTH-LIVE-Moon-Orbit-Preview-v1.40.zip",
-  "base": "EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
+  "package": "Map Restored",
+  "version": "1.41",
+  "filename": "EARTH-LIVE-Map-Restored-v1.41.zip",
+  "base": "EARTH-LIVE-Moon-Orbit-Preview-v1.40.zip",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Adds an always-on temporary dotted Moon orbital arc to the known-good Earth view; no controls or layout changed.",
-  "orbit_window_days": 10,
-  "orbit_sample_hours": 6,
-  "samples_expected": 41,
-  "orbit_distance": "visually scaled inward; not to scale",
-  "calculation_source": "existing local moon-dataset.js approximation",
-  "title": "EARTH // LIVE \u2014 Moon Orbit Preview v1.39",
-  "description": "Temporary 10-day Moon orbital arc preview with a more visible radius and diagnostic dots drawn through the globe for inspection. Uses existing local approximate Moon calculations; not a precision ephemeris. Existing Earth UI preserved. Requires iPhone/PWA testing."
+  "ui_scope": "Removes the temporary Moon-orbit diagnostic path; preserves existing Earth UI and Cesium globe lighting.",
+  "moon_orbit_preview": "removed",
+  "custom_visible_sun": "none found in v1.40 source; no custom Sun added",
+  "title": "EARTH // LIVE — Map Restored v1.41",
+  "description": "Removes the temporary Moon-orbit preview and returns to the normal Earth map presentation. Preserves existing Cesium Sun lighting, Earth controls, layout, and tracker features. Requires iPhone/PWA testing."
 }

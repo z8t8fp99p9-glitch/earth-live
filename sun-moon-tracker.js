@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const panel=$('astroPanel'),button=$('lightingBtn'),close=$('astroClose'),sunTab=$('sunTab'),moonTab=$('moonTab');
 const normalHeader=$('astroNormalHeader'),normalControls=$('astroNormalControls'),simOnly=$('astroSimOnly'),pastFutureBtn=$('pastFutureBtn'),scrubber=$('astroTimeScrubber');
 const info=$('astroInfo'),summary=$('astroSummary'),title=$('astroTitle'),readout=$('astroTimeReadout');
-let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null,moonOrbitEntities=[];
+let viewer=null,activeObject=null,simulation=false,simTime=new Date(),simulationAnchor=new Date(),overlayEntities=[],liveTimer=null,lastOverlayBucket=null;
 const DEG=Math.PI/180,MOON_ALTITUDE_THRESHOLD=40,OVERLAY_STEP=10,OVERLAY_ALPHA=34;
 function wrap360(v){return ((v%360)+360)%360;}
 function sinD(v){return Math.sin(v*DEG);}
@@ -22,42 +22,6 @@ function sunPosition(date){
 function moonPosition(date){
  if(window.EarthLiveMoon&&typeof window.EarthLiveMoon.calculate==='function'){const m=window.EarthLiveMoon.calculate(date);return {ra:m.rightAscensionDeg,dec:m.declinationDeg,illumination:m.illuminationPercent,phase:m.phaseName,distance:m.distanceKm};}
  return null;
-}
-// Temporary visual diagnostic: a 10-day Moon orbital arc sampled from the
-// existing local lunar calculator. Positions are expressed in one fixed inertial
-// orientation anchored at the current time, so the orbit does not rotate with Earth's texture.
-// The radius is deliberately enlarged for inspection; this is a visual preview, not scale.
-function clearMoonOrbitPath(){
- if(!viewer)return;
- for(const entity of moonOrbitEntities)viewer.entities.remove(entity);
- moonOrbitEntities=[];
-}
-function renderMoonOrbitPath(){
- if(!viewer||!window.Cesium||!window.EarthLiveMoon||typeof window.EarthLiveMoon.calculate!=='function')return;
- clearMoonOrbitPath();
- const now=new Date(),anchorGmst=gmstDeg(now),halfWindowMs=5*86400000,stepMs=6*3600000;
- const points=[];
- for(let offset=-halfWindowMs;offset<=halfWindowMs;offset+=stepMs){
-  const sampleDate=new Date(now.getTime()+offset),moon=moonPosition(sampleDate);
-  if(!moon)continue;
-  const longitude=((moon.ra-anchorGmst+540)%360)-180;
-  const latitude=moon.dec;
-  // Keep the real calculated orbital direction and distance variation, but use a
-  // display radius suitable for the existing globe camera rather than true scale.
-  const displayRadius=19000000*(moon.distance/384400);
-  const altitude=Math.max(250000,displayRadius-6378137);
-  const position=Cesium.Cartesian3.fromDegrees(longitude,latitude,altitude);
-  points.push({position,offset});
- }
- for(let i=0;i<points.length;i++){
-  const current=points[i],isNow=Math.abs(current.offset)<stepMs/2;
-  moonOrbitEntities.push(viewer.entities.add({
-   position:current.position,
-   point:{pixelSize:isNow?9:4,color:isNow?Cesium.Color.fromCssColorString('#e8f7ff'):Cesium.Color.fromCssColorString('#9bd8ff').withAlpha(0.76),outlineColor:Cesium.Color.fromCssColorString('#14364d'),outlineWidth:isNow?2:1,disableDepthTestDistance:Number.POSITIVE_INFINITY},
-   properties:{earthLiveMoonOrbit:true,offsetHours:current.offset/3600000}
-  }));
- }
- viewer.scene.requestRender();
 }
 function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
 function currentLocalTime(){return new Date(Date.now());}
@@ -125,7 +89,7 @@ pastFutureBtn.addEventListener('click',enterSimulation);
 scrubber.addEventListener('input',()=>scrubTo(scrubber.value));
 scrubber.addEventListener('change',()=>scrubTo(scrubber.value));
 $('backToLive').addEventListener('click',returnLive);
-window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;syncObjectButtons();renderMoonOrbitPath();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
+window.addEventListener('earthlive:viewer-ready',event=>{viewer=event.detail.viewer;panel.hidden=true;simOnly.hidden=true;button.classList.remove('active');activeObject=null;simulation=false;syncObjectButtons();liveTimer=setInterval(()=>{if(!document.hidden)update();},30000);});
 window.addEventListener('earthlive:foreground',()=>{if(!simulation&&activeObject)update();});
-window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();clearMoonOrbitPath();});
+window.addEventListener('pagehide',()=>{if(liveTimer!==null)clearInterval(liveTimer);clearOverlay();});
 })();
