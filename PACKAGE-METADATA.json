@@ -1,13 +1,13 @@
 {
   "project": "EARTH // LIVE",
   "package": "Sun & Moon Visualization",
-  "version": "1.33",
-  "filename": "EARTH-LIVE-Sun-Moon-Visualization-v1.33.zip",
+  "version": "v1.35",
+  "filename": "EARTH-LIVE-Sun-Moon-Screen-Lock-v1.35.zip",
   "base": "User-tested EARTH-LIVE-Adaptive-Landscape-Scroller-v1.32.zip",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Adds selected Sun/Moon directional markers tied to live/simulated time; preserves adaptive landscape scroller and centred dock",
+  "ui_scope": "Slightly larger, persistent selected Sun/Moon directional markers; preserve existing layout and app behavior",
   "moon_visibility_threshold_degrees": 40,
   "live_refresh_seconds": 30,
   "simulation_window_minutes": [
@@ -28,8 +28,11 @@
     "Keep the existing 40-degree Moon visibility overlay threshold.",
     "Keep the marker distances visually scaled for the existing globe camera; do not claim scale-accurate orbital distances.",
     "Preserve the v1.32 centre dock and responsive landscape scroller.",
-    "Requires on-device interaction and visual testing; no runtime validation claim."
+    "Requires on-device interaction and visual testing; no runtime validation claim.",
+    "Increase Sun marker to 76 px and Moon marker to 66 px.",
+    "Disable depth-test hiding for selected marker and label so they stay visible through Earth.",
+    "Keep the current Sun/Moon selection active until the main Sun/Moon panel is closed."
   ],
-  "title": "EARTH // LIVE \u2014 Sun & Moon Visualization v1.33",
-  "description": "Adds visible, directionally calculated Sun and Moon markers linked to live time and the existing \u00b112-hour simulation slider. Includes a simple Moon illumination appearance and keeps the current Moon visibility overlay. Celestial markers are visually scaled for readability; the Moon model is an approximation, not a precision ephemeris. Preserves the centred dock and adaptive landscape scroller. Requires iPhone/PWA testing."
+  "title": "EARTH // LIVE \u2014 Sun & Moon Screen Lock v1.35",
+  "description": "Enlarges the Sun and Moon markers and keeps the selected marker visible through the globe until the main Sun/Moon dock panel is closed. Selection persists through time scrubbing and LIVE. Preserves the centred dock and adaptive landscape scroller. Requires iPhone/PWA testing; Moon model remains approximate."
 }

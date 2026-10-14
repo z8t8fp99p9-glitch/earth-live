@@ -29,11 +29,19 @@ function moonIcon(illumination){const lit=Math.max(0,Math.min(1,illumination/100
 function clearCelestial(){if(viewer&&celestialEntity){viewer.entities.remove(celestialEntity);}celestialEntity=null;}
 function renderCelestial(which,date,data){
  if(!viewer||!window.Cesium||!data)return;
- clearCelestial();
+ const id='earth-live-'+which+'-visual';
  const lon=data.longitude,lat=which==='sun'?data.latitude:data.dec;
- // Distances are deliberately visually scaled for this globe camera; coordinates track the calculated celestial direction.
- const height=which==='sun'?1600000:3500000;
- celestialEntity=viewer.entities.add({id:'earth-live-'+which+'-visual',position:Cesium.Cartesian3.fromDegrees(lon,lat,height),billboard:{image:which==='sun'?sunIcon():moonIcon(data.illumination),width:which==='sun'?54:46,height:which==='sun'?54:46,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,scaleByDistance:new Cesium.NearFarScalar(7000000,1.15,45000000,0.58),disableDepthTestDistance:0},label:{text:which==='sun'?'SUN':'MOON',font:'600 12px sans-serif',fillColor:which==='sun'?Cesium.Color.fromCssColorString('#ffe8a6'):Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.BLACK,outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,35),scaleByDistance:new Cesium.NearFarScalar(7000000,1,45000000,0.6)}});
+ // Markers stay attached to the selected object and update in place to avoid flicker during scrubbing.
+ const position=Cesium.Cartesian3.fromDegrees(lon,lat,which==='sun'?1600000:3500000);
+ const image=which==='sun'?sunIcon():moonIcon(data.illumination);
+ if(celestialEntity&&celestialEntity.id!==id)clearCelestial();
+ if(celestialEntity){
+  celestialEntity.position=position;
+  celestialEntity.billboard.image=image;
+  celestialEntity.label.text=which==='sun'?'SUN':'MOON';
+ }else{
+  celestialEntity=viewer.entities.add({id,position,billboard:{image,width:which==='sun'?76:66,height:which==='sun'?76:66,verticalOrigin:Cesium.VerticalOrigin.CENTER,horizontalOrigin:Cesium.HorizontalOrigin.CENTER,scaleByDistance:new Cesium.NearFarScalar(7000000,1.15,45000000,0.78),disableDepthTestDistance:Number.POSITIVE_INFINITY},label:{text:which==='sun'?'SUN':'MOON',font:'600 13px sans-serif',fillColor:which==='sun'?Cesium.Color.fromCssColorString('#ffe8a6'):Cesium.Color.fromCssColorString('#e7f1ff'),outlineColor:Cesium.Color.BLACK,outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,46),scaleByDistance:new Cesium.NearFarScalar(7000000,1,45000000,0.8),disableDepthTestDistance:Number.POSITIVE_INFINITY}});
+ }
  viewer.scene.requestRender();
 }
 function fmt(d){return d.toLocaleString(undefined,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
@@ -71,8 +79,9 @@ function update(){
 function syncObjectButtons(){sunTab.classList.toggle('active',activeObject==='sun'&&!simulation);moonTab.classList.toggle('active',activeObject==='moon'&&!simulation);sunTab.setAttribute('aria-pressed',String(activeObject==='sun'&&!simulation));moonTab.setAttribute('aria-pressed',String(activeObject==='moon'&&!simulation));}
 function chooseLiveObject(which){
  if(simulation)return;
- if(activeObject===which){activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;clearOverlay();lastOverlayBucket=null;}
- else{activeObject=which;update();}
+ // Selection is sticky: tapping the already-selected tab must not hide the marker.
+ // The main Sun/Moon dock control is the single exit that clears it.
+ if(activeObject!==which){activeObject=which;update();}
  syncObjectButtons();
 }
 function enterSimulation(){
@@ -80,8 +89,9 @@ function enterSimulation(){
 }
 function returnLive(){
  simulation=false;panel.classList.remove('simulation-mode');simOnly.hidden=true;normalHeader.hidden=false;normalControls.hidden=false;
- activeObject=null;title.textContent='SUN / MOON';summary.textContent='Choose Sun or Moon';info.hidden=true;
- clearOverlay();clearCelestial();lastOverlayBucket=null;syncObjectButtons();
+ lastOverlayBucket=null;
+ // Keep the selected Sun/Moon active and immediately recalculate its live position.
+ update();
 }
 function scrubTo(value){
  const raw=Number(value);
