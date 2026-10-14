@@ -1,0 +1,15 @@
+EARTH // LIVE v1.62 — Layer 2 Silent Mountains integration
+Flat ZIP patch. Upload contents to repository root.
+
+Files:
+- celestial-path-refinement.css: additive integration for layered static mountain SVGs.
+- mountains-warm.svg: warm Sun-view layered mountain scenery.
+- mountains-night.svg: cool Moon-view layered mountain scenery.
+- service-worker.js: cache v1.62 and include both new SVG assets.
+- app-version.js: version label v1.62.
+
+Layer 1 atmosphere integration remains intact. No HTML, astronomy logic, paths,
+sky-object positioning, horizon container geometry, scrollers, dock, globe,
+Live Location, or Moon phase reference files are changed.
+
+After upload, verify portrait and landscape. Layer 2 remains pending visual approval.

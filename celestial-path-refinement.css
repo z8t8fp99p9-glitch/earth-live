@@ -13,8 +13,7 @@
 .sky-sun,.sky-moon { z-index:3; }
 .sky-direction { z-index:4; }
 
-/* v1.61 Layer 1: static atmosphere artwork only. Foreground objects, paths,
-   horizon layers, controls, and astronomy positioning remain untouched. */
+/* v1.61 Layer 1: static atmosphere artwork only. */
 .sun-sky {
   background-image: url('./solar-atmosphere.svg');
   background-position: center;
@@ -26,4 +25,24 @@
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+/* v1.62 Layer 2: replace the temporary polygon silhouettes with layered
+   static vector scenery. Keep the horizon container, its placement, and all
+   celestial positioning and controls unchanged. */
+.sun-sky .horizon-mountains,
+.moon-sky .horizon-mountains {
+  inset: 0;
+  clip-path: none;
+  background-color: transparent;
+  background-position: center bottom;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+.sun-sky .horizon-mountains {
+  background-image: url('./mountains-warm.svg');
+}
+.moon-sky .horizon-mountains {
+  background-image: url('./mountains-night.svg');
 }
