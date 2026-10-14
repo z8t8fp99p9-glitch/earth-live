@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.56 — a single, cached astronomical trajectory per sky. */
+/* EARTH // LIVE — trajectory layer and sky artwork refinement. */
 .celestial-real-trajectory {
   position:absolute; inset:0; width:100%; height:100%;
   z-index:2; overflow:hidden; pointer-events:none;
@@ -13,63 +13,48 @@
 .sky-sun,.sky-moon { z-index:3; }
 .sky-direction { z-index:4; }
 
-/* v1.61 Layer 1: static atmosphere artwork only. */
 .sun-sky {
-  background-image: url('./solar-atmosphere.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-image:url('./solar-atmosphere.svg');
+  background-position:center; background-size:cover; background-repeat:no-repeat;
 }
 .moon-sky {
-  background-image: url('./lunar-atmosphere.svg');
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-image:url('./lunar-atmosphere.svg');
+  background-position:center; background-size:cover; background-repeat:no-repeat;
 }
+.sun-sky .horizon-mountains,.moon-sky .horizon-mountains {
+  inset:0; clip-path:none; background-color:transparent;
+  background-position:center bottom; background-size:100% 100%;
+  background-repeat:no-repeat; opacity:1;
+}
+.sun-sky .horizon-mountains { background-image:url('./mountains-warm.svg'); }
+.moon-sky .horizon-mountains { background-image:url('./mountains-night.svg'); }
 
-/* v1.62 Layer 2: layered static vector scenery. */
-.sun-sky .horizon-mountains,
-.moon-sky .horizon-mountains {
-  inset: 0;
-  clip-path: none;
-  background-color: transparent;
-  background-position: center bottom;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  opacity: 1;
-}
-.sun-sky .horizon-mountains {
-  background-image: url('./mountains-warm.svg');
-}
-.moon-sky .horizon-mountains {
-  background-image: url('./mountains-night.svg');
-}
-
-/* v1.71: restore the original horizon height; reduce only the belt tint.
-   Keep the horizon border/position and celestial coordinate system fixed.
-   The atmosphere wallpaper remains visible behind the horizon region.
-   Portrait mountains keep the established 155% placement; landscape is
-   unchanged. */
-@media (orientation: portrait) {
+/* v1.72 Layer 2: portrait-only belt behind the wallpaper.
+   Keep the 34% horizon reference and trajectory coordinate system fixed.
+   The belt is made transparent and placed behind the lifted mountain art;
+   landscape styles are untouched. */
+@media (orientation:portrait) {
   .sun-sky .sky-horizon,
   .moon-sky .sky-horizon {
-    height: 34%;
-    overflow: visible;
-    background: linear-gradient(
-      180deg,
-      rgba(111,66,53,.22) 0%,
-      rgba(111,66,53,.08) 1%,
-      rgba(20,19,24,0) 4%,
-      rgba(20,19,24,0) 100%
-    );
+    height:34%;
+    overflow:visible;
+    background:transparent !important;
+    border-top-color:rgba(255,255,255,.20);
+    z-index:0;
   }
   .sun-sky .horizon-mountains,
   .moon-sky .horizon-mountains {
-    inset: auto 0 0;
-    height: 155%;
-    background-size: auto 100%;
-    background-position: center bottom;
-    background-repeat: no-repeat;
-    pointer-events: none;
+    position:absolute;
+    inset:auto 0 0;
+    height:185%;
+    background-size:auto 100%;
+    background-position:center bottom;
+    background-repeat:no-repeat;
+    pointer-events:none;
+    z-index:1;
+  }
+  .sun-sky .horizon-glow,
+  .moon-sky .horizon-glow {
+    z-index:2;
   }
 }

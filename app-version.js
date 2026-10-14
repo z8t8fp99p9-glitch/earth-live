@@ -1,2 +1,2 @@
-/* EARTH // LIVE — 1% portrait Horizon Belt tint; restore horizon position — v1.71 */
-(function(){const version='v1.71';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
+/* EARTH // LIVE — portrait belt behind lifted wallpaper — v1.72 */
+(function(){const version='v1.72';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
