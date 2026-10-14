@@ -791,3 +791,29 @@ html.standalone-app #app{position:fixed;top:0;right:0;bottom:0;left:0;width:100%
  .time-panel-heading strong{font-size:11px}.time-panel output{font-size:10px}.timeline-caption{font-size:7px}
 }
 @media(prefers-reduced-motion:reduce){.dock-art,.dock-art img,.quality-segment{transition:none!important}}
+
+/* v1.43 — enlarge the approved celestial artwork while preserving the dock silhouette. */
+.quality-segment{width:clamp(46px,12vw,60px);gap:4px;padding:5px 3px}
+.quality-segment img{width:clamp(29px,7.2vw,37px);height:clamp(29px,7.2vw,37px)}
+.dock-item{width:clamp(47px,14vw,65px);flex-basis:clamp(47px,14vw,65px);gap:4px;font-size:10px}
+.dock-art{width:clamp(38px,10vw,50px);height:clamp(38px,10vw,50px)}
+@media(max-width:390px){
+ .quality-segment{width:clamp(43px,12vw,49px);padding:4px 2px}
+ .quality-segment img{width:clamp(28px,7.5vw,32px);height:clamp(28px,7.5vw,32px)}
+ .dock-item{width:clamp(43px,12vw,50px);flex-basis:clamp(43px,12vw,50px);font-size:9px}
+ .dock-art{width:clamp(35px,9.5vw,40px);height:clamp(35px,9.5vw,40px)}
+}
+@media(max-width:370px){
+ .quality-segment{width:41px}.quality-segment img{width:27px;height:27px}
+ .dock-item{width:42px;flex-basis:42px;font-size:8px}.dock-art{width:34px;height:34px}
+}
+@media(orientation:landscape){
+ .dock-item{width:clamp(51px,8vw,66px);flex-basis:clamp(51px,8vw,66px)}
+ .dock-art{width:clamp(40px,6.3vh,50px);height:clamp(40px,6.3vh,50px)}
+ .quality-segment{width:clamp(47px,6.4vw,60px)}
+ .quality-segment img{width:clamp(30px,4.5vh,37px);height:clamp(30px,4.5vh,37px)}
+}
+@media(orientation:landscape) and (max-height:430px){
+ .dock-item{width:47px;flex-basis:47px;font-size:8px}.dock-art{width:36px;height:36px}
+ .quality-segment{width:43px}.quality-segment img{width:28px;height:28px}
+}

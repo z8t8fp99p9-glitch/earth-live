@@ -1,4 +1,4 @@
-EARTH // LIVE v1.42 — Celestial Dock Candidate
+EARTH // LIVE v1.43 — Celestial Dock — Larger Icons Candidate
 
 - Built from the current main source (read-only inspection; no GitHub writes).
 - Added static generated glass-style icon assets for Earth Basic, Earth HD, Live Location, Sun Observer, Moon Observer, and Stacks, plus Sun/Moon scroller handles.
