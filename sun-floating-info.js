@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.97.1 — refined horizon Sun icons with a quiet, transparent ember finish. */
+/* EARTH // LIVE v1.97.2 — refined horizon Sun icons with a quiet, transparent ember finish. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
