@@ -74,7 +74,7 @@
  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 3.5vw)!important}
  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 3.5vw)!important}
  #app .dock-item,#app .quality-segment{width:46px!important;flex-basis:46px!important;min-height:52px!important}
- #app .dock-item::before,#app .quality-segment::before{width:42px!important;height:42px!important} #app .dock-art{width:58px!important;height:58px!important} #app .quality-segment img{width:34px!important;height:34px!important}
+ #app .dock-item::before,#app .quality-segment::before{width:42px!important;height:42px!important} #app .dock-art{width:58px!important;height:58px!important} #app .quality-segment img{width:58px!important;height:58px!important}
  #app .dock-item::after{width:28px!important;height:11px!important}
  #app .dock-item .dock-label,#app .quality-segment span{font-size:9px!important}
  #sunPanel{right:calc(env(safe-area-inset-right,0px) + 8px)!important}
@@ -153,7 +153,7 @@
   #app .bottom-ui{gap:2px!important;padding:6px 5px 9px!important;max-width:calc(100vw - 8px)!important}
   #app .dock-item,#app .quality-segment{width:clamp(32px,8.9vw,36px)!important;flex-basis:clamp(32px,8.9vw,36px)!important;min-height:44px!important}
   #app .dock-item::before,#app .quality-segment::before{width:31px!important;height:31px!important}
-  #app .dock-art,#app .quality-segment img{width:30px!important;height:30px!important}
+  #app .dock-art{width:30px!important;height:30px!important} #app .quality-segment img{width:30px!important;height:30px!important}
 }
 @media (prefers-reduced-motion:reduce){#app .dock-item{transition:none!important}}
 </style>
@@ -212,7 +212,7 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.99.6"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.99.6"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.99.7"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.99.7"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>
 (()=>{const app=document.getElementById('app');if(!app)return;let first=true;const mq=window.matchMedia('(orientation: landscape)');const sync=()=>{app.classList.remove('landscape-dock-split');if(mq.matches){requestAnimationFrame(()=>requestAnimationFrame(()=>app.classList.add('landscape-dock-split')))}else{app.classList.remove('landscape-dock-split')}first=false};sync();if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);window.addEventListener('orientationchange',()=>setTimeout(sync,80),{passive:true});})();
 </script>
