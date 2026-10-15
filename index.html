@@ -26,7 +26,7 @@
 }
 </style>
 
-<style id="landscape-rebuild-v1989">
+<style id="landscape-rebuild-v1991">
 /* v1.98.8: stronger backward tray tilt and more visible glass thickness. Landscape only. */
 .dock-left-group,.dock-right-group{display:contents}
 @media (orientation:landscape){
@@ -34,9 +34,9 @@
  #app .dock-left-group,#app .dock-right-group{position:relative!important;left:auto!important;right:auto!important;display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:clamp(8px,1.15vw,15px)!important;padding:9px 12px 11px!important;border-radius:999px!important;background:linear-gradient(180deg,rgba(226,242,255,.22) 0%,rgba(87,117,149,.15) 18%,rgba(10,20,34,.58) 70%,rgba(3,9,18,.72) 100%)!important;border:1px solid rgba(222,240,255,.30)!important;box-shadow:0 10px 22px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -2px 4px rgba(0,0,0,.22)!important;-webkit-backdrop-filter:blur(18px) saturate(145%)!important;backdrop-filter:blur(18px) saturate(145%)!important;pointer-events:auto;position:relative!important;transform-style:preserve-3d!important;perspective:900px;will-change:transform;transition:transform 560ms cubic-bezier(.2,.78,.22,1),opacity 420ms ease!important}
  /* Thin front bevel catches light like a physical tilted glass tray. */
  #app .dock-left-group::after,#app .dock-right-group::after{content:"";position:absolute;left:4%;right:4%;bottom:0;height:8px;border-radius:0 0 999px 999px;background:linear-gradient(180deg,rgba(245,251,255,.52) 0%,rgba(190,224,255,.24) 38%,rgba(55,82,111,.18) 70%,rgba(4,10,18,.42) 100%);box-shadow:0 4px 9px rgba(0,0,0,.34),inset 0 1px 1px rgba(255,255,255,.35);pointer-events:none;transform:translateZ(2px)}
- .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 4.5vw)!important;transform:perspective(900px) rotateX(30deg) translateX(68px);opacity:.96}
- .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 4.5vw)!important;transform:perspective(900px) rotateX(30deg) translateX(-68px);opacity:.96}
- #app.landscape-dock-split .dock-left-group{transform:perspective(900px) rotateX(30deg) translateX(0);opacity:1} #app.landscape-dock-split .dock-right-group{transform:perspective(900px) rotateX(30deg) translateX(0);opacity:1}
+ .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 4.5vw)!important;transform:perspective(900px) rotateX(38deg) translateX(68px);opacity:.96}
+ .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 4.5vw)!important;transform:perspective(900px) rotateX(38deg) translateX(-68px);opacity:.96}
+ #app.landscape-dock-split .dock-left-group{transform:perspective(900px) rotateX(38deg) translateX(0);opacity:1} #app.landscape-dock-split .dock-right-group{transform:perspective(900px) rotateX(38deg) translateX(0);opacity:1}
  /* Back rim and surface glint make the plate's backward tilt visible at a glance. */
  #app .dock-left-group::before,#app .dock-right-group::before{content:"";position:absolute;left:7%;right:7%;top:1px;height:2px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(235,248,255,.55),rgba(255,255,255,.06));box-shadow:0 0 5px rgba(180,220,255,.12);pointer-events:none}
  /* Orb button body: round, glossy, dimensional, with a visible contact shadow on the plate. */
@@ -87,108 +87,75 @@
 @media (prefers-reduced-motion:reduce){.dock-left-group,.dock-right-group,#app .dock-item{transition:none!important}}
 </style>
 
-<style id="universal-orb-dock-v1990">
-/* v1.99.0: Universal orb material language. Landscape retains its existing layout.
-   Portrait keeps a centered dock and uses smaller responsive orbs on two compact plates. */
+<style id="universal-orb-dock-v1991">
+/* Universal material language; portrait intentionally uses one centered deck so all six controls fit. */
 @media (orientation:portrait) {
   #app .bottom-ui{
-    display:flex!important;
-    flex-direction:row!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:clamp(5px,1.6vw,9px)!important;
-    width:100%!important;
-    max-width:100%!important;
-    left:0!important;
-    right:0!important;
-    padding:0 5px!important;
-    box-sizing:border-box!important;
-    overflow:visible!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-    -webkit-backdrop-filter:none!important;
-    backdrop-filter:none!important;
+    position:absolute!important;
+    left:50%!important;right:auto!important;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)!important;
+    top:auto!important;transform:translateX(-50%) perspective(900px) rotateX(28deg)!important;
+    transform-origin:center bottom!important;transform-style:preserve-3d!important;
+    display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+    gap:clamp(3px,1vw,6px)!important;width:max-content!important;max-width:calc(100vw - 12px)!important;
+    min-width:0!important;padding:7px 7px 10px!important;box-sizing:border-box!important;overflow:visible!important;
+    border-radius:999px!important;
+    background:linear-gradient(180deg,rgba(226,242,255,.26) 0%,rgba(87,117,149,.18) 20%,rgba(10,20,34,.68) 72%,rgba(3,9,18,.82) 100%)!important;
+    border:1px solid rgba(222,240,255,.36)!important;
+    box-shadow:0 9px 20px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,255,255,.34),inset 0 -3px 5px rgba(0,0,0,.28)!important;
+    -webkit-backdrop-filter:blur(15px) saturate(145%)!important;backdrop-filter:blur(15px) saturate(145%)!important;
   }
   #app .dock-left-group,#app .dock-right-group{
-    display:flex!important;
-    flex:0 1 auto!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:clamp(3px,1vw,6px)!important;
-    min-width:0!important;
-    padding:6px 5px 8px!important;
-    border-radius:999px!important;
-    background:linear-gradient(180deg,rgba(226,242,255,.23) 0%,rgba(87,117,149,.16) 20%,rgba(10,20,34,.62) 72%,rgba(3,9,18,.76) 100%)!important;
-    border:1px solid rgba(222,240,255,.30)!important;
-    box-shadow:0 8px 18px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.30),inset 0 -2px 4px rgba(0,0,0,.24)!important;
-    -webkit-backdrop-filter:blur(14px) saturate(140%)!important;
-    backdrop-filter:blur(14px) saturate(140%)!important;
-    transform:perspective(760px) rotateX(17deg)!important;
-    transform-style:preserve-3d!important;
-    position:relative!important;
-    overflow:visible!important;
+    display:contents!important;position:static!important;transform:none!important;opacity:1!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
+    box-shadow:none!important;filter:none!important;
   }
-  #app .dock-left-group::before,#app .dock-right-group::before{
-    content:"";position:absolute;left:9%;right:9%;top:1px;height:2px;border-radius:999px;
-    background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(235,248,255,.48),rgba(255,255,255,.04));
-    pointer-events:none;
+  #app .bottom-ui::before{
+    content:"";position:absolute;left:8%;right:8%;top:1px;height:2px;border-radius:999px;
+    background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(235,248,255,.58),rgba(255,255,255,.04));pointer-events:none;
   }
-  #app .dock-left-group::after,#app .dock-right-group::after{
-    content:"";position:absolute;left:5%;right:5%;bottom:0;height:6px;border-radius:0 0 999px 999px;
-    background:linear-gradient(180deg,rgba(245,251,255,.48),rgba(190,224,255,.20) 40%,rgba(4,10,18,.45));
-    box-shadow:0 3px 7px rgba(0,0,0,.30),inset 0 1px 1px rgba(255,255,255,.30);
-    pointer-events:none;transform:translateZ(2px);
+  #app .bottom-ui::after{
+    content:"";position:absolute;left:4%;right:4%;bottom:0;height:7px;border-radius:0 0 999px 999px;
+    background:linear-gradient(180deg,rgba(245,251,255,.52),rgba(190,224,255,.22) 40%,rgba(4,10,18,.48));
+    box-shadow:0 4px 8px rgba(0,0,0,.32),inset 0 1px 1px rgba(255,255,255,.32);pointer-events:none;transform:translateZ(2px);
   }
-  #app .dock-item{
-    width:clamp(39px,10.3vw,47px)!important;
-    flex:0 1 clamp(39px,10.3vw,47px)!important;
-    min-width:0!important;
-    min-height:clamp(48px,12vw,57px)!important;
-    padding:0!important;
-    gap:2px!important;
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    position:relative!important;
-    border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
-    overflow:visible!important;
+  #app .quality-group{display:flex!important;align-items:center!important;gap:2px!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;min-width:0!important}
+  #app .dock-item,#app .quality-segment{
+    position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
+    gap:2px!important;width:clamp(35px,9.5vw,42px)!important;flex:0 1 clamp(35px,9.5vw,42px)!important;min-width:0!important;
+    min-height:clamp(46px,12vw,53px)!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+    background:transparent!important;box-shadow:none!important;overflow:visible!important;white-space:nowrap!important;
   }
-  #app .dock-item::before{
-    top:0!important;
-    width:clamp(36px,9.5vw,43px)!important;
-    height:clamp(36px,9.5vw,43px)!important;
+  #app .dock-item::before,#app .quality-segment::before{
+    content:"";position:absolute;z-index:-1;top:0;left:50%;width:clamp(33px,8.7vw,39px)!important;height:clamp(33px,8.7vw,39px)!important;
+    transform:translateX(-50%);border-radius:50%;
+    background:radial-gradient(circle at 31% 19%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.28) 7%,rgba(255,255,255,.08) 19%,rgba(36,68,105,.22) 45%,rgba(2,9,20,.72) 72%,rgba(178,224,255,.32) 83%,rgba(255,255,255,.08) 90%,rgba(0,0,0,.4) 100%);
+    border:1px solid rgba(229,245,255,.68);box-shadow:inset 0 2px 3px rgba(255,255,255,.5),inset 0 -4px 7px rgba(0,0,0,.55),0 4px 6px rgba(0,0,0,.38);
   }
-  #app .dock-art{
-    width:clamp(35px,9.1vw,41px)!important;
-    height:clamp(35px,9.1vw,41px)!important;
-    flex:0 0 auto!important;
-    margin:0!important;
-    border-radius:50%!important;
-    overflow:hidden!important;
+  #app .dock-item::after{content:"";position:absolute;z-index:-1;top:3px;left:50%;width:27px;height:11px;transform:translateX(-60%) rotate(-22deg);border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.02));filter:blur(1px);pointer-events:none}
+  #app .dock-art,#app .quality-segment img{
+    position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    width:clamp(32px,8.2vw,37px)!important;height:clamp(32px,8.2vw,37px)!important;flex:0 0 auto!important;
+    margin:0!important;object-fit:cover!important;border-radius:50%!important;overflow:hidden!important;
+    border:1px solid rgba(223,242,255,.48)!important;
+    box-shadow:inset 0 1px 2px rgba(255,255,255,.4),inset 0 -3px 5px rgba(0,0,0,.45),0 3px 5px rgba(0,0,0,.32)!important;
   }
-  #app .dock-art img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
-  #app .dock-item .dock-label{
-    display:block!important;margin-top:1px!important;font-size:clamp(8px,2.2vw,10px)!important;
-    line-height:1!important;white-space:nowrap!important;color:rgba(245,249,255,.88)!important;
-    text-shadow:0 1px 3px rgba(0,0,0,.85)!important;
+  #app .dock-art img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
+  #app .dock-item .dock-label,#app .quality-segment span{
+    display:block!important;position:relative!important;margin-top:1px!important;font-size:clamp(7px,1.9vw,9px)!important;
+    line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;color:rgba(245,249,255,.9)!important;
+    text-shadow:0 1px 3px rgba(0,0,0,.9)!important;
   }
-  #app .dock-item.active,#app .dock-item[aria-pressed="true"]{filter:drop-shadow(0 5px 4px rgba(44,164,255,.42))!important}
-  #app #sunBtn.active,#app #sunBtn[aria-pressed="true"]{filter:drop-shadow(0 5px 4px rgba(255,171,55,.48))!important}
-  #app .quality-segment{min-width:0!important;width:clamp(30px,8vw,36px)!important}
-  #app .quality-segment img{width:clamp(25px,6.8vw,30px)!important;height:clamp(25px,6.8vw,30px)!important;border-radius:50%!important;object-fit:cover!important}
+  #app #locateBtn .dock-label{font-size:clamp(6px,1.65vw,8px)!important;letter-spacing:-.02em!important}
+  #app .dock-item.active,#app .dock-item[aria-pressed="true"],#app .quality-segment.active{filter:drop-shadow(0 5px 5px rgba(44,164,255,.48))!important}
+  #app #sunBtn.active,#app #sunBtn[aria-pressed="true"]{filter:drop-shadow(0 5px 5px rgba(255,171,55,.52))!important}
 }
-@media (max-width:360px) and (orientation:portrait){
-  #app .bottom-ui{gap:3px!important;padding:0 2px!important}
-  #app .dock-left-group,#app .dock-right-group{gap:2px!important;padding:5px 3px 7px!important}
-  #app .dock-item{width:36px!important;flex-basis:36px!important;min-height:44px!important}
-  #app .dock-item::before{width:33px!important;height:33px!important}
-  #app .dock-art{width:32px!important;height:32px!important}
+@media (max-width:390px) and (orientation:portrait){
+  #app .bottom-ui{gap:2px!important;padding:6px 5px 9px!important;max-width:calc(100vw - 8px)!important}
+  #app .dock-item,#app .quality-segment{width:clamp(32px,8.9vw,36px)!important;flex-basis:clamp(32px,8.9vw,36px)!important;min-height:44px!important}
+  #app .dock-item::before,#app .quality-segment::before{width:31px!important;height:31px!important}
+  #app .dock-art,#app .quality-segment img{width:30px!important;height:30px!important}
 }
-@media (prefers-reduced-motion:reduce){
-  #app .dock-item{transition:none!important}
-}
+@media (prefers-reduced-motion:reduce){#app .dock-item{transition:none!important}}
 </style>
 
 
