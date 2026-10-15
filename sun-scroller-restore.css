@@ -1,0 +1,50 @@
+/* EARTH // LIVE v1.87 — Restore the proven v1.79 Sun scroller look.
+   Uses native CSS Sun thumb and a warm static gold beam. No separate image asset.
+   Moon styles, sky artwork and astronomy logic are untouched. */
+.sun-panel .sun-range {
+  -webkit-appearance:none;
+  appearance:none;
+  background:transparent;
+  border:0;
+  outline:none;
+  box-shadow:none;
+}
+.sun-panel .sun-range::-webkit-slider-runnable-track {
+  height:7px;
+  border:0;
+  border-radius:999px;
+  background:rgba(112,68,24,.28) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='12' viewBox='0 0 240 12'%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.2'/%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23fff0b2' stroke-width='.8' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E") center/100% 12px repeat-x;
+  box-shadow:0 0 8px rgba(255,183,77,.2);
+}
+.sun-panel .sun-range::-moz-range-track {
+  height:7px;
+  border:0;
+  border-radius:999px;
+  background:rgba(112,68,24,.28) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='12' viewBox='0 0 240 12'%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23ffbd55' stroke-width='5' stroke-linecap='round' opacity='.2'/%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23ffd477' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M0 7 C18 2 31 3 47 6 S76 10 91 6 S124 2 140 6 S164 9 180 5 S213 2 240 6' fill='none' stroke='%23fff0b2' stroke-width='.8' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E") center/100% 12px repeat-x;
+  box-shadow:0 0 8px rgba(255,183,77,.2);
+}
+.sun-panel .sun-range::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  appearance:none;
+  width:35px;
+  height:35px;
+  margin-top:-14px;
+  border:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6c6 0%, #ffd979 35%, #ffc24f 70%, #ff9f24 100%);
+  box-shadow:0 0 0 4px rgba(255,199,101,.14),0 0 14px rgba(255,183,77,.58);
+}
+.sun-panel .sun-range::-moz-range-thumb {
+  width:35px;
+  height:35px;
+  border:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6c6 0%, #ffd979 35%, #ffc24f 70%, #ff9f24 100%);
+  box-shadow:0 0 0 4px rgba(255,199,101,.14),0 0 14px rgba(255,183,77,.58);
+}
+@media (orientation:landscape) and (max-height:430px) {
+ .sun-panel .sun-range::-webkit-slider-thumb{width:32px;height:32px;margin-top:-12.5px}
+ .sun-panel .sun-range::-moz-range-thumb{width:32px;height:32px}
+}
+/* Keep the 7:20 screenshot's original sunrise/sunset labels; hide only helper copy. */
+.timeline-caption span:last-child{display:none}
