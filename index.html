@@ -26,21 +26,22 @@
 }
 </style>
 
-<style id="landscape-rebuild-v1982">
-/* v1.98.2: Landscape-only split dock and vertical Sun timer support. Portrait layout remains the original centered dock. */
+<style id="landscape-rebuild-v1983">
+/* v1.98.3: Landscape dock glides outward; vertical Sun timeline anchored right. Portrait layout remains the original centered dock. Portrait layout remains the original centered dock. */
 .dock-left-group,.dock-right-group{display:contents}
 @media (orientation:landscape){
   .bottom-ui{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 9px);transform:none;width:auto;max-width:none;padding:0;gap:0;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none;display:flex;align-items:center;justify-content:space-between;overflow:visible}
   .dock-left-group,.dock-right-group{display:flex;align-items:center;gap:clamp(7px,1.3vw,15px);padding:7px 9px;border-radius:24px;background:linear-gradient(145deg,rgba(24,37,54,.88),rgba(5,11,21,.91));border:1px solid rgba(184,216,246,.28);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);pointer-events:auto;will-change:transform;transition:transform 560ms cubic-bezier(.2,.78,.22,1),opacity 420ms ease}
-  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 5.5vw);transform:translateX(0);}
-  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 5.5vw);transform:translateX(0);}
+  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 5.5vw);transform:translateX(72px);opacity:.94;}
+  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 5.5vw);transform:translateX(-72px);opacity:.94;}
   /* A restrained outward unfold leaves a clear centre for the sky. */
-  #app.landscape-dock-split .dock-left-group{transform:translateX(-7px)}
-  #app.landscape-dock-split .dock-right-group{transform:translateX(7px)}
+  #app.landscape-dock-split .dock-left-group{transform:translateX(0);opacity:1}
+  #app.landscape-dock-split .dock-right-group{transform:translateX(0);opacity:1}
   .dock-item{width:clamp(45px,7.2vh,58px);flex:0 0 clamp(45px,7.2vh,58px);min-height:clamp(46px,8.5vh,62px);padding:2px 0}
   .dock-art{width:clamp(36px,6.7vh,48px);height:clamp(36px,6.7vh,48px)}
   .quality-segment{width:clamp(39px,6vh,50px)}
   .quality-segment img{width:clamp(24px,4.8vh,32px);height:clamp(24px,4.8vh,32px)}
+  #sunPanel{left:auto!important;right:calc(env(safe-area-inset-right,0px) + 10px)!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;}
   .time-panel.sun-panel{left:auto;right:calc(env(safe-area-inset-right,0px) + 10px);top:50%;bottom:auto;transform:translateY(-50%);width:96px;max-width:96px;padding:8px 7px;border-radius:18px}
   .sun-panel .sun-timeline{display:block!important;width:100%!important;height:clamp(135px,38vh,220px)!important;min-height:0!important;}
   .sun-panel .sun-range{position:absolute!important;left:50%!important;right:auto!important;top:50%!important;inset-inline:auto!important;width:clamp(135px,38vh,220px)!important;height:36px!important;transform:translate(-50%,-50%) rotate(-90deg)!important;transform-origin:center!important;touch-action:pan-y!important;}
@@ -53,6 +54,7 @@
   .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 4.5vw)}
   .dock-item{width:42px;flex-basis:42px;min-height:42px}
   .dock-art{width:32px;height:32px}
+  #sunPanel{right:calc(env(safe-area-inset-right,0px) + 8px)!important}
   .time-panel.sun-panel{width:84px;max-width:84px;padding:6px 5px}
   .sun-panel .sun-timeline{height:clamp(112px,34vh,150px)!important}
   .sun-panel .sun-range{width:clamp(112px,34vh,150px)!important;height:32px!important}
@@ -115,6 +117,9 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.98.2"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.98.2"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.98.3"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.98.3"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script>
+(()=>{const app=document.getElementById('app');if(!app)return;let first=true;const mq=window.matchMedia('(orientation: landscape)');const sync=()=>{app.classList.remove('landscape-dock-split');if(mq.matches){requestAnimationFrame(()=>requestAnimationFrame(()=>app.classList.add('landscape-dock-split')))}else{app.classList.remove('landscape-dock-split')}first=false};sync();if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);window.addEventListener('orientationchange',()=>setTimeout(sync,80),{passive:true});})();
+</script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>

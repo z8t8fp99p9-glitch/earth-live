@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.98.2 — landscape vertical timer and refined horizon Sun icons with a quiet, transparent ember finish. */
+/* EARTH // LIVE v1.98.3 — landscape vertical timer and refined horizon Sun icons with a quiet, transparent ember finish. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
