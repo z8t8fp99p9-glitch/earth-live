@@ -1,216 +1,219 @@
-/* EARTH // LIVE v1.104 — Smart Coding Sun scroller.
-   One source of truth for layout variables; original Ember Light track artwork retained.
-   Astronomy, timeline values, Moon styling and the main dock are owned elsewhere. */
-.sun-panel {
-  --sun-panel-side: 10px;
-  --sun-panel-bottom-gap: 103px;
-  --sun-track-left: 10%;
-  --sun-track-width: 80%;
-  --sun-track-height: 70px;
-  --sun-thumb-size: 40px;
-  --sun-track-top: -13px;
-  --sun-info-inset: 6%;
-  --sun-info-top: -78px;
-  --sun-info-height: 142px;
-  --sun-extra-top: 126px;
-  position: absolute !important;
-  z-index: 8 !important;
-  left: var(--sun-panel-side) !important;
-  right: var(--sun-panel-side) !important;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--sun-panel-bottom-gap)) !important;
-  top: auto !important;
-  transform: none !important;
-  width: auto !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  overflow: visible !important;
-  color: transparent !important;
-}
-.sun-panel[hidden] { display: none !important; }
+/* EARTH // LIVE v1.93 — fixed Ember Light Sun scroller.
+   The ember waveform is a static full-width decorative track. Time only moves the Sun thumb. */
 .sun-panel .sun-timeline {
-  position: relative !important;
-  display: block !important;
-  width: 100% !important;
-  height: 44px !important;
-  min-height: 44px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  overflow: visible !important;
-  transform: none !important;
-  z-index: 2 !important;
+  display:grid !important;
+  grid-template-columns:43px minmax(0,1fr) 43px !important;
+  align-items:center !important;
+  gap:5px !important;
 }
 .sun-panel .sun-range {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  position: absolute !important;
-  left: var(--sun-track-left) !important;
-  right: auto !important;
-  top: var(--sun-track-top) !important;
-  display: block !important;
-  width: var(--sun-track-width) !important;
-  height: var(--sun-track-height) !important;
-  min-height: var(--sun-track-height) !important;
-  min-width: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  transform: none !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  outline: none !important;
-  box-shadow: none !important;
-  background-color: transparent !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 40' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23A34E13'/%3E%3Cstop offset='.22' stop-color='%23E98720'/%3E%3Cstop offset='.5' stop-color='%23FFD27A'/%3E%3Cstop offset='.78' stop-color='%23E98720'/%3E%3Cstop offset='1' stop-color='%23944716'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-10%25' y='-100%25' width='120%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='%23FF8A20' stroke-width='8' stroke-linecap='round' opacity='.55' filter='url(%23glow)'/%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='url(%23g)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg fill='%23FFD98B'%3E%3Ccircle cx='17' cy='14' r='1.1'/%3E%3Ccircle cx='31' cy='27' r='.8'/%3E%3Ccircle cx='52' cy='8' r='1.1'/%3E%3Ccircle cx='73' cy='32' r='1.2'/%3E%3Ccircle cx='92' cy='19' r='.8'/%3E%3Ccircle cx='108' cy='7' r='1.3'/%3E%3Ccircle cx='132' cy='31' r='.9'/%3E%3Ccircle cx='151' cy='11' r='1.1'/%3E%3Ccircle cx='174' cy='30' r='1.2'/%3E%3Ccircle cx='198' cy='7' r='.9'/%3E%3Ccircle cx='218' cy='32' r='1.1'/%3E%3Ccircle cx='242' cy='10' r='1.2'/%3E%3Ccircle cx='261' cy='30' r='.8'/%3E%3Ccircle cx='282' cy='8' r='1.1'/%3E%3Ccircle cx='303' cy='32' r='1.1'/%3E%3Ccircle cx='326' cy='7' r='.8'/%3E%3Ccircle cx='349' cy='31' r='1.2'/%3E%3Ccircle cx='370' cy='8' r='1.1'/%3E%3Ccircle cx='390' cy='32' r='.9'/%3E%3Ccircle cx='414' cy='8' r='1.1'/%3E%3Ccircle cx='434' cy='31' r='1.2'/%3E%3Ccircle cx='455' cy='9' r='.9'/%3E%3Ccircle cx='478' cy='32' r='1.1'/%3E%3Ccircle cx='499' cy='7' r='1.2'/%3E%3Ccircle cx='520' cy='31' r='.9'/%3E%3Ccircle cx='542' cy='9' r='1.1'/%3E%3Ccircle cx='563' cy='30' r='1.2'/%3E%3Ccircle cx='584' cy='12' r='1'/%3E%3C/g%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: center center !important;
-  background-size: 100% var(--sun-track-height) !important;
-  cursor: ew-resize !important;
-  touch-action: pan-y !important;
-  accent-color: #ffc04a !important;
-  z-index: 4 !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:40px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background-color:transparent !important;
+  /* Fixed ember trail: no progress fill and no time-dependent geometry. */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 40' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23A34E13'/%3E%3Cstop offset='.22' stop-color='%23E98720'/%3E%3Cstop offset='.5' stop-color='%23FFD27A'/%3E%3Cstop offset='.78' stop-color='%23E98720'/%3E%3Cstop offset='1' stop-color='%23944716'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-10%25' y='-100%25' width='120%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='%23FF8A20' stroke-width='8' stroke-linecap='round' opacity='.55' filter='url(%23glow)'/%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='url(%23g)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg fill='%23FFD98B'%3E%3Ccircle cx='17' cy='14' r='1.1'/%3E%3Ccircle cx='31' cy='27' r='.8'/%3E%3Ccircle cx='52' cy='8' r='1.1'/%3E%3Ccircle cx='73' cy='32' r='1.2'/%3E%3Ccircle cx='92' cy='19' r='.8'/%3E%3Ccircle cx='108' cy='7' r='1.3'/%3E%3Ccircle cx='132' cy='31' r='.9'/%3E%3Ccircle cx='151' cy='11' r='1.1'/%3E%3Ccircle cx='174' cy='30' r='1.2'/%3E%3Ccircle cx='198' cy='7' r='.9'/%3E%3Ccircle cx='218' cy='32' r='1.1'/%3E%3Ccircle cx='242' cy='10' r='1.2'/%3E%3Ccircle cx='261' cy='30' r='.8'/%3E%3Ccircle cx='282' cy='8' r='1.1'/%3E%3Ccircle cx='303' cy='32' r='1.1'/%3E%3Ccircle cx='326' cy='7' r='.8'/%3E%3Ccircle cx='349' cy='31' r='1.2'/%3E%3Ccircle cx='370' cy='8' r='1.1'/%3E%3Ccircle cx='390' cy='32' r='.9'/%3E%3Ccircle cx='414' cy='8' r='1.1'/%3E%3Ccircle cx='434' cy='31' r='1.2'/%3E%3Ccircle cx='455' cy='9' r='.9'/%3E%3Ccircle cx='478' cy='32' r='1.1'/%3E%3Ccircle cx='499' cy='7' r='1.2'/%3E%3Ccircle cx='520' cy='31' r='.9'/%3E%3Ccircle cx='542' cy='9' r='1.1'/%3E%3Ccircle cx='563' cy='30' r='1.2'/%3E%3Ccircle cx='584' cy='12' r='1'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:100% 40px !important;
+  cursor:ew-resize !important;
+  touch-action:pan-y !important;
+  accent-color:#ffc04a !important;
 }
 .sun-panel .sun-range::-webkit-slider-runnable-track {
-  -webkit-appearance: none !important;
-  height: var(--sun-track-height) !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  -webkit-appearance:none !important;
+  height:40px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
 .sun-panel .sun-range::-moz-range-track {
-  height: var(--sun-track-height) !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
+  height:40px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
-.sun-panel .sun-range::-moz-range-progress { background: transparent !important; border: 0 !important; }
+.sun-panel .sun-range::-moz-range-progress { background:transparent !important; border:0 !important; }
 .sun-panel .sun-range::-webkit-slider-thumb {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  width: var(--sun-thumb-size) !important;
-  height: var(--sun-thumb-size) !important;
-  margin-top: calc((var(--sun-track-height) - var(--sun-thumb-size)) / 2) !important;
-  border: 0 !important;
-  border-radius: 50% !important;
-  background: transparent url('./icon-sun-dragger.svg') center / contain no-repeat !important;
-  box-shadow: none !important;
-  filter: drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  width:35px !important;
+  height:35px !important;
+  margin-top:2.5px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
 }
 .sun-panel .sun-range::-moz-range-thumb {
-  width: var(--sun-thumb-size) !important;
-  height: var(--sun-thumb-size) !important;
-  border: 0 !important;
-  border-radius: 50% !important;
-  background: transparent url('./icon-sun-dragger.svg') center / contain no-repeat !important;
-  box-shadow: none !important;
-  filter: drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
+  width:35px !important;
+  height:35px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
 }
-.sun-panel .sun-floating-info {
-  position: absolute !important;
-  left: var(--sun-info-inset) !important;
-  right: var(--sun-info-inset) !important;
-  top: var(--sun-info-top) !important;
-  bottom: auto !important;
-  height: var(--sun-info-height) !important;
-  overflow: visible !important;
-  pointer-events: none !important;
-  transform: none !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  z-index: 3 !important;
-  color: #ffe7b4;
-  text-shadow: 0 0 8px rgba(255,177,72,.32), 0 1px 3px rgba(0,0,0,.65);
+.sun-panel .timeline-bound { white-space:nowrap !important; text-align:center !important; }
+.sun-panel .timeline-caption span:first-child { color:#e8c56f !important; letter-spacing:.8px; font-weight:800; }
+@media (orientation:landscape) and (max-height:430px) {
+  .sun-panel .sun-range { height:36px !important; background-size:100% 36px !important; }
+  .sun-panel .sun-range::-webkit-slider-runnable-track { height:36px !important; }
+  .sun-panel .sun-range::-moz-range-track { height:36px !important; }
+  .sun-panel .sun-range::-webkit-slider-thumb { width:32px !important; height:32px !important; margin-top:2px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width:32px !important; height:32px !important; }
 }
-.sun-panel .sun-endpoint {
-  position: absolute !important;
-  top: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
-  max-width: 90px !important;
-  white-space: nowrap !important;
-}
-.sun-panel .sunrise-info { left: 0 !important; right: auto !important; align-items: flex-start !important; text-align: left !important; }
-.sun-panel .sunset-info { right: 0 !important; left: auto !important; align-items: flex-end !important; text-align: right !important; }
-.sun-panel .sun-info-label { display: block !important; font-size: 9px !important; line-height: 1.2 !important; font-weight: 750 !important; letter-spacing: 1.25px !important; color: #d9a15c !important; text-transform: uppercase !important; }
-.sun-panel .sun-endpoint strong { position: static !important; display: block !important; margin-top: 2px !important; line-height: 1.15 !important; font-size: 13px !important; font-weight: 650 !important; letter-spacing: .25px !important; color: #fff0d0 !important; }
-.sun-panel .sun-current-time {
-  position: absolute !important;
-  left: 50%;
-  top: 0 !important;
-  transform: translateX(-50%) !important;
-  z-index: 5 !important;
-  white-space: nowrap !important;
-  font-size: 14px !important;
-  line-height: 1.2 !important;
-  font-weight: 750 !important;
-  letter-spacing: .25px !important;
-  color: #fff0bd !important;
-  text-shadow: 0 0 9px rgba(255,190,85,.55), 0 1px 3px rgba(0,0,0,.72) !important;
-}
-.sun-panel .sun-current-time::after { content: none !important; }
-.sun-panel .sun-extra-info {
-  position: absolute !important;
-  left: 50% !important;
-  top: var(--sun-extra-top) !important;
-  transform: translateX(-50%) !important;
-  white-space: nowrap !important;
-  text-align: center !important;
-  max-width: 92% !important;
-  font-size: 10px !important;
-  font-weight: 600 !important;
-  letter-spacing: .35px !important;
-  line-height: 1.2 !important;
-  color: #e3bd80 !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,.75) !important;
-}
-.sun-panel .timeline-bound { white-space: nowrap !important; text-align: center !important; }
-.sun-panel .timeline-caption span:first-child { color: #e8c56f !important; letter-spacing: .8px; font-weight: 800; }
 
-/* Narrow portrait: variables change together, so thumb and track geometry stay aligned. */
-@media (max-width: 390px) {
+/* v1.95 — Shorter, calmer Ember Line is the control itself: no deck, belt, rail, title, or caption. */
+.sun-panel {
+  position:absolute !important;
+  z-index:8 !important;
+  left:10px !important;
+  right:10px !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 103px) !important;
+  top:auto !important;
+  transform:none !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  overflow:visible !important;
+  color:transparent !important;
+}
+.sun-panel[hidden] { display:none !important; }
+.sun-panel .sun-timeline {
+  display:block !important;
+  position:relative !important;
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+.sun-panel .sun-range {
+  position:absolute !important;
+  inset:0 6% !important;
+  left:6% !important;
+  right:auto !important;
+  display:block !important;
+  width:88% !important;
+  height:44px !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background-color:transparent !important;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%2044%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23A34E13%22%2F%3E%3Cstop%20offset%3D%22.18%22%20stop-color%3D%22%23E98720%22%2F%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23FFE0A0%22%2F%3E%3Cstop%20offset%3D%22.82%22%20stop-color%3D%22%23E98720%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23944716%22%2F%3E%3C%2FlinearGradient%3E%3Cfilter%20id%3D%22glow%22%20x%3D%22-10%25%22%20y%3D%22-100%25%22%20width%3D%22120%25%22%20height%3D%22300%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%223.2%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M3%2023%20C72%2021%20100%2017%20150%2020%20S235%2026%20300%2022%20S410%2018%20465%2022%20S545%2024%20597%2021%22%20fill%3D%22none%22%20stroke%3D%22%23FF8A20%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.62%22%20filter%3D%22url(%23glow)%22%2F%3E%3Cpath%20d%3D%22M3%2023%20C72%2021%20100%2017%20150%2020%20S235%2026%20300%2022%20S410%2018%20465%2022%20S545%2024%20597%2021%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M12%2023%20C90%2022%20132%2019%20196%2022%20S318%2024%20382%2021%20S506%2022%20588%2021%22%20fill%3D%22none%22%20stroke%3D%22%23FFF0C4%22%20stroke-width%3D%22.8%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.7%22%2F%3E%3Cg%20fill%3D%22%23FFD98B%22%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2217%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22139%22%20cy%3D%2229%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22224%22%20cy%3D%2214%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22306%22%20cy%3D%2229%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22386%22%20cy%3D%2214%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22464%22%20cy%3D%2228%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22535%22%20cy%3D%2216%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22578%22%20cy%3D%2226%22%20r%3D%22.8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:100% 44px !important;
+  cursor:ew-resize !important;
+  touch-action:pan-y !important;
+  accent-color:transparent !important;
+}
+.sun-panel .sun-range::-webkit-slider-runnable-track,
+.sun-panel .sun-range::-moz-range-track,
+.sun-panel .sun-range::-moz-range-progress {
+  appearance:none !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.sun-panel .sun-range::-webkit-slider-thumb {
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  width:39px !important;
+  height:39px !important;
+  margin-top:2.5px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 6px rgba(255,169,43,.72)) !important;
+}
+.sun-panel .sun-range::-moz-range-thumb {
+  width:39px !important;
+  height:39px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 6px rgba(255,169,43,.72)) !important;
+}
+.sun-panel .sr-only {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+@media (orientation:landscape) {
   .sun-panel {
-    --sun-track-height: 64px;
-    --sun-thumb-size: 36px;
-    --sun-track-top: -10px;
-    --sun-info-top: -74px;
-    --sun-info-height: 136px;
-    --sun-extra-top: 120px;
+    left:10px !important;
+    right:10px !important;
+    top:auto !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 103px) !important;
+    width:auto !important;
+    max-width:none !important;
+    padding:0 !important;
+    transform:none !important;
   }
-  .sun-panel .sun-info-label { font-size: 8.5px !important; letter-spacing: 1px !important; }
-  .sun-panel .sun-endpoint strong { font-size: 12px !important; }
-  .sun-panel .sun-current-time { font-size: 13px !important; }
-  .sun-panel .sun-extra-info { font-size: clamp(8px, 2.35vw, 9px) !important; letter-spacing: .1px !important; white-space: normal !important; width: max-content !important; max-width: 92% !important; }
+  .sun-panel .sun-timeline { display:block !important; width:100% !important; height:44px !important; }
+  .sun-panel .sun-range { position:absolute !important; inset:0 6% !important; left:6% !important; right:auto !important; width:88% !important; height:44px !important; transform:none !important; touch-action:pan-y !important; }
 }
-@media (orientation: landscape) {
-  .sun-panel { --sun-info-top: -70px; --sun-info-height: 126px; --sun-extra-top: 112px; }
-  .sun-panel .sun-current-time { font-size: 13px !important; }
-  .sun-panel .sun-extra-info { font-size: 9px !important; }
+@media (orientation:landscape) and (max-height:430px) {
+  .sun-panel { bottom:calc(env(safe-area-inset-bottom,0px) + 79px) !important; }
+  .sun-panel .sun-timeline, .sun-panel .sun-range { height:40px !important; }
+  .sun-panel .sun-range { background-size:100% 40px !important; }
+  .sun-panel .sun-range::-webkit-slider-thumb { width:34px !important; height:34px !important; margin-top:3px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width:34px !important; height:34px !important; }
 }
-@media (orientation: landscape) and (max-height: 430px) {
-  .sun-panel {
-    --sun-panel-bottom-gap: 79px;
-    --sun-track-height: 52px;
-    --sun-thumb-size: 30px;
-    --sun-track-top: -8px;
-    --sun-info-top: -62px;
-    --sun-info-height: 112px;
-    --sun-extra-top: 100px;
-  }
-  .sun-panel .sun-info-label { font-size: 8px !important; }
-  .sun-panel .sun-endpoint strong { font-size: 11px !important; }
-  .sun-panel .sun-current-time { font-size: 12px !important; }
-  .sun-panel .sun-extra-info { font-size: 8px !important; }
-}
+
+
+/* v1.96 — scene-floating Sun information. No panels, fills, or text backplates. */
+.sun-panel .sun-floating-info{position:absolute;left:6%;right:6%;bottom:43px;height:72px;pointer-events:none;background:transparent!important;border:0!important;box-shadow:none!important;z-index:3;color:#ffe7b4;text-shadow:0 0 8px rgba(255,177,72,.32),0 1px 3px rgba(0,0,0,.65)}
+.sun-panel .sun-endpoint{position:absolute;top:30px;display:flex;flex-direction:column;gap:2px;max-width:90px;white-space:nowrap}
+.sun-panel .sunrise-info{left:0;align-items:flex-start;text-align:left}
+.sun-panel .sunset-info{right:0;align-items:flex-end;text-align:right}
+.sun-panel .sun-info-label{font-size:9px;font-weight:750;letter-spacing:1.35px;color:#d9a15c;text-transform:uppercase}
+.sun-panel .sun-endpoint strong{font-size:13px;font-weight:650;letter-spacing:.25px;color:#fff0d0}
+.sun-panel .sun-current-time{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;font-size:14px;line-height:1.2;font-weight:750;letter-spacing:.25px;color:#fff0bd;text-shadow:0 0 9px rgba(255,190,85,.55),0 1px 3px rgba(0,0,0,.72)}
+.sun-panel .sun-extra-info{position:absolute;left:50%;top:23px;transform:translateX(-50%);white-space:nowrap;text-align:center;font-size:10px;font-weight:600;letter-spacing:.55px;color:#e3bd80;text-shadow:0 1px 3px rgba(0,0,0,.75)}
+.sun-panel .sun-timeline{position:relative!important;z-index:2!important;margin-top:0!important}
+.sun-panel .sun-range{position:relative;z-index:4}
+@media(max-width:390px){.sun-panel .sun-floating-info{left:6%;right:6%;bottom:40px;height:66px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-endpoint strong{font-size:12px}.sun-panel .sun-extra-info{font-size:9px;letter-spacing:.25px}}
+@media(orientation:landscape){.sun-panel .sun-floating-info{bottom:42px;height:65px}.sun-panel .sun-endpoint{top:27px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-extra-info{top:21px}}
+@media(orientation:landscape) and (max-height:430px){.sun-panel .sun-floating-info{bottom:36px;height:57px}.sun-panel .sun-endpoint{top:25px}.sun-panel .sun-info-label{font-size:8px}.sun-panel .sun-endpoint strong{font-size:11px}.sun-panel .sun-current-time{font-size:12px}.sun-panel .sun-extra-info{top:20px;font-size:9px}}
