@@ -1,0 +1,68 @@
+/* EARTH // LIVE v1.91 — Sun scroller rebuilt from the working Moon scroller's geometry.
+   Presentation only: the Sun timeline's existing range input, time bounds and handlers remain unchanged.
+   The gold waveform is one correctly encoded SVG layer; the Sun retains its own thumb artwork. */
+.sun-panel .sun-range {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.sun-panel .sun-range::-webkit-slider-runnable-track {
+  height: 5px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background-color: #70481d !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8' viewBox='0 0 160 8'%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23ffbd55' stroke-width='4' stroke-linecap='round' opacity='.26'/%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23ffd477' stroke-width='1.7' stroke-linecap='round'/%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23fff0b2' stroke-width='.55' stroke-linecap='round' opacity='.85'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-size: 100% 8px !important;
+  background-repeat: repeat-x !important;
+  box-shadow: 0 0 8px rgba(255,183,77,.25) !important;
+}
+
+.sun-panel .sun-range::-moz-range-track {
+  height: 5px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background-color: #70481d !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='8' viewBox='0 0 160 8'%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23ffbd55' stroke-width='4' stroke-linecap='round' opacity='.26'/%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23ffd477' stroke-width='1.7' stroke-linecap='round'/%3E%3Cpath d='M0 4 C8 3 13 5 20 2 S34 3 41 4 S54 2 61 4 S76 2 82 4 S97 3 104 4 S119 2 126 4 S140 3 148 4 S155 3 160 4' fill='none' stroke='%23fff0b2' stroke-width='.55' stroke-linecap='round' opacity='.85'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-size: 100% 8px !important;
+  background-repeat: repeat-x !important;
+  box-shadow: 0 0 8px rgba(255,183,77,.25) !important;
+}
+
+.sun-panel .sun-range::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 39px !important;
+  height: 39px !important;
+  margin-top: -17px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent url('./icon-sun-dragger.svg') center / contain no-repeat !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 5px rgba(255,189,54,.38)) !important;
+}
+
+.sun-panel .sun-range::-moz-range-thumb {
+  width: 39px !important;
+  height: 39px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent url('./icon-sun-dragger.svg') center / contain no-repeat !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 5px rgba(255,189,54,.38)) !important;
+}
+
+@media (orientation: landscape) {
+  .sun-panel .sun-range::-webkit-slider-thumb { width: 38px !important; height: 38px !important; margin-top: -16.5px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width: 38px !important; height: 38px !important; }
+}
+
+@media (orientation: landscape) and (max-height: 430px) {
+  .sun-panel .sun-range::-webkit-slider-thumb { width: 32px !important; height: 32px !important; margin-top: -13.5px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width: 32px !important; height: 32px !important; }
+}
