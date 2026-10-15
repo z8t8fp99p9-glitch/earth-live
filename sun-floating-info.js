@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.96.7 — transparent ember-red celestial timer anchored to the Sun scroller thumb. */
+/* EARTH // LIVE v1.96.9 — compact black sunrise label with ember glow and transparent background anchored to the Sun scroller thumb. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
@@ -28,15 +28,15 @@
   sunrise.setAttribute('aria-label', 'Sunrise time');
   Object.assign(sunrise.style, {
     position: 'fixed', zIndex: '999', display: 'none', pointerEvents: 'none',
-    transform: 'translate(0, -100%)', padding: '5px 9px', borderRadius: '10px',
-    color: '#ff5148', background: 'rgba(255, 92, 55, 0.13)',
-    border: '1px solid rgba(255, 105, 75, 0.48)',
-    boxShadow: '0 0 7px rgba(255, 75, 48, 0.52), 0 0 16px rgba(255, 82, 48, 0.32), inset 0 0 10px rgba(255, 92, 55, 0.16)',
-    font: '700 10px/1.25 -apple-system, BlinkMacSystemFont, sans-serif',
-    letterSpacing: '0.08em', whiteSpace: 'nowrap', textAlign: 'center',
-    textShadow: '0 0 5px rgba(255, 80, 65, 0.55)'
+    transform: 'translate(0, -100%)', padding: '0', borderRadius: '0',
+    color: '#17100d', background: 'transparent',
+    border: 'none',
+    boxShadow: 'none',
+    font: '800 9px/1.2 -apple-system, BlinkMacSystemFont, sans-serif',
+    letterSpacing: '0.035em', whiteSpace: 'nowrap', textAlign: 'center',
+    textShadow: '0 0 3px rgba(255, 102, 68, 0.95), 0 0 7px rgba(255, 91, 54, 0.78), 0 0 12px rgba(255, 75, 45, 0.5)'
   });
-  sunrise.innerHTML = '<span style="display:block">SUNRISE</span><span id="sunriseScrollerTime" style="display:block;font-size:12px;letter-spacing:.02em;margin-top:2px">—</span>';
+  sunrise.innerHTML = '<span style="display:block;font-weight:800">SUNRISE</span><span id="sunriseScrollerTime" style="display:block;font-size:10px;font-weight:800;letter-spacing:.02em;margin-top:1px">—</span>';
   document.body.appendChild(sunrise);
 
   function timeText() {
