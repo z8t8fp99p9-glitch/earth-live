@@ -11,13 +11,12 @@
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Portrait profile has a small zoom-response and zoom-inertia refinement.
-  // Rotation inertia is reduced across all profiles so the globe settles sooner after a drag.
+  // Portrait zoom is tuned slightly further. Globe-drag inertia is restored; two-finger twist is tuned separately.
   const profiles = {
-    portrait:  { initialHeight: 18500000, zoomFactor: 8.5, movementRatio: 0.075, inertiaSpin: 0.72, inertiaTranslate: 0.86, inertiaZoom: 0.86 },
-    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.72, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
-    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.72, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
-    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.72, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
+    portrait:  { initialHeight: 18500000, zoomFactor: 8.63, movementRatio: 0.075, inertiaSpin: 0.86, inertiaTranslate: 0.86, inertiaZoom: 0.86 },
+    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.88, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
+    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.90, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
+    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.92, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
   };
 
   function showError(error) {
@@ -79,6 +78,47 @@
         console.warn("Esri World Imagery tile request failed:", error);
       });
     }
+  }
+
+  // Detect two-finger twist separately from one-finger globe dragging.
+  // A modest multiplier makes map-heading rotation less sensitive while leaving pinch zoom available.
+  function installTwoFingerTwist() {
+    let previousAngle = null;
+    const twistSensitivity = 0.65;
+    const normalizeAngle = angle => {
+      while (angle > Math.PI) angle -= Math.PI * 2;
+      while (angle < -Math.PI) angle += Math.PI * 2;
+      return angle;
+    };
+    globeElement.addEventListener("touchstart", event => {
+      if (event.touches.length === 2) {
+        const a = event.touches[0];
+        const b = event.touches[1];
+        previousAngle = Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
+      } else {
+        previousAngle = null;
+      }
+    }, { passive: true });
+    globeElement.addEventListener("touchmove", event => {
+      if (event.touches.length !== 2 || !viewer || viewer.isDestroyed()) {
+        previousAngle = null;
+        return;
+      }
+      const a = event.touches[0];
+      const b = event.touches[1];
+      const angle = Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
+      if (previousAngle !== null) {
+        const delta = normalizeAngle(angle - previousAngle);
+        if (Math.abs(delta) < 0.35) {
+          viewer.camera.rotateRight(delta * twistSensitivity);
+          viewer.scene.requestRender();
+        }
+      }
+      previousAngle = angle;
+    }, { passive: true });
+    const resetTwist = () => { previousAngle = null; };
+    globeElement.addEventListener("touchend", resetTwist, { passive: true });
+    globeElement.addEventListener("touchcancel", resetTwist, { passive: true });
   }
 
   function resizeGlobe() {
@@ -143,6 +183,7 @@
       controller.enableLook = true;
 
       applyDisplayProfile({ initial: true });
+      installTwoFingerTwist();
 
       window.EarthLiveViewer = viewer;
       window.EarthLiveAdaptiveDisplay = {

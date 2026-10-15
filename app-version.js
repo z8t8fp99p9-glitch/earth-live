@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "esri-rotation-zoom-tuned-v1.3.2";
+window.EARTH_LIVE_VERSION = "esri-two-finger-twist-v1.3.3";

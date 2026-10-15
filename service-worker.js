@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-esri-rotation-zoom-tuned-v1-3-2";
+const CACHE_NAME = "earth-live-esri-two-finger-twist-v1-3-3";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).catch(error => console.warn("EARTH LIVE shell cache skipped:", error)).then(() => self.skipWaiting()));
