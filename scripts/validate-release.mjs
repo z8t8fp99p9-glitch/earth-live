@@ -1,34 +1,39 @@
+import { existsSync, readFileSync } from "node:fs";
 
-import { readFileSync, existsSync } from "node:fs";
-
-const requiredFiles = [
+const required = [
   "index.html",
+  "style.css",
   "app.js",
-  "icon.svg",
+  "app-version.js",
   "manifest.webmanifest",
   "service-worker.js",
+  "icon.svg"
 ];
 
 let failed = false;
-
-for (const file of requiredFiles) {
-  if (existsSync(file)) {
-    console.log(`PASS: ${file} exists`);
-  } else {
+for (const file of required) {
+  if (existsSync(file)) console.log(`PASS: ${file} exists`);
+  else {
     console.error(`FAIL: ${file} is missing`);
     failed = true;
   }
 }
 
-const app = readFileSync("app.js", "utf8");
-
-if (app.trim().length > 0) {
-  console.log("PASS: app.js is not empty");
-} else {
-  console.error("FAIL: app.js is empty");
-  failed = true;
+for (const file of ["app.js", "service-worker.js"]) {
+  if (existsSync(file) && readFileSync(file, "utf8").trim()) {
+    console.log(`PASS: ${file} is not empty`);
+  } else {
+    console.error(`FAIL: ${file} is empty`);
+    failed = true;
+  }
 }
 
+const html = existsSync("index.html") ? readFileSync("index.html", "utf8") : "";
+for (const requiredRef of ["./style.css", "./app.js", "./manifest.webmanifest"]) {
+  if (!html.includes(requiredRef)) {
+    console.error(`FAIL: index.html does not reference ${requiredRef}`);
+    failed = true;
+  }
+}
 if (failed) process.exit(1);
-
-console.log("All release validation checks passed.");
+console.log("Basic-globe release checks passed.");
