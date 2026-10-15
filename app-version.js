@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "map-lab-1.1.0-zoom-unlocked";
+window.EARTH_LIVE_VERSION = "esri-zoom-limit-only-v1.2.0";

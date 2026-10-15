@@ -7,36 +7,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>EARTH // LIVE — Map Lab</title>
+  <title>EARTH // LIVE</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./style.css?v=map-lab-1.1.0">
+  <link rel="stylesheet" href="./style.css?v=esri-zoom-limit-only-1.2.0">
   <script>window.CESIUM_BASE_URL = "https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/";</script>
   <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-  <script defer src="./app-version.js?v=map-lab-1.1.0"></script>
-  <script defer src="./app.js?v=map-lab-1.1.0"></script>
+  <script defer src="./app-version.js?v=esri-zoom-limit-only-1.2.0"></script>
+  <script defer src="./app.js?v=esri-zoom-limit-only-1.2.0"></script>
 </head>
 <body>
-  <main id="app" aria-label="EARTH LIVE map comparison">
-    <header id="mapBar">
-      <div class="brand">EARTH <span>// LIVE</span><small>MAP LAB</small></div>
-      <div class="mapSwitch" role="group" aria-label="Choose map on small screens">
-        <button type="button" class="mapTab active" data-map="nasa" aria-pressed="true">NASA Earth</button>
-        <button type="button" class="mapTab" data-map="esri" aria-pressed="false">Satellite Map</button>
-      </div>
-      <div class="zoomNote">Zoom unlocked · drag to rotate · pinch to zoom</div>
-    </header>
-    <section id="mapGrid" aria-label="Compare NASA and satellite maps">
-      <article class="mapPane" id="nasaPane" data-map="nasa">
-        <div class="paneLabel"><strong>NASA EARTH</strong><span>Blue Marble · shaded relief</span></div>
-        <div id="nasaGlobe" class="globe" role="application" aria-label="NASA Earth globe"></div>
-      </article>
-      <article class="mapPane" id="esriPane" data-map="esri">
-        <div class="paneLabel"><strong>SATELLITE IMAGERY</strong><span>Esri World Imagery · tiled detail</span></div>
-        <div id="esriGlobe" class="globe" role="application" aria-label="Satellite imagery globe"></div>
-      </article>
-    </section>
+  <main id="app" aria-label="EARTH LIVE globe">
+    <div id="globe" role="application" aria-label="Interactive satellite Earth. Drag to rotate and pinch to zoom."></div>
     <div id="errorMessage" hidden role="status">The globe could not load. Check your internet connection and reload the page.</div>
   </main>
 </body>

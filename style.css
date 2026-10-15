@@ -1,43 +1,37 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #030509; color: #fff; }
-body { position: fixed; inset: 0; overscroll-behavior: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-#app { position: fixed; inset: 0; width: 100vw; height: 100dvh; overflow: hidden; background: #030509; isolation: isolate; }
-#mapBar { position: absolute; z-index: 20; inset: max(8px, env(safe-area-inset-top)) 10px auto 10px; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(4,8,14,.82); backdrop-filter: blur(14px); }
-.brand { flex: 0 0 auto; font-size: 13px; font-weight: 800; letter-spacing: .09em; white-space: nowrap; }
-.brand span { color: #9ecbff; }
-.brand small { display: block; margin-top: 2px; font-size: 8px; letter-spacing: .2em; color: #91a4b8; }
-.mapSwitch { display: flex; flex: 1 1 auto; justify-content: center; gap: 4px; }
-.mapTab { min-height: 34px; padding: 0 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 9px; color: #c7d1df; background: rgba(255,255,255,.04); font: inherit; font-size: 12px; font-weight: 650; white-space: nowrap; }
-.mapTab.active { color: #fff; border-color: rgba(119,183,255,.65); background: rgba(51,119,190,.28); }
-.zoomNote { flex: 0 1 auto; color: #b4c1d1; font-size: 10px; text-align: right; }
-#mapGrid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; padding-top: 0; }
-.mapPane { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #030509; }
-.mapPane + .mapPane { border-left: 1px solid rgba(255,255,255,.2); }
-.globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer, .cesium-widget, .cesium-widget canvas { position: absolute; inset: 0; width: 100%; height: 100%; outline: none; touch-action: none; }
+html, body {
+  width: 100%; height: 100%; margin: 0; overflow: hidden;
+  background: #030509; color: #fff;
+}
+body {
+  position: fixed; inset: 0; overscroll-behavior: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+#app {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  height: 100dvh; width: 100vw; overflow: hidden; background: #030509; isolation: isolate;
+}
+#globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer,
+.cesium-widget, .cesium-widget canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  outline: none; touch-action: none;
+}
 .cesium-viewer { overflow: hidden; }
-.paneLabel { position: absolute; z-index: 5; left: 12px; top: 68px; max-width: calc(100% - 24px); display: flex; flex-direction: column; gap: 3px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.13); border-radius: 9px; background: rgba(3,7,12,.72); pointer-events: none; backdrop-filter: blur(8px); }
-.paneLabel strong { font-size: 10px; letter-spacing: .11em; }
-.paneLabel span { color: #bdc9d7; font-size: 10px; }
-.cesium-viewer-bottom { left: auto !important; right: max(8px, env(safe-area-inset-right)) !important; bottom: max(5px, env(safe-area-inset-bottom)) !important; max-width: 75%; text-align: right; opacity: .8; }
+.cesium-viewer-bottom {
+  left: auto !important; right: max(8px, env(safe-area-inset-right)) !important;
+  bottom: max(5px, env(safe-area-inset-bottom)) !important;
+  max-width: 75vw; text-align: right; opacity: .8;
+}
 .cesium-widget-credits { font-size: 9px !important; }
-#errorMessage { position: absolute; z-index: 30; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86vw, 340px); padding: 16px 18px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; background: rgba(8,12,20,.94); color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.5; text-align: center; }
+#errorMessage {
+  position: absolute; z-index: 10; left: 50%; top: 50%;
+  transform: translate(-50%, -50%); width: min(86vw, 340px);
+  padding: 16px 18px; border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px; background: rgba(8,12,20,.92);
+  color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.5;
+  text-align: center;
+}
 #errorMessage[hidden] { display: none; }
-@media (max-width: 759px), (orientation: portrait) and (max-width: 900px) {
-  #mapBar { inset: max(7px, env(safe-area-inset-top)) 8px auto; flex-wrap: wrap; gap: 6px 9px; padding: 7px 9px; }
-  .brand { font-size: 12px; }
-  .brand small { font-size: 7px; }
-  .mapSwitch { order: 3; flex: 1 0 100%; }
-  .mapTab { flex: 1; min-height: 32px; }
-  .zoomNote { margin-left: auto; font-size: 9px; }
-  #mapGrid { grid-template-columns: 1fr; }
-  .mapPane { display: none; }
-  .mapPane.mobile-active { display: block; }
-  .mapPane + .mapPane { border-left: 0; }
-  .paneLabel { top: 112px; left: 10px; padding: 6px 8px; }
-  .paneLabel strong, .paneLabel span { font-size: 9px; }
-}
-@media (min-width: 760px) and (orientation: landscape) {
-  .mapSwitch { display: none; }
-  .zoomNote { margin-left: auto; }
-  .paneLabel { top: 68px; }
-}
+/* Keep the existing adaptive display styling unchanged. */
+@media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; } }
+@media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }
