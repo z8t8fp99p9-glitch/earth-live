@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.97.0 — compact paired sunrise/sunset ember markers with a quiet, transparent finish. */
+/* EARTH // LIVE v1.97.1 — refined horizon Sun icons with a quiet, transparent ember finish. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
@@ -35,18 +35,18 @@
       letterSpacing: '0.055em', whiteSpace: 'nowrap', textAlign: 'center',
       textShadow: `0 0 2px ${glow}, 0 0 5px ${glow}, 0 0 9px ${color}`
     });
-    marker.innerHTML = `<span aria-hidden="true" style="display:block;width:15px;height:10px;margin:0 auto 2px;filter:drop-shadow(0 0 3px ${glow})">${iconSvg}</span><span style="display:block;font-weight:800">${title}</span><span id="${timeId}" style="display:block;font-size:10px;font-weight:800;letter-spacing:.025em;margin-top:2px">—</span>`;
+    marker.innerHTML = `<span aria-hidden="true" style="display:block;width:20px;height:14px;margin:0 auto 2px;filter:drop-shadow(0 0 3px ${glow})">${iconSvg}</span><span style="display:block;font-weight:800">${title}</span><span id="${timeId}" style="display:block;font-size:10px;font-weight:800;letter-spacing:.025em;margin-top:2px">—</span>`;
     document.body.appendChild(marker);
     return marker;
   }
   const sunrise = makeEndpointMarker(
     'sunriseScrollerMarker', 'Sunrise time', 'SUNRISE', 'sunriseScrollerTime',
-    '<svg viewBox="0 0 24 16" width="15" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M2 13H22M6 13a6 6 0 0 1 12 0" fill="none" stroke="#FFC77A" stroke-width="1.7" stroke-linecap="round"/><path d="M12 1v3M4.7 4l2 2M19.3 4l-2 2" stroke="#FFC77A" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    '<svg viewBox="0 0 24 16" width="20" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M1 10.5H23M5.5 10.5a6.5 6.5 0 0 1 13 0" fill="none" stroke="#FFC77A" stroke-width="1.5" stroke-linecap="round"/><path d="M12 0.8v3M5.1 3.2l1.8 1.9M18.9 3.2l-1.8 1.9M2.5 7.1l2.6 1M21.5 7.1l-2.6 1" stroke="#FFC77A" stroke-width="1.25" stroke-linecap="round"/></svg>',
     'rgba(255,160,92,.45)', 'rgba(255,184,113,.85)'
   );
   const sunset = makeEndpointMarker(
     'sunsetScrollerMarker', 'Sunset time', 'SUNSET', 'sunsetScrollerTime',
-    '<svg viewBox="0 0 24 16" width="15" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M2 7H22M6 7a6 6 0 0 1 12 0" fill="none" stroke="#FF9A80" stroke-width="1.7" stroke-linecap="round"/><path d="M12 10v3M4.7 10l2 2M19.3 10l-2 2" stroke="#FF9A80" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    '<svg viewBox="0 0 24 16" width="20" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M1 10.5H23M5.5 10.5a6.5 6.5 0 0 1 13 0" fill="none" stroke="#FF9A80" stroke-width="1.5" stroke-linecap="round"/><path d="M12 0.8v3M5.1 3.2l1.8 1.9M18.9 3.2l-1.8 1.9M2.5 7.1l2.6 1M21.5 7.1l-2.6 1" stroke="#FF9A80" stroke-width="1.25" stroke-linecap="round"/></svg>',
     'rgba(255,105,91,.42)', 'rgba(255,155,132,.8)'
   );
 
