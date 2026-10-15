@@ -26,12 +26,12 @@
 }
 </style>
 
-<style id="landscape-rebuild-v1983">
-/* v1.98.3: Landscape dock glides outward; vertical Sun timeline anchored right. Portrait layout remains the original centered dock. Portrait layout remains the original centered dock. */
+<style id="landscape-rebuild-v1984">
+/* v1.98.4: Landscape dock anchor override; vertical Sun timeline anchored right. Portrait layout remains the original centered dock. Portrait layout remains the original centered dock. */
 .dock-left-group,.dock-right-group{display:contents}
 @media (orientation:landscape){
-  .bottom-ui{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 9px);transform:none;width:auto;max-width:none;padding:0;gap:0;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none;display:flex;align-items:center;justify-content:space-between;overflow:visible}
-  .dock-left-group,.dock-right-group{display:flex;align-items:center;gap:clamp(7px,1.3vw,15px);padding:7px 9px;border-radius:24px;background:linear-gradient(145deg,rgba(24,37,54,.88),rgba(5,11,21,.91));border:1px solid rgba(184,216,246,.28);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);pointer-events:auto;will-change:transform;transition:transform 560ms cubic-bezier(.2,.78,.22,1),opacity 420ms ease}
+  #app .bottom-ui{position:absolute!important;left:10px!important;right:10px!important;bottom:calc(env(safe-area-inset-bottom,0px) + 9px)!important;top:auto!important;transform:none!important;width:auto!important;max-width:none!important;min-width:0!important;padding:0!important;margin:0!important;gap:0!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;overflow:visible!important;box-sizing:border-box!important}
+  #app .dock-left-group,#app .dock-right-group{position:relative!important;left:auto!important;right:auto!important;display:flex!important;flex:0 0 auto!important;align-items:center;gap:clamp(7px,1.3vw,15px);padding:7px 9px;border-radius:24px;background:linear-gradient(145deg,rgba(24,37,54,.88),rgba(5,11,21,.91));border:1px solid rgba(184,216,246,.28);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);pointer-events:auto;will-change:transform;transition:transform 560ms cubic-bezier(.2,.78,.22,1),opacity 420ms ease}
   .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 5.5vw);transform:translateX(72px);opacity:.94;}
   .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 5.5vw);transform:translateX(-72px);opacity:.94;}
   /* A restrained outward unfold leaves a clear centre for the sky. */
