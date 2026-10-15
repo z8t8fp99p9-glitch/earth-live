@@ -13,10 +13,17 @@
 <link rel="stylesheet" href="./liquid-glass.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-<style id="sun-scroller-vertical-adjustment-v1972">
-/* Move only the Sun time control upward; the thumb, timer, and endpoint markers
-   follow the slider's rendered bounds automatically. Celestial path is untouched. */
-#sunPanel { transform: translateY(-15px); }
+<style id="sun-scroller-spacing-v1973">
+/* v1.97.3: raise only the Sun scroller group using its actual bottom anchor.
+   The slider thumb, floating timer, and endpoint markers remain geometry-linked.
+   Do not transform the panel: the shared stylesheet intentionally resets transforms. */
+#sunPanel { bottom: calc(env(safe-area-inset-bottom, 0px) + 113px) !important; }
+@media (orientation: landscape) {
+  #sunPanel { bottom: calc(env(safe-area-inset-bottom, 0px) + 113px) !important; }
+}
+@media (orientation: landscape) and (max-height: 430px) {
+  #sunPanel { bottom: calc(env(safe-area-inset-bottom, 0px) + 89px) !important; }
+}
 </style>
 </head>
 <body>
@@ -67,6 +74,6 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.97.2"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.97.2"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.97.3"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.97.3"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>
