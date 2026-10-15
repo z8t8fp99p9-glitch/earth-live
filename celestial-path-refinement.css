@@ -41,3 +41,23 @@
 @media (max-height:430px){
  .sun-sky .sky-horizon,.moon-sky .sky-horizon{height:40%}
 }
+
+
+/* v1.79 — static celestial treatment: warm solar firelight + lunar starlight.
+   Presentation only: no animation and no changes to astronomy/projection logic. */
+.sky-sun{
+ background:radial-gradient(circle at 34% 28%,#fffce0 0%,#fff0b1 17%,#ffd86f 39%,#ffad43 62%,#f47727 78%,#d84a1e 100%);
+ box-shadow:0 0 0 2px rgba(255,231,159,.20),0 0 14px 5px rgba(255,214,113,.78),0 0 32px 13px rgba(255,157,54,.54),0 0 62px 24px rgba(255,104,34,.22);
+}
+.sky-sun::before,.sky-sun::after{content:"";position:absolute;inset:-24%;border-radius:50%;pointer-events:none}
+.sky-sun::before{background:radial-gradient(ellipse at 50% 50%,rgba(255,224,126,.28) 0%,rgba(255,148,49,.16) 42%,transparent 72%);filter:blur(3px)}
+.sky-sun::after{inset:-13%;border:1px solid rgba(255,218,130,.26);box-shadow:0 0 10px rgba(255,170,63,.28),inset 0 0 9px rgba(255,218,130,.16)}
+.sky-moon{
+ box-shadow:0 0 0 1px rgba(224,241,255,.42),0 0 12px 4px rgba(191,222,255,.38),0 0 28px 11px rgba(124,187,255,.24),0 0 48px 18px rgba(101,159,224,.12);
+}
+.sky-moon::before,.sky-moon::after{content:"";position:absolute;inset:-24%;border-radius:50%;pointer-events:none}
+.sky-moon::before{background:radial-gradient(circle,rgba(219,238,255,.20) 0%,rgba(154,203,255,.12) 42%,transparent 72%)}
+.sky-moon::after{inset:-17%;background:radial-gradient(1px 1px at 18% 28%,rgba(239,248,255,.95) 0 1px,transparent 1.8px),radial-gradient(1.2px 1.2px at 82% 23%,rgba(220,240,255,.9) 0 1px,transparent 2px),radial-gradient(1px 1px at 88% 68%,rgba(239,248,255,.85) 0 1px,transparent 1.8px),radial-gradient(1px 1px at 12% 74%,rgba(220,240,255,.8) 0 1px,transparent 1.8px)}
+.celestial-real-trajectory path.sun{filter:drop-shadow(0 0 2px rgba(255,195,89,.95)) drop-shadow(0 0 6px rgba(255,125,40,.55));stroke:#ffe3a3}
+.celestial-real-trajectory path.moon{filter:drop-shadow(0 0 2px rgba(133,213,255,.95)) drop-shadow(0 0 6px rgba(91,172,255,.58));stroke:#9cddff}
+.timeline-caption>span:nth-child(2){display:none!important}
