@@ -1,0 +1,16 @@
+EARTH // LIVE — Landscape Celestial Path Boundary Patch
+Prepared from the uploaded earth-live-main ZIP. This is a local patch only; nothing was changed on GitHub.
+
+Files to replace at repository root:
+- sun-moon-tracker.js
+- sun-sky-view.js
+- celestial-path-refinement.js
+
+What it changes:
+- In landscape layouts where the vertical time panel is open, the live Sun/Moon and the trajectory renderer share a narrower horizontal projection that reserves the panel and a safety gap.
+- Portrait projection is unchanged.
+- Astronomical calculations, rise/set windows, altitude mapping, wallpaper SVGs, mountains, dock, gestures, and other controls are unchanged.
+
+Validation performed:
+- JavaScript syntax checks passed for all three files.
+- This is a source-level fix, not yet device-verified. Please test landscape at both ends of the Sun timeline and Moon timeline, then switch portrait/landscape to confirm the object and arc stay inside the sky column.

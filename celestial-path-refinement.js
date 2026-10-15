@@ -39,12 +39,23 @@ function lunar(date, loc) {
   p.altitude -= parallax*Math.cos(p.altitude*DEG);
   return p;
 }
-/* Same projection as the visible celestial objects. East is left, west is right. */
-function project(p) {
-  return {
-    x: 6 + 88*clamp((p.azimuth-90)/180,0,1),
-    bottom: 34 + clamp(p.altitude,0,75)*.48
-  };
+/* Match the live object's projection. In landscape, reserve the right-side timeline
+   so the path cannot run underneath it or appear to leave the visible sky. */
+function projectedX(skyId,azimuth) {
+  const sky=$(skyId), normalized=clamp((azimuth-90)/180,0,1);
+  if(sky&&window.matchMedia&&window.matchMedia('(orientation: landscape) and (min-width: 600px)').matches){
+    const panel=$(skyId==='sunSky'?'sunPanel':'moonPanel');
+    if(panel&&!panel.hidden){
+      const width=sky.clientWidth||window.innerWidth;
+      const reserved=(panel.getBoundingClientRect().width||116)+24;
+      const usable=Math.max(width*.55,width-reserved);
+      return ((12+normalized*Math.max(0,usable-24))/width)*100;
+    }
+  }
+  return 6+88*normalized;
+}
+function project(p,skyId) {
+  return { x:projectedX(skyId,p.azimuth), bottom:34+clamp(p.altitude,0,75)*.48 };
 }
 function locationKey(loc) {
   if (!loc || !Number.isFinite(Number(loc.latitude)) || !Number.isFinite(Number(loc.longitude))) return '';
@@ -82,7 +93,7 @@ function makePath(skyId,pathId,kind,startMs,endMs,loc) {
         if(chunk.length>1) chunks.push(chunk);
         chunk=[]; continue;
       }
-      const q=project(p); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
+      const q=project(p,skyId); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
     }
     if(chunk.length>1) chunks.push(chunk);
     pathCache.set(key,chunks);

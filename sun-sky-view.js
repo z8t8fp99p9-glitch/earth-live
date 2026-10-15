@@ -39,7 +39,17 @@ function findSunWindow(loc){
 }
 function setTime(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);viewer.clock.shouldAnimate=false;viewer.scene.requestRender();}}
 function compass(az){return ['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];}
-function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=6+88*clamp((p.azimuth-90)/180,0,1),y=34+clamp(p.altitude,0,75)*0.48;
+function projectedSunX(azimuth){
+  const normalized=clamp((azimuth-90)/180,0,1),sky=$('sunSky'),panel=$('sunPanel');
+  // Keep the Sun inside the sky column when the vertical landscape scroller is open.
+  if(sky&&panel&&!panel.hidden&&window.matchMedia&&window.matchMedia('(orientation: landscape) and (min-width: 600px)').matches){
+    const width=sky.clientWidth||window.innerWidth,reserved=(panel.getBoundingClientRect().width||116)+24;
+    const usable=Math.max(width*.55,width-reserved);
+    return ((12+normalized*Math.max(0,usable-24))/width)*100;
+  }
+  return 6+88*normalized;
+}
+function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=projectedSunX(p.azimuth),y=34+clamp(p.altitude,0,75)*0.48;
   const orb=$('skySun');orb.style.left=x+'%';orb.style.bottom=y+'%';orb.style.opacity=p.altitude>=HORIZON?'1':'.3';
   $('sunSkyDirection').textContent=`${Math.round(p.azimuth)}° ${compass(p.azimuth)} · ${Math.max(0,p.altitude).toFixed(0)}° altitude`;
   $('sunSkyStatus').textContent=`${fmt(date)} · ${p.altitude>=HORIZON?'SUN ABOVE HORIZON':'SUN BELOW HORIZON'}`;
