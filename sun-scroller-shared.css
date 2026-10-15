@@ -253,3 +253,45 @@
  .sun-panel .sun-extra-info{top:103px!important}
  .sun-panel .sun-current-time{top:-36px!important}
 }
+
+/* v1.98 — compact cinematic Sun information layout; preserve the existing sky art. */
+.sun-panel .sun-floating-info{
+  left:6%!important; right:6%!important;
+  bottom:-46px!important; height:112px!important;
+  overflow:visible!important;
+  background:transparent!important; border:0!important; box-shadow:none!important;
+}
+/* Sunrise/sunset labels sit just above the ember line. */
+.sun-panel .sun-endpoint{top:3px!important; gap:0!important; max-width:90px!important}
+.sun-panel .sun-info-label{display:block!important; line-height:1.2!important; font-size:9px!important; letter-spacing:1.25px!important}
+/* Their times sit below the line, with clear air between label, beam, and value. */
+.sun-panel .sun-endpoint strong{position:absolute!important; top:58px!important; line-height:1.15!important; font-size:13px!important}
+.sun-panel .sunrise-info strong{left:0!important; right:auto!important}
+.sun-panel .sunset-info strong{right:0!important; left:auto!important}
+/* The selected time is anchored to the small slider Sun, not the large sky Sun. */
+.sun-panel .sun-current-time{top:-3px!important; font-size:14px!important; line-height:1.15!important; z-index:5!important}
+/* Quiet solar details beneath the endpoint times, kept clear of the bottom dock. */
+.sun-panel .sun-extra-info{top:83px!important; left:50%!important; max-width:100%!important; font-size:9px!important; line-height:1.2!important; letter-spacing:.25px!important; white-space:normal!important; width:max-content!important; max-width:88%!important}
+.sun-panel .sun-timeline{transform:translateY(-17px)!important; z-index:2!important}
+.sun-panel .sun-range{background-size:100% 44px!important}
+@media(max-width:390px){
+ .sun-panel .sun-floating-info{bottom:-43px!important;height:106px!important}
+ .sun-panel .sun-endpoint strong{top:56px!important;font-size:12px!important}
+ .sun-panel .sun-current-time{top:-2px!important;font-size:13px!important}
+ .sun-panel .sun-extra-info{top:80px!important;font-size:8.5px!important;letter-spacing:.1px!important}
+}
+@media(orientation:landscape){
+ .sun-panel .sun-floating-info{bottom:-39px!important;height:100px!important}
+ .sun-panel .sun-endpoint{top:2px!important}
+ .sun-panel .sun-endpoint strong{top:51px!important}
+ .sun-panel .sun-current-time{top:-2px!important;font-size:13px!important}
+ .sun-panel .sun-extra-info{top:74px!important;font-size:9px!important}
+ .sun-panel .sun-timeline{transform:translateY(-13px)!important}
+}
+@media(orientation:landscape) and (max-height:430px){
+ .sun-panel .sun-floating-info{bottom:-34px!important;height:88px!important}
+ .sun-panel .sun-endpoint strong{top:43px!important;font-size:11px!important}
+ .sun-panel .sun-current-time{top:-1px!important;font-size:12px!important}
+ .sun-panel .sun-extra-info{top:64px!important;font-size:8px!important}
+ .sun-panel .sun-timeline{transform:translateY(-10px)!important}
+}

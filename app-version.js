@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = 'v1.97 Ember Text Layout';
+window.EARTH_LIVE_VERSION = 'v1.98 Sun Spacing Polish';
