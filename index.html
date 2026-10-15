@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="./sun-scroller-shared.css">
 <link rel="stylesheet" href="./celestial-path-refinement.css">
 <link rel="stylesheet" href="./liquid-glass.css">
+<style>/* v1.96.5: remove all floating Sun timer/information UI; preserve the ember scroller and calculated Sun path. */
+#sunPanel .sun-floating-info,#sunPanel .sun-current-time,#sunPanel #sunCurrentTimeFloat{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+</style>
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
 </head>
@@ -37,12 +40,6 @@
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
   <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun ember time control">
-    <div class="sun-floating-info" aria-live="polite">
-      <div class="sun-endpoint sunrise-info"><span class="sun-info-label">SUNRISE</span><strong id="sunRiseTimeFloat">—</strong></div>
-      <div class="sun-current-time" id="sunCurrentTimeFloat">—</div>
-      <div class="sun-endpoint sunset-info"><span class="sun-info-label">SUNSET</span><strong id="sunSetTimeFloat">—</strong></div>
-      <div class="sun-extra-info" id="sunExtraInfoFloat">—</div>
-    </div>
     <div class="timeline-shell sun-timeline"><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1" step="1" value="0" aria-label="Drag the Sun from sunrise to sunset"><span class="sr-only" id="sunStartLabel">SUNRISE</span><span class="sr-only" id="sunEndLabel">SUNSET</span></div>
     <output id="sunTimeReadout" class="sr-only">—</output><span id="sunSkyWindowLabel" class="sr-only">CALCULATED DAYLIGHT WINDOW</span>
   </section>
@@ -68,6 +65,6 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.96.2"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.96.2"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.96.5"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>
