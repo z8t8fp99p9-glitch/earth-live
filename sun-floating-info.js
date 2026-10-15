@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.96 — floating, unboxed Sun time and information labels. */
+/* EARTH // LIVE v1.102 — floating, unboxed Sun time and information labels. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -25,7 +25,7 @@
       const fraction = Math.max(0, Math.min(1, (Number(range.value) - min) / (max - min)));
       const thumbHalf = 20;
       const trackRect = track.getBoundingClientRect(), panelRect = panel.getBoundingClientRect();
-      const x = trackRect.left + trackRect.width * (.06 + .88 * fraction);
+      const x = trackRect.left + trackRect.width * (.10 + .75 * fraction);
       const half = current.offsetWidth / 2;
       const bounded = Math.max(panelRect.left + half + 4, Math.min(panelRect.right - half - 4, x));
       current.style.left = (bounded - panelRect.left) + 'px';
