@@ -36,10 +36,9 @@
   </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
-  <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun visibility scroller">
-    <div class="time-panel-heading"><div><span class="panel-kicker">SOLAR TIME</span><strong>Sun Journey</strong></div><output id="sunTimeReadout">—</output></div>
-    <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">SUNRISE</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1" step="1" value="0" aria-label="Sunrise to sunset timeline"><span class="timeline-bound end-bound" id="sunEndLabel">SUNSET</span></div>
-    <div class="timeline-caption"><span id="sunSkyWindowLabel">CALCULATED DAYLIGHT WINDOW</span><span>Drag the Sun along its timeline</span></div>
+  <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun ember time control">
+    <div class="timeline-shell sun-timeline"><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1" step="1" value="0" aria-label="Drag the Sun from sunrise to sunset"><span class="sr-only" id="sunStartLabel">SUNRISE</span><span class="sr-only" id="sunEndLabel">SUNSET</span></div>
+    <output id="sunTimeReadout" class="sr-only">—</output><span id="sunSkyWindowLabel" class="sr-only">CALCULATED DAYLIGHT WINDOW</span>
   </section>
 
   <section id="moonPanel" class="time-panel moon-panel" hidden aria-label="Moon visibility scroller">

@@ -1,36 +1,201 @@
-/* EARTH // LIVE v1.92 — shared Sun/Moon scroller foundation.
-   Geometry follows Moon's proven range input. Sun gets a plain static rail for now;
-   the decorative gold tail is intentionally deferred to a later pass. */
-.sun-panel .sun-timeline { display:grid; grid-template-columns:43px minmax(0,1fr) 43px; align-items:center; gap:5px; }
+/* EARTH // LIVE v1.93 — fixed Ember Light Sun scroller.
+   The ember waveform is a static full-width decorative track. Time only moves the Sun thumb. */
+.sun-panel .sun-timeline {
+  display:grid !important;
+  grid-template-columns:43px minmax(0,1fr) 43px !important;
+  align-items:center !important;
+  gap:5px !important;
+}
 .sun-panel .sun-range {
-  -webkit-appearance:none !important; appearance:none !important; width:100%; min-width:0;
-  height:36px !important; margin:0; padding:0; border:0 !important; outline:none !important;
-  background:transparent !important; box-shadow:none !important; accent-color:#f4b95f; cursor:ew-resize;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:40px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background-color:transparent !important;
+  /* Fixed ember trail: no progress fill and no time-dependent geometry. */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 40' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23A34E13'/%3E%3Cstop offset='.22' stop-color='%23E98720'/%3E%3Cstop offset='.5' stop-color='%23FFD27A'/%3E%3Cstop offset='.78' stop-color='%23E98720'/%3E%3Cstop offset='1' stop-color='%23944716'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-10%25' y='-100%25' width='120%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='%23FF8A20' stroke-width='8' stroke-linecap='round' opacity='.55' filter='url(%23glow)'/%3E%3Cpath d='M3 20 C22 20 22 14 41 14 S60 26 79 26 S98 15 117 15 S136 24 155 24 S174 14 193 14 S212 25 231 25 S250 16 269 16 S288 24 307 24 S326 13 345 13 S364 25 383 25 S402 16 421 16 S440 24 459 24 S478 14 497 14 S516 25 535 25 S554 17 573 17 L597 20' fill='none' stroke='url(%23g)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg fill='%23FFD98B'%3E%3Ccircle cx='17' cy='14' r='1.1'/%3E%3Ccircle cx='31' cy='27' r='.8'/%3E%3Ccircle cx='52' cy='8' r='1.1'/%3E%3Ccircle cx='73' cy='32' r='1.2'/%3E%3Ccircle cx='92' cy='19' r='.8'/%3E%3Ccircle cx='108' cy='7' r='1.3'/%3E%3Ccircle cx='132' cy='31' r='.9'/%3E%3Ccircle cx='151' cy='11' r='1.1'/%3E%3Ccircle cx='174' cy='30' r='1.2'/%3E%3Ccircle cx='198' cy='7' r='.9'/%3E%3Ccircle cx='218' cy='32' r='1.1'/%3E%3Ccircle cx='242' cy='10' r='1.2'/%3E%3Ccircle cx='261' cy='30' r='.8'/%3E%3Ccircle cx='282' cy='8' r='1.1'/%3E%3Ccircle cx='303' cy='32' r='1.1'/%3E%3Ccircle cx='326' cy='7' r='.8'/%3E%3Ccircle cx='349' cy='31' r='1.2'/%3E%3Ccircle cx='370' cy='8' r='1.1'/%3E%3Ccircle cx='390' cy='32' r='.9'/%3E%3Ccircle cx='414' cy='8' r='1.1'/%3E%3Ccircle cx='434' cy='31' r='1.2'/%3E%3Ccircle cx='455' cy='9' r='.9'/%3E%3Ccircle cx='478' cy='32' r='1.1'/%3E%3Ccircle cx='499' cy='7' r='1.2'/%3E%3Ccircle cx='520' cy='31' r='.9'/%3E%3Ccircle cx='542' cy='9' r='1.1'/%3E%3Ccircle cx='563' cy='30' r='1.2'/%3E%3Ccircle cx='584' cy='12' r='1'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:100% 40px !important;
+  cursor:ew-resize !important;
+  touch-action:pan-y !important;
+  accent-color:#ffc04a !important;
 }
 .sun-panel .sun-range::-webkit-slider-runnable-track {
-  height:7px; border:0; border-radius:999px; background:#70481d;
-  box-shadow:inset 0 1px 1px rgba(0,0,0,.25),0 0 5px rgba(255,183,77,.10);
+  -webkit-appearance:none !important;
+  height:40px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
 .sun-panel .sun-range::-moz-range-track {
-  height:7px; border:0; border-radius:999px; background:#70481d;
-  box-shadow:inset 0 1px 1px rgba(0,0,0,.25),0 0 5px rgba(255,183,77,.10);
+  height:40px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
+.sun-panel .sun-range::-moz-range-progress { background:transparent !important; border:0 !important; }
 .sun-panel .sun-range::-webkit-slider-thumb {
-  -webkit-appearance:none; appearance:none; width:35px; height:35px; margin-top:-14px;
-  border:0; border-radius:50%; background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;
-  filter:drop-shadow(0 0 5px rgba(255,189,54,.34));
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  width:35px !important;
+  height:35px !important;
+  margin-top:2.5px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
 }
 .sun-panel .sun-range::-moz-range-thumb {
-  width:35px; height:35px; border:0; border-radius:50%; background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;
-  filter:drop-shadow(0 0 5px rgba(255,189,54,.34));
+  width:35px !important;
+  height:35px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 5px rgba(255,169,43,.55)) !important;
 }
-.sun-panel .timeline-bound { white-space:nowrap; text-align:center; }
-.sun-panel .timeline-caption span:first-child { color:#e8c56f; letter-spacing:.8px; font-weight:800; }
+.sun-panel .timeline-bound { white-space:nowrap !important; text-align:center !important; }
+.sun-panel .timeline-caption span:first-child { color:#e8c56f !important; letter-spacing:.8px; font-weight:800; }
+@media (orientation:landscape) and (max-height:430px) {
+  .sun-panel .sun-range { height:36px !important; background-size:100% 36px !important; }
+  .sun-panel .sun-range::-webkit-slider-runnable-track { height:36px !important; }
+  .sun-panel .sun-range::-moz-range-track { height:36px !important; }
+  .sun-panel .sun-range::-webkit-slider-thumb { width:32px !important; height:32px !important; margin-top:2px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width:32px !important; height:32px !important; }
+}
+
+/* v1.94 — Ember Light is the control itself: no deck, belt, rail, title, or caption. */
+.sun-panel {
+  position:absolute !important;
+  z-index:8 !important;
+  left:10px !important;
+  right:10px !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 103px) !important;
+  top:auto !important;
+  transform:none !important;
+  width:auto !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  overflow:visible !important;
+  color:transparent !important;
+}
+.sun-panel[hidden] { display:none !important; }
+.sun-panel .sun-timeline {
+  display:block !important;
+  position:relative !important;
+  width:100% !important;
+  height:44px !important;
+  min-height:44px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+.sun-panel .sun-range {
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  width:100% !important;
+  height:44px !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+  border:0 !important;
+  border-radius:0 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background-color:transparent !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 44' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23A34E13'/%3E%3Cstop offset='.22' stop-color='%23E98720'/%3E%3Cstop offset='.5' stop-color='%23FFD27A'/%3E%3Cstop offset='.78' stop-color='%23E98720'/%3E%3Cstop offset='1' stop-color='%23944716'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-10%25' y='-100%25' width='120%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M2 22 C22 22 22 15 42 15 S62 29 82 29 S102 16 122 16 S142 27 162 27 S182 15 202 15 S222 28 242 28 S262 17 282 17 S302 27 322 27 S342 14 362 14 S382 28 402 28 S422 17 442 17 S462 27 482 27 S502 15 522 15 S542 28 562 28 S582 19 598 22' fill='none' stroke='%23FF8A20' stroke-width='8' stroke-linecap='round' opacity='.55' filter='url(%23glow)'/%3E%3Cpath d='M2 22 C22 22 22 15 42 15 S62 29 82 29 S102 16 122 16 S142 27 162 27 S182 15 202 15 S222 28 242 28 S262 17 282 17 S302 27 322 27 S342 14 362 14 S382 28 402 28 S422 17 442 17 S462 27 482 27 S502 15 522 15 S542 28 562 28 S582 19 598 22' fill='none' stroke='url(%23g)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg fill='%23FFD98B'%3E%3Ccircle cx='17' cy='14' r='1.1'/%3E%3Ccircle cx='31' cy='31' r='.8'/%3E%3Ccircle cx='52' cy='8' r='1.1'/%3E%3Ccircle cx='73' cy='36' r='1.2'/%3E%3Ccircle cx='92' cy='21' r='.8'/%3E%3Ccircle cx='108' cy='7' r='1.3'/%3E%3Ccircle cx='132' cy='35' r='.9'/%3E%3Ccircle cx='151' cy='11' r='1.1'/%3E%3Ccircle cx='174' cy='34' r='1.2'/%3E%3Ccircle cx='198' cy='7' r='.9'/%3E%3Ccircle cx='218' cy='36' r='1.1'/%3E%3Ccircle cx='242' cy='10' r='1.2'/%3E%3Ccircle cx='261' cy='34' r='.8'/%3E%3Ccircle cx='282' cy='8' r='1.1'/%3E%3Ccircle cx='303' cy='36' r='1.1'/%3E%3Ccircle cx='326' cy='7' r='.8'/%3E%3Ccircle cx='349' cy='35' r='1.2'/%3E%3Ccircle cx='370' cy='8' r='1.1'/%3E%3Ccircle cx='390' cy='36' r='.9'/%3E%3Ccircle cx='414' cy='8' r='1.1'/%3E%3Ccircle cx='434' cy='35' r='1.2'/%3E%3Ccircle cx='455' cy='9' r='.9'/%3E%3Ccircle cx='478' cy='36' r='1.1'/%3E%3Ccircle cx='499' cy='7' r='1.2'/%3E%3Ccircle cx='520' cy='35' r='.9'/%3E%3Ccircle cx='542' cy='9' r='1.1'/%3E%3Ccircle cx='563' cy='34' r='1.2'/%3E%3Ccircle cx='584' cy='12' r='1'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center center !important;
+  background-size:100% 44px !important;
+  cursor:ew-resize !important;
+  touch-action:pan-y !important;
+  accent-color:transparent !important;
+}
+.sun-panel .sun-range::-webkit-slider-runnable-track,
+.sun-panel .sun-range::-moz-range-track,
+.sun-panel .sun-range::-moz-range-progress {
+  appearance:none !important;
+  height:44px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.sun-panel .sun-range::-webkit-slider-thumb {
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  width:39px !important;
+  height:39px !important;
+  margin-top:2.5px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 6px rgba(255,169,43,.72)) !important;
+}
+.sun-panel .sun-range::-moz-range-thumb {
+  width:39px !important;
+  height:39px !important;
+  border:0 !important;
+  border-radius:50% !important;
+  background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 0 6px rgba(255,169,43,.72)) !important;
+}
+.sun-panel .sr-only {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
 @media (orientation:landscape) {
-  .sun-panel .sun-range::-webkit-slider-thumb { width:35px; height:35px; margin-top:-14px; }
-  .sun-panel .sun-range::-moz-range-thumb { width:35px; height:35px; }
+  .sun-panel {
+    left:10px !important;
+    right:10px !important;
+    top:auto !important;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 103px) !important;
+    width:auto !important;
+    max-width:none !important;
+    padding:0 !important;
+    transform:none !important;
+  }
+  .sun-panel .sun-timeline { display:block !important; width:100% !important; height:44px !important; }
+  .sun-panel .sun-range { position:absolute !important; inset:0 !important; width:100% !important; height:44px !important; transform:none !important; touch-action:pan-y !important; }
 }
 @media (orientation:landscape) and (max-height:430px) {
-  .sun-panel .sun-range::-webkit-slider-thumb { width:32px; height:32px; margin-top:-12.5px; }
-  .sun-panel .sun-range::-moz-range-thumb { width:32px; height:32px; }
+  .sun-panel { bottom:calc(env(safe-area-inset-bottom,0px) + 79px) !important; }
+  .sun-panel .sun-timeline, .sun-panel .sun-range { height:40px !important; }
+  .sun-panel .sun-range { background-size:100% 40px !important; }
+  .sun-panel .sun-range::-webkit-slider-thumb { width:34px !important; height:34px !important; margin-top:3px !important; }
+  .sun-panel .sun-range::-moz-range-thumb { width:34px !important; height:34px !important; }
 }
