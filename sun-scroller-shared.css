@@ -217,3 +217,39 @@
 @media(max-width:390px){.sun-panel .sun-floating-info{left:6%;right:6%;bottom:40px;height:66px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-endpoint strong{font-size:12px}.sun-panel .sun-extra-info{font-size:9px;letter-spacing:.25px}}
 @media(orientation:landscape){.sun-panel .sun-floating-info{bottom:42px;height:65px}.sun-panel .sun-endpoint{top:27px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-extra-info{top:21px}}
 @media(orientation:landscape) and (max-height:430px){.sun-panel .sun-floating-info{bottom:36px;height:57px}.sun-panel .sun-endpoint{top:25px}.sun-panel .sun-info-label{font-size:8px}.sun-panel .sun-endpoint strong{font-size:11px}.sun-panel .sun-current-time{font-size:12px}.sun-panel .sun-extra-info{top:20px;font-size:9px}}
+
+
+/* v1.97 — clean split around the ember line: labels above, times below. */
+.sun-panel .sun-floating-info{
+  left:6%!important;right:6%!important;bottom:-70px!important;height:150px!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  overflow:visible!important;
+}
+.sun-panel .sun-endpoint{top:0!important;gap:0!important;max-width:90px!important}
+.sun-panel .sun-info-label{display:block!important;line-height:1.25!important}
+.sun-panel .sun-endpoint strong{position:absolute!important;top:101px!important;line-height:1.25!important}
+.sun-panel .sunrise-info strong{left:0!important}
+.sun-panel .sunset-info strong{right:0!important}
+.sun-panel .sun-current-time{top:-44px!important}
+.sun-panel .sun-extra-info{top:128px!important;left:50%!important;max-width:100%!important}
+/* Slightly lift the line and give it a brighter core with tapered, faded ends. */
+.sun-panel .sun-timeline{transform:translateY(-8px)!important}
+.sun-panel .sun-range{background-size:100% 44px!important}
+@media(max-width:390px){
+ .sun-panel .sun-floating-info{bottom:-64px!important;height:142px!important}
+ .sun-panel .sun-endpoint strong{top:95px!important;font-size:12px!important}
+ .sun-panel .sun-extra-info{top:120px!important;font-size:9px!important;letter-spacing:.2px!important}
+ .sun-panel .sun-current-time{top:-42px!important;font-size:13px!important}
+}
+@media(orientation:landscape){
+ .sun-panel .sun-floating-info{bottom:-62px!important;height:140px!important}
+ .sun-panel .sun-endpoint strong{top:91px!important}
+ .sun-panel .sun-extra-info{top:116px!important}
+ .sun-panel .sun-current-time{top:-39px!important}
+}
+@media(orientation:landscape) and (max-height:430px){
+ .sun-panel .sun-floating-info{bottom:-55px!important;height:125px!important}
+ .sun-panel .sun-endpoint strong{top:82px!important}
+ .sun-panel .sun-extra-info{top:103px!important}
+ .sun-panel .sun-current-time{top:-36px!important}
+}

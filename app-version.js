@@ -1,1 +1,1 @@
-(function(){const version='v1.96 Floating Sun Info';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
+window.EARTH_LIVE_VERSION = 'v1.97 Ember Text Layout';
