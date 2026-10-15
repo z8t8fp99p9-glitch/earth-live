@@ -251,3 +251,16 @@
  .sun-panel .sun-current-time{font-size:12px!important}
  .sun-panel .sun-extra-info{top:100px!important;font-size:8px!important}
 }
+
+
+/* v1.101 — minimal Sun layout correction, based on the user's approved reference. */
+/* Raise only the ember timeline and its draggable Sun; keep the track artwork unchanged. */
+.sun-panel .sun-timeline { transform:translateY(-32px) !important; }
+/* Keep sunrise/sunset labels above the line; bring the endpoint block closer to it. */
+.sun-panel .sun-endpoint { top:-28px !important; }
+/* Place endpoint times 20px lower than their labels while keeping both above the line. */
+.sun-panel .sun-endpoint strong { transform:translateY(20px) !important; }
+/* The selected time follows the slider's own thumb x-position and sits just above it. */
+.sun-panel .sun-current-time { top:50px !important; }
+/* Remove the entire dark sky-direction pill from Sun View. Its text remains available to the floating readout script. */
+#sunSky #sunSkyDirection { display:none !important; }
