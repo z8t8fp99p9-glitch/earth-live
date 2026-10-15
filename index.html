@@ -218,7 +218,7 @@
 </script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 
-<style id="glass-layering-repair-v1993">
+<style id="orb-plate-tilt-only-v1992">
 /* v1.99.2: tilt the glass plate only; keep all controls/orbs upright and round. */
 @media (orientation:portrait) {
   #app .bottom-ui{
@@ -272,7 +272,7 @@
     border:1px solid rgba(222,240,255,.40)!important;
     box-shadow:0 10px 22px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.34),inset 0 -3px 5px rgba(0,0,0,.28)!important;
     -webkit-backdrop-filter:blur(15px) saturate(145%)!important;backdrop-filter:blur(15px) saturate(145%)!important;
-    transform:perspective(1200px) rotateX(14deg) scaleY(1.08)!important;transform-origin:center bottom!important;pointer-events:none!important;
+    transform:perspective(900px) rotateX(38deg)!important;transform-origin:center bottom!important;pointer-events:none!important;
   }
   #app .dock-left-group::after,#app .dock-right-group::after{
     z-index:-1!important;transform:none!important;bottom:-1px!important;height:7px!important;pointer-events:none!important;
@@ -283,111 +283,6 @@
     border-radius:50%!important;border:1px solid rgba(223,242,255,.52)!important;
     box-shadow:inset 0 1px 2px rgba(255,255,255,.45),inset 0 -3px 5px rgba(0,0,0,.42),0 3px 6px rgba(0,0,0,.34)!important;
   }
-}
-</style>
-
-
-<style id="glass-layering-repair-v1993">
-/* Fix v1.99.2 stacking: keep the plate surface visible, tilt only that surface, and lift the orbs above it. */
-@media (orientation:portrait) {
-  #app .bottom-ui{isolation:isolate!important;overflow:visible!important}
-  #app .bottom-ui::before{z-index:0!important;left:0!important;right:0!important;top:0!important;bottom:0!important;display:block!important}
-  #app .bottom-ui::after{z-index:1!important;display:block!important}
-  #app .bottom-ui > *,#app .bottom-ui .quality-group,#app .bottom-ui .dock-item,#app .bottom-ui .quality-segment{
-    position:relative!important;z-index:2!important;transform-style:preserve-3d!important
-  }
-  #app .bottom-ui .dock-item::before,#app .bottom-ui .dock-item::after{z-index:0!important}
-  #app .bottom-ui .dock-art,#app .bottom-ui .quality-segment img{
-    position:relative!important;z-index:2!important;transform:translateZ(12px)!important;
-    width:clamp(35px,8.7vw,40px)!important;height:clamp(35px,8.7vw,40px)!important;
-    min-width:35px!important;min-height:35px!important;flex:0 0 auto!important;
-    aspect-ratio:1/1!important;object-fit:cover!important;border-radius:50%!important;
-    display:block!important;box-sizing:border-box!important
-  }
-  #app .bottom-ui .dock-item::before,#app .bottom-ui .quality-segment::before{
-    z-index:1!important;top:0!important;left:50%!important;transform:translateX(-50%) translateZ(8px)!important;
-    width:clamp(38px,9.4vw,43px)!important;height:clamp(38px,9.4vw,43px)!important;
-    border-radius:50%!important
-  }
-  #app .bottom-ui .dock-item .dock-label,#app .bottom-ui .quality-segment span{
-    position:relative!important;z-index:3!important;transform:translateZ(8px)!important
-  }
-  #app .bottom-ui .quality-segment{width:clamp(39px,9.9vw,45px)!important;flex:0 1 clamp(39px,9.9vw,45px)!important}
-  #app .bottom-ui .quality-segment img{width:clamp(35px,8.7vw,40px)!important;height:clamp(35px,8.7vw,40px)!important}
-  #app .bottom-ui .quality-segment::before{display:none!important;content:none!important}
-  #app .bottom-ui .quality-segment.active img{box-shadow:inset 0 1px 2px rgba(255,255,255,.5),0 0 11px rgba(37,164,255,.5)!important}
-}
-@media (orientation:landscape) {
-  #app .dock-left-group,#app .dock-right-group{isolation:isolate!important;overflow:visible!important}
-  #app .dock-left-group::before,#app .dock-right-group::before{z-index:0!important;display:block!important}
-  #app .dock-left-group::after,#app .dock-right-group::after{z-index:1!important;display:block!important}
-  #app .dock-left-group > *,#app .dock-right-group > *{position:relative!important;z-index:2!important;transform-style:preserve-3d!important}
-  #app .dock-left-group .dock-art,#app .dock-right-group .dock-art,
-  #app .dock-left-group .quality-segment img{
-    width:clamp(39px,6.2vh,48px)!important;height:clamp(39px,6.2vh,48px)!important;
-    min-width:39px!important;min-height:39px!important;aspect-ratio:1/1!important;
-    object-fit:cover!important;border-radius:50%!important;transform:translateZ(12px)!important
-  }
-  #app .dock-left-group .quality-segment{width:clamp(43px,6.8vh,51px)!important;flex:0 1 clamp(43px,6.8vh,51px)!important}
-  #app .dock-left-group .quality-segment::before{display:none!important;content:none!important}
-}
-</style>
-
-
-<style id="glass-surface-orb-size-v1994">
-/* v1.99.4: broad visible glass face; the plate tilts independently from the upright orbs. */
-@media (orientation:portrait) {
-  #app .bottom-ui{
-    background:transparent!important;border:0!important;box-shadow:none!important;
-    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-    transform:translateX(-50%)!important;transform-style:flat!important;perspective:none!important;
-    isolation:isolate!important;overflow:visible!important;
-  }
-  #app .bottom-ui::before{
-    z-index:0!important;display:block!important;left:-1px!important;right:-1px!important;top:0!important;bottom:0!important;
-    border-radius:999px!important;
-    background:linear-gradient(180deg,rgba(226,242,255,.30) 0%,rgba(87,117,149,.22) 22%,rgba(10,20,34,.76) 73%,rgba(3,9,18,.88) 100%)!important;
-    border:1px solid rgba(222,240,255,.44)!important;
-    box-shadow:0 10px 22px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.36),inset 0 -3px 5px rgba(0,0,0,.28)!important;
-    -webkit-backdrop-filter:blur(15px) saturate(145%)!important;backdrop-filter:blur(15px) saturate(145%)!important;
-    transform:perspective(1200px) rotateX(14deg) scaleY(1.08)!important;transform-origin:center bottom!important;
-    pointer-events:none!important;
-  }
-  #app .bottom-ui::after{z-index:1!important;display:block!important;transform:none!important;bottom:-1px!important}
-  #app .bottom-ui > *,#app .bottom-ui .quality-group,#app .bottom-ui .dock-item,#app .bottom-ui .quality-segment{
-    position:relative!important;z-index:2!important;transform-style:flat!important
-  }
-  #app .bottom-ui .dock-art,#app .bottom-ui .quality-segment img{
-    position:relative!important;z-index:2!important;transform:translateY(-3px)!important;
-    width:clamp(38px,9.8vw,41px)!important;height:clamp(38px,9.8vw,41px)!important;
-    min-width:38px!important;min-height:38px!important;flex:0 0 auto!important;
-    aspect-ratio:1/1!important;object-fit:cover!important;border-radius:50%!important;box-sizing:border-box!important;
-  }
-  #app .bottom-ui .quality-segment{width:clamp(40px,10vw,44px)!important;flex:0 1 clamp(40px,10vw,44px)!important}
-  #app .bottom-ui .quality-segment::before{display:none!important;content:none!important}
-  #app .bottom-ui .dock-item::before{z-index:1!important;transform:translateX(-50%) translateY(-3px)!important}
-  #app .bottom-ui .dock-item .dock-label,#app .bottom-ui .quality-segment span{
-    position:relative!important;z-index:3!important
-  }
-}
-@media (orientation:landscape) {
-  #app .dock-left-group,#app .dock-right-group{isolation:isolate!important;overflow:visible!important}
-  #app .dock-left-group::before,#app .dock-right-group::before{
-    transform:perspective(1200px) rotateX(14deg) scaleY(1.08)!important;
-    transform-origin:center bottom!important;z-index:0!important;display:block!important;
-    top:0!important;bottom:0!important;left:0!important;right:0!important;border-radius:999px!important;
-    background:linear-gradient(180deg,rgba(226,242,255,.30) 0%,rgba(87,117,149,.22) 22%,rgba(10,20,34,.76) 73%,rgba(3,9,18,.88) 100%)!important;
-    border:1px solid rgba(222,240,255,.44)!important;
-    box-shadow:0 10px 22px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.36),inset 0 -3px 5px rgba(0,0,0,.28)!important;
-  }
-  #app .dock-left-group::after,#app .dock-right-group::after{z-index:1!important}
-  #app .dock-left-group > *,#app .dock-right-group > *{position:relative!important;z-index:2!important;transform-style:flat!important}
-  #app .dock-left-group .quality-segment img{
-    width:clamp(39px,6.2vh,45px)!important;height:clamp(39px,6.2vh,45px)!important;
-    min-width:39px!important;min-height:39px!important;aspect-ratio:1/1!important;object-fit:cover!important;border-radius:50%!important
-  }
-  #app .dock-left-group .quality-segment{width:clamp(43px,6.8vh,50px)!important;flex:0 1 clamp(43px,6.8vh,50px)!important}
-  #app .dock-left-group .quality-segment::before{display:none!important;content:none!important}
 }
 </style>
 
