@@ -159,7 +159,7 @@
 </style>
 
 
-  <link rel="stylesheet" href="./orb-deck-design-system.css?v=1.99.13">
+  <link rel="stylesheet" href="./orb-deck-design-system.css?v=1.99.14">
 </head>
 <body>
 <main id="app" data-deck-family="glass" data-orb-family="futuristic">
@@ -225,12 +225,12 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.99.13"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.98.3"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.99.14"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.98.3"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>
 (()=>{const app=document.getElementById('app');if(!app)return;let first=true;const mq=window.matchMedia('(orientation: landscape)');const sync=()=>{app.classList.remove('landscape-dock-split');if(mq.matches){requestAnimationFrame(()=>requestAnimationFrame(()=>app.classList.add('landscape-dock-split')))}else{app.classList.remove('landscape-dock-split')}first=false};sync();if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);window.addEventListener('orientationchange',()=>setTimeout(sync,80),{passive:true});})();
 </script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
-<script src="./orb-deck-design-system.js?v=1.99.13"></script>
+<script src="./orb-deck-design-system.js?v=1.99.14"></script>
 
 <style id="orb-plate-tilt-only-v1992">
 /* v1.99.2: tilt the glass plate only; keep all controls/orbs upright and round. */
@@ -304,12 +304,9 @@
 <style id="landscape-unified-deck-v19911">
 /* v1.99.11: one continuous centered deck in landscape; controls remain independently tappable. */
 @media (orientation:landscape){
+  /* Restore the original .bottom-ui sizing/positioning from the base stylesheet.
+     Keep only the unified deck surface treatment here; do not impose custom dimensions. */
   #app .bottom-ui{
-    left:50%!important;right:auto!important;transform:translateX(-50%)!important;
-    width:calc(100vw - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px) - 24px)!important;
-    max-width:1080px!important;min-width:0!important;
-    padding:8px clamp(10px,1.7vw,22px) 12px!important;
-    gap:clamp(8px,1.2vw,16px)!important;justify-content:space-between!important;
     border-radius:999px!important;isolation:isolate!important;overflow:visible!important;
   }
   #app .bottom-ui::before{

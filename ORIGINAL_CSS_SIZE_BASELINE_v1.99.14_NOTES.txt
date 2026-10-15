@@ -1,0 +1,7 @@
+EARTH // LIVE v1.99.14 — Original CSS Size Baseline
+
+Purpose: restore the original base stylesheet sizing for the landscape bottom deck instead of defining a custom width, padding, or gap. The unified single deck surface remains centered by the base left/right anchoring and retains its appearance treatment.
+
+Preserved: all six controls (Basic, HD, Live Location, Sun, Moon, Stacks), deck/orb design selector system, both deck surfaces, both Orb families, and the existing application/astronomy scripts. data-store.js is not included or modified. Portrait-specific CSS is unchanged.
+
+Upload the files flat into the repository root, replacing matching files. This candidate passed ZIP integrity and basic JavaScript syntax checks; confirm the resulting appearance on the live iPhone before further layout adjustments. Keep the v1.99.2 recovery ZIP safe.
