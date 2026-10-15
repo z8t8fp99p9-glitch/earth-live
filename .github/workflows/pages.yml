@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: earth-live-pages
@@ -14,10 +14,10 @@ concurrency:
 
 jobs:
   validate:
-    name: Validate release
+    name: Validate basic globe
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
+      - name: Check out main
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -25,15 +25,25 @@ jobs:
         with:
           node-version: 22
 
+      - name: Verify required files
+        run: |
+          test -s index.html
+          test -s style.css
+          test -s app.js
+          test -s service-worker.js
+          test -s manifest.webmanifest
+          test -s icon.svg
+
       - name: Check JavaScript syntax
         run: |
           node --check app.js
           node --check service-worker.js
+          node --check scripts/validate-release.mjs
 
-      - name: Validate required app files
+      - name: Validate release
         run: node scripts/validate-release.mjs
 
-      - name: Upload validated site artifact
+      - name: Upload validated site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
@@ -56,211 +66,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  organize-assets:
-    name: Organize approved assets (copy-only)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Organize approved assets
-        run: |
-          node --input-type=module <<'ASSET_ORGANIZER'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import os from 'node:os';
-          import crypto from 'node:crypto';
-          import { execFileSync } from 'node:child_process';
-
-          const ROOT = process.cwd();
-          const BRANCH = 'Assets';
-          const LIBRARY = 'library';
-
-          const CANDIDATES = [
-            { file: 'earth-relief-bump.jpg', purpose: 'Alternate Earth relief texture reference.' },
-            { file: 'earth-relief-skin.jpg', purpose: 'Earth surface texture reference.' },
-            { file: 'moon-phase-01-new-moon.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-02-waxing-crescent.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-03-first-quarter.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-04-waxing-gibbous.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-05-full-moon.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-06-waning-gibbous.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-07-last-quarter.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-phase-08-waning-crescent.svg', purpose: 'Moon phase reference artwork.' },
-            { file: 'moon-texture.svg', purpose: 'Moon texture reference artwork.' },
-            { file: 'sun-object.svg', purpose: 'Alternate Sun artwork reference.' },
-            { file: 'celestial-vector-manifest.json', purpose: 'Celestial vector reference manifest.' }
-          ];
-
-          function git(args, cwd = ROOT) {
-            return execFileSync('git', args, {
-              cwd,
-              encoding: 'utf8',
-              stdio: ['ignore', 'pipe', 'pipe']
-            }).trim();
-          }
-
-          function exists(file) {
-            return fs.existsSync(path.join(ROOT, file));
-          }
-
-          function sha256(file) {
-            return crypto.createHash('sha256')
-              .update(fs.readFileSync(file))
-              .digest('hex');
-          }
-
-          function findReferences(filename) {
-            const hits = [];
-
-            function visit(dir) {
-              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-                if (['.git', 'node_modules', 'dist'].includes(entry.name)) continue;
-
-                const absolute = path.join(dir, entry.name);
-                const relative = path.relative(ROOT, absolute).split(path.sep).join('/');
-
-                if (entry.isDirectory()) {
-                  visit(absolute);
-                } else if (
-                  /\.(html|css|js|webmanifest)$/i.test(relative) &&
-                  !relative.startsWith('.github/') &&
-                  !relative.startsWith('scripts/')
-                ) {
-                  const body = fs.readFileSync(absolute, 'utf8');
-                  if (body.includes(filename)) hits.push(relative);
-                }
-              }
-            }
-
-            visit(ROOT);
-            return hits;
-          }
-
-          const present = CANDIDATES.filter(item => exists(item.file));
-
-          if (!present.length) {
-            console.log('Asset organizer: no approved candidate files found. Nothing changed.');
-            process.exit(0);
-          }
-
-          const unsafe = present
-            .map(item => ({ file: item.file, refs: findReferences(item.file) }))
-            .filter(item => item.refs.length);
-
-          if (unsafe.length) {
-            console.log('Asset organizer: stopped safely because references were found.');
-            for (const item of unsafe) {
-              console.log(`${item.file}: ${item.refs.join(', ')}`);
-            }
-            process.exit(0);
-          }
-
-          const payload = fs.mkdtempSync(path.join(os.tmpdir(), 'earth-live-assets-'));
-          const worktree = path.join(os.tmpdir(), `earth-live-assets-${process.pid}`);
-          const bootstrap = `assets-bootstrap-${process.pid}`;
-          let worktreeAdded = false;
-          let bootstrapCreated = false;
-
-          try {
-            for (const item of present) {
-              fs.copyFileSync(
-                path.join(ROOT, item.file),
-                path.join(payload, item.file)
-              );
-            }
-
-            const remote = git([
-              'ls-remote', '--heads', 'origin', `refs/heads/${BRANCH}`
-            ]);
-
-            if (remote) {
-              git(['fetch', 'origin', `refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}`]);
-              git(['worktree', 'add', '--detach', worktree, `refs/remotes/origin/${BRANCH}`]);
-            } else {
-              git(['worktree', 'add', '--detach', worktree, 'HEAD']);
-              git(['checkout', '--orphan', bootstrap], worktree);
-              bootstrapCreated = true;
-              git(['rm', '-rf', '--ignore-unmatch', '.'], worktree);
-            }
-
-            worktreeAdded = true;
-            const library = path.join(worktree, LIBRARY);
-            fs.mkdirSync(library, { recursive: true });
-
-            for (const item of present) {
-              fs.copyFileSync(
-                path.join(payload, item.file),
-                path.join(library, item.file)
-              );
-            }
-
-            fs.writeFileSync(
-              path.join(library, 'README.md'),
-              '# EARTH // LIVE asset library\n\n' +
-              'Archived reference assets. This branch is not the live website.\n' +
-              'Original files on main are intentionally preserved.\n'
-            );
-
-            const catalog = present.map(item => {
-              const file = path.join(library, item.file);
-              return {
-                file: item.file,
-                purpose: item.purpose,
-                bytes: fs.statSync(file).size,
-                sha256: sha256(file)
-              };
-            });
-
-            fs.writeFileSync(
-              path.join(library, 'ASSET-CATALOG.json'),
-              JSON.stringify({
-                project: 'EARTH // LIVE',
-                branch: BRANCH,
-                policy: 'Copy-only; never delete original files from main.',
-                assets: catalog
-              }, null, 2) + '\n'
-            );
-
-            git(['add', '-A', LIBRARY], worktree);
-
-            let changed = true;
-            try {
-              git(['diff', '--cached', '--quiet'], worktree);
-              changed = false;
-            } catch {}
-
-            if (changed) {
-              git(['config', 'user.name', 'github-actions[bot]'], worktree);
-              git([
-                'config', 'user.email',
-                '41898282+github-actions[bot]@users.noreply.github.com'
-              ], worktree);
-              git(['commit', '-m', 'chore(assets): archive approved reference assets'], worktree);
-              git(['push', 'origin', `HEAD:refs/heads/${BRANCH}`], worktree);
-              console.log(`Asset organizer: copied ${present.length} file(s) to ${BRANCH}.`);
-            } else {
-              console.log(`Asset organizer: ${BRANCH} already has these asset versions.`);
-            }
-
-            console.log('Copy-only mode: original files on main were not deleted.');
-          } finally {
-            if (worktreeAdded) {
-              try { git(['worktree', 'remove', '--force', worktree]); } catch {}
-            }
-            if (bootstrapCreated) {
-              try { git(['branch', '-D', bootstrap]); } catch {}
-            }
-            fs.rmSync(payload, { recursive: true, force: true });
-          }
-          ASSET_ORGANIZER
