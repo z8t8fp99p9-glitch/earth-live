@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.103 — SMART CODING: read actual rendered thumb geometry. */
+/* EARTH // LIVE v1.104 — SMART CODING: share the rendered thumb-size variable with label geometry. */
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
@@ -25,7 +25,8 @@
     const fraction = Math.max(0, Math.min(1, (Number(range.value) - min) / (max - min || 1)));
     const rangeRect = range.getBoundingClientRect();
     const panelRect = panel.getBoundingClientRect();
-    const thumb = range.matches(':disabled') ? 0 : (window.matchMedia('(max-width:390px)').matches ? 36 : 40);
+    const thumbSize = getComputedStyle(range).getPropertyValue('--sun-thumb-size').trim();
+    const thumb = range.matches(':disabled') ? 0 : (Number.parseFloat(thumbSize) || 40);
     // Native range thumb centers travel between the thumb-radius inset edges.
     const x = rangeRect.left + thumb / 2 + (rangeRect.width - thumb) * fraction;
     const half = current.offsetWidth / 2;
