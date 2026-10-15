@@ -201,3 +201,19 @@
   .sun-panel .sun-range::-webkit-slider-thumb { width:34px !important; height:34px !important; margin-top:3px !important; }
   .sun-panel .sun-range::-moz-range-thumb { width:34px !important; height:34px !important; }
 }
+
+
+/* v1.96 — scene-floating Sun information. No panels, fills, or text backplates. */
+.sun-panel .sun-floating-info{position:absolute;left:6%;right:6%;bottom:43px;height:72px;pointer-events:none;background:transparent!important;border:0!important;box-shadow:none!important;z-index:3;color:#ffe7b4;text-shadow:0 0 8px rgba(255,177,72,.32),0 1px 3px rgba(0,0,0,.65)}
+.sun-panel .sun-endpoint{position:absolute;top:30px;display:flex;flex-direction:column;gap:2px;max-width:90px;white-space:nowrap}
+.sun-panel .sunrise-info{left:0;align-items:flex-start;text-align:left}
+.sun-panel .sunset-info{right:0;align-items:flex-end;text-align:right}
+.sun-panel .sun-info-label{font-size:9px;font-weight:750;letter-spacing:1.35px;color:#d9a15c;text-transform:uppercase}
+.sun-panel .sun-endpoint strong{font-size:13px;font-weight:650;letter-spacing:.25px;color:#fff0d0}
+.sun-panel .sun-current-time{position:absolute;left:50%;top:0;transform:translateX(-50%);white-space:nowrap;font-size:14px;line-height:1.2;font-weight:750;letter-spacing:.25px;color:#fff0bd;text-shadow:0 0 9px rgba(255,190,85,.55),0 1px 3px rgba(0,0,0,.72)}
+.sun-panel .sun-extra-info{position:absolute;left:50%;top:23px;transform:translateX(-50%);white-space:nowrap;text-align:center;font-size:10px;font-weight:600;letter-spacing:.55px;color:#e3bd80;text-shadow:0 1px 3px rgba(0,0,0,.75)}
+.sun-panel .sun-timeline{position:relative!important;z-index:2!important;margin-top:0!important}
+.sun-panel .sun-range{position:relative;z-index:4}
+@media(max-width:390px){.sun-panel .sun-floating-info{left:6%;right:6%;bottom:40px;height:66px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-endpoint strong{font-size:12px}.sun-panel .sun-extra-info{font-size:9px;letter-spacing:.25px}}
+@media(orientation:landscape){.sun-panel .sun-floating-info{bottom:42px;height:65px}.sun-panel .sun-endpoint{top:27px}.sun-panel .sun-current-time{font-size:13px}.sun-panel .sun-extra-info{top:21px}}
+@media(orientation:landscape) and (max-height:430px){.sun-panel .sun-floating-info{bottom:36px;height:57px}.sun-panel .sun-endpoint{top:25px}.sun-panel .sun-info-label{font-size:8px}.sun-panel .sun-endpoint strong{font-size:11px}.sun-panel .sun-current-time{font-size:12px}.sun-panel .sun-extra-info{top:20px;font-size:9px}}
