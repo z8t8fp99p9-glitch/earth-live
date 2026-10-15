@@ -22,6 +22,23 @@
   });
   document.body.appendChild(timer);
 
+  // Sunrise marker: uses the actual calculated start time supplied by Sun Sky View.
+  const sunrise = document.createElement('div');
+  sunrise.id = 'sunriseScrollerMarker';
+  sunrise.setAttribute('aria-label', 'Sunrise time');
+  Object.assign(sunrise.style, {
+    position: 'fixed', zIndex: '999', display: 'none', pointerEvents: 'none',
+    transform: 'translate(0, -100%)', padding: '5px 9px', borderRadius: '10px',
+    color: '#ff5148', background: 'rgba(255, 92, 55, 0.13)',
+    border: '1px solid rgba(255, 105, 75, 0.48)',
+    boxShadow: '0 0 7px rgba(255, 75, 48, 0.52), 0 0 16px rgba(255, 82, 48, 0.32), inset 0 0 10px rgba(255, 92, 55, 0.16)',
+    font: '700 10px/1.25 -apple-system, BlinkMacSystemFont, sans-serif',
+    letterSpacing: '0.08em', whiteSpace: 'nowrap', textAlign: 'center',
+    textShadow: '0 0 5px rgba(255, 80, 65, 0.55)'
+  });
+  sunrise.innerHTML = '<span style="display:block">SUNRISE</span><span id="sunriseScrollerTime" style="display:block;font-size:12px;letter-spacing:.02em;margin-top:2px">—</span>';
+  document.body.appendChild(sunrise);
+
   function timeText() {
     const text = readout ? readout.textContent.replace(/\s+/g, ' ').trim() : '';
     if (text && text !== '—' && text !== '-') return text;
@@ -42,9 +59,16 @@
   function update() {
     const panelVisible = !panel.hidden && getComputedStyle(panel).display !== 'none';
     const skyVisible = (() => { const sky = document.getElementById('sunSky'); return !!sky && !sky.hidden; })();
-    if (!panelVisible || !skyVisible) { timer.style.display = 'none'; return; }
+    if (!panelVisible || !skyVisible) { timer.style.display = 'none'; sunrise.style.display = 'none'; return; }
     const rect = range.getBoundingClientRect();
-    if (!rect.width || !rect.height) { timer.style.display = 'none'; return; }
+    if (!rect.width || !rect.height) { timer.style.display = 'none'; sunrise.style.display = 'none'; return; }
+    const startLabel = document.getElementById('sunStartLabel');
+    const sunriseTime = document.getElementById('sunriseScrollerTime');
+    if (startLabel && startLabel.textContent.trim()) sunriseTime.textContent = startLabel.textContent.trim();
+    const sunThumb = thumbWidth();
+    sunrise.style.left = `${rect.left + sunThumb / 2}px`;
+    sunrise.style.top = `${rect.top + rect.height / 2 - sunThumb / 2 - 15}px`;
+    sunrise.style.display = 'block';
     const min = Number(range.min || 0), max = Number(range.max || 100), value = Number(range.value || 0);
     const fraction = max > min ? Math.min(1, Math.max(0, (value - min) / (max - min))) : 0;
     const thumb = thumbWidth();
