@@ -1,0 +1,7 @@
+EARTH // LIVE v1.99.13 — Default Deck Sizing Reset
+
+Purpose: reset the experimental landscape deck/control sizing overrides to the underlying default sizing rules before making further layout adjustments.
+
+Changes: removed the v1.99.12 landscape-only custom width/height/flex sizing block for dock groups, dock items, labels, and Orb artwork. Retained the v1.99.11 unified centered landscape deck surface and appearance system. Portrait rules and application/astronomy logic are not intentionally changed.
+
+Upload these files flat into the repository root, replacing matching files. This is a candidate build; confirm landscape sizing on the live device before making the next adjustment. Keep the v1.99.2 recovery ZIP safe.
