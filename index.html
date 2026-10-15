@@ -32,7 +32,7 @@
     <div class="sky-compass" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
     <div class="sky-horizon" aria-hidden="true"><div class="horizon-mountains"></div><div class="horizon-glow"></div></div>
     <div id="skySun" class="sky-sun" aria-hidden="true"></div>
-    <div class="sky-direction" id="sunSkyDirection">—</div>
+    <div class="sr-only" id="sunSkyDirection" aria-hidden="true">—</div>
   </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
@@ -68,6 +68,6 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.96.1"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>
