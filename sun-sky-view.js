@@ -1,4 +1,5 @@
-/* EARTH // LIVE v1.50 — Sun Sky View reuses the Moon location → scroller → sky flow. */
+/* EARTH // LIVE v1.92 — Sun View uses the Moon View layout/scroller foundation.
+   Preserve solar calculations and button/location behavior; decorative tail is deferred. */
 (() => {
 'use strict';
 const $=id=>document.getElementById(id);
@@ -39,7 +40,7 @@ function findSunWindow(loc){
 }
 function setTime(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium.JulianDate.fromDate(date);viewer.clock.shouldAnimate=false;viewer.scene.requestRender();}}
 function compass(az){return ['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];}
-function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),point=window.EarthLiveSkyProjection?window.EarthLiveSkyProjection.project(p,'sunSky','skySun'):{x:6+88*clamp((p.azimuth-90)/180,0,1),bottom:34+clamp(p.altitude,0,75)*0.48},x=point.x,y=point.bottom;
+function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=6+88*clamp((p.azimuth-90)/180,0,1),y=34+clamp(p.altitude,0,75)*0.48;
   const orb=$('skySun');orb.style.left=x+'%';orb.style.bottom=y+'%';orb.style.opacity=p.altitude>=HORIZON?'1':'.3';
   $('sunSkyDirection').textContent=`${Math.round(p.azimuth)}° ${compass(p.azimuth)} · ${Math.max(0,p.altitude).toFixed(0)}° altitude`;
   $('sunSkyStatus').textContent=`${fmt(date)} · ${p.altitude>=HORIZON?'SUN ABOVE HORIZON':'SUN BELOW HORIZON'}`;
@@ -64,7 +65,5 @@ moonBtn.addEventListener('click',()=>{if(active)closeSun();},true);
 layersBtn.addEventListener('click',()=>{if(active)closeSun();},true);
 window.addEventListener('earthlive:viewer-ready',e=>{viewer=e.detail.viewer;if(viewer&&viewer.scene&&viewer.scene.globe){viewer.scene.globe.enableLighting=true;viewer.scene.globe.dynamicAtmosphereLighting=true;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.requestRender();}});
 window.addEventListener('earthlive:foreground',()=>{if(active&&sunWindow)updateSun(new Date(sunWindow.start.getTime()+Number(sunRange.value)*60000));});
-window.addEventListener('resize',()=>{if(active&&sunWindow)updateSun(new Date(sunWindow.start.getTime()+Number(sunRange.value)*60000));},{passive:true});
-window.addEventListener('orientationchange',()=>{if(active&&sunWindow)updateSun(new Date(sunWindow.start.getTime()+Number(sunRange.value)*60000));},{passive:true});
 window.EarthLiveSunSky={isActive:()=>active,close:closeSun};
 })();

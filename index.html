@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./landscape-dock.css">
 <link rel="stylesheet" href="./sun-sky.css">
-<link rel="stylesheet" href="./sun-scroller-moon-match.css">
+<link rel="stylesheet" href="./sun-scroller-shared.css">
 <link rel="stylesheet" href="./celestial-path-refinement.css">
 <link rel="stylesheet" href="./liquid-glass.css">
 <script>window.CESIUM_BASE_URL='https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/';</script>
@@ -36,10 +36,10 @@
   </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
-  <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun time scroller">
+  <section id="sunPanel" class="time-panel sun-panel" hidden aria-label="Sun visibility scroller">
     <div class="time-panel-heading"><div><span class="panel-kicker">SOLAR TIME</span><strong>Sun Journey</strong></div><output id="sunTimeReadout">—</output></div>
-    <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">00:00</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1439" step="1" value="720" aria-label="Sun time across 24 hours"><span class="timeline-bound end-bound" id="sunEndLabel">24:00</span></div>
-    <div class="timeline-caption"><span id="sunSkyWindowLabel">LOCAL DAY</span><span>Drag the Sun along the light beam</span></div>
+    <div class="timeline-shell sun-timeline"><span class="timeline-bound start-bound" id="sunStartLabel">SUNRISE</span><input id="sunTimeRange" class="time-range sun-range" type="range" min="0" max="1" step="1" value="0" aria-label="Sunrise to sunset timeline"><span class="timeline-bound end-bound" id="sunEndLabel">SUNSET</span></div>
+    <div class="timeline-caption"><span id="sunSkyWindowLabel">CALCULATED DAYLIGHT WINDOW</span><span>Drag the Sun along its timeline</span></div>
   </section>
 
   <section id="moonPanel" class="time-panel moon-panel" hidden aria-label="Moon visibility scroller">

@@ -1,0 +1,36 @@
+/* EARTH // LIVE v1.92 — shared Sun/Moon scroller foundation.
+   Geometry follows Moon's proven range input. Sun gets a plain static rail for now;
+   the decorative gold tail is intentionally deferred to a later pass. */
+.sun-panel .sun-timeline { display:grid; grid-template-columns:43px minmax(0,1fr) 43px; align-items:center; gap:5px; }
+.sun-panel .sun-range {
+  -webkit-appearance:none !important; appearance:none !important; width:100%; min-width:0;
+  height:36px !important; margin:0; padding:0; border:0 !important; outline:none !important;
+  background:transparent !important; box-shadow:none !important; accent-color:#f4b95f; cursor:ew-resize;
+}
+.sun-panel .sun-range::-webkit-slider-runnable-track {
+  height:7px; border:0; border-radius:999px; background:#70481d;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.25),0 0 5px rgba(255,183,77,.10);
+}
+.sun-panel .sun-range::-moz-range-track {
+  height:7px; border:0; border-radius:999px; background:#70481d;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.25),0 0 5px rgba(255,183,77,.10);
+}
+.sun-panel .sun-range::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none; width:35px; height:35px; margin-top:-14px;
+  border:0; border-radius:50%; background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 5px rgba(255,189,54,.34));
+}
+.sun-panel .sun-range::-moz-range-thumb {
+  width:35px; height:35px; border:0; border-radius:50%; background:transparent url('./icon-sun-dragger.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 5px rgba(255,189,54,.34));
+}
+.sun-panel .timeline-bound { white-space:nowrap; text-align:center; }
+.sun-panel .timeline-caption span:first-child { color:#e8c56f; letter-spacing:.8px; font-weight:800; }
+@media (orientation:landscape) {
+  .sun-panel .sun-range::-webkit-slider-thumb { width:35px; height:35px; margin-top:-14px; }
+  .sun-panel .sun-range::-moz-range-thumb { width:35px; height:35px; }
+}
+@media (orientation:landscape) and (max-height:430px) {
+  .sun-panel .sun-range::-webkit-slider-thumb { width:32px; height:32px; margin-top:-12.5px; }
+  .sun-panel .sun-range::-moz-range-thumb { width:32px; height:32px; }
+}
