@@ -1,37 +1,42 @@
-/* EARTH // LIVE v1.99 — anchor the floating selected time to the small scroller Sun. */
+/* EARTH // LIVE v1.96 — floating, unboxed Sun time and information labels. */
 (() => {
   'use strict';
-  const range = document.getElementById('sunTimeRange');
-  const panel = document.getElementById('sunPanel');
-  const info = panel && panel.querySelector('.sun-floating-info');
-  const time = document.getElementById('sunCurrentTimeFloat');
-  if (!range || !panel || !info || !time) return;
-
-  function placeTimeOnThumb() {
-    if (panel.hidden || !range.getClientRects().length) return;
-    const rangeRect = range.getBoundingClientRect();
-    const infoRect = info.getBoundingClientRect();
-    const width = rangeRect.width;
-    if (!width || !infoRect.width) return;
-    const min = Number(range.min || 0);
-    const max = Number(range.max || 1);
-    const value = Number(range.value || min);
-    const fraction = max > min ? Math.max(0, Math.min(1, (value - min) / (max - min))) : 0;
-    // Native range thumbs stop half a thumb-width inside the input's bounds.
-    const thumb = Math.min(39, Math.max(30, rangeRect.height * .89));
-    const centerX = rangeRect.left + thumb / 2 + fraction * Math.max(0, width - thumb);
-    const labelWidth = time.getBoundingClientRect().width || 42;
-    const pad = Math.min(labelWidth / 2 + 2, infoRect.width / 2);
-    const localX = Math.max(pad, Math.min(infoRect.width - pad, centerX - infoRect.left));
-    time.style.left = `${localX}px`;
+  const $ = id => document.getElementById(id);
+  const range = $('sunTimeRange');
+  if (!range) return;
+  const rise = $('sunRiseTimeFloat'), set = $('sunSetTimeFloat');
+  const current = $('sunCurrentTimeFloat'), extra = $('sunExtraInfoFloat');
+  const start = $('sunStartLabel'), end = $('sunEndLabel');
+  const readout = $('sunTimeReadout'), direction = $('sunSkyDirection'), status = $('sunSkyStatus');
+  const tidy = value => (value || '—').replace(/\s+/g, ' ').trim();
+  function sync() {
+    if (rise && start) rise.textContent = tidy(start.textContent);
+    if (set && end) set.textContent = tidy(end.textContent);
+    if (current && readout) current.textContent = tidy(readout.textContent || readout.value);
+    if (extra) {
+      const dir = direction ? tidy(direction.textContent) : '';
+      const state = status ? tidy(status.textContent).split('·').pop().trim() : '';
+      extra.textContent = [dir, state].filter(Boolean).join('  ·  ');
+    }
+    const track = range.closest('.sun-timeline');
+    const panel = range.closest('.sun-panel');
+    if (track && panel && current) {
+      const max = Number(range.max) || 1, min = Number(range.min) || 0;
+      const fraction = Math.max(0, Math.min(1, (Number(range.value) - min) / (max - min)));
+      const thumbHalf = 20;
+      const trackRect = track.getBoundingClientRect(), panelRect = panel.getBoundingClientRect();
+      const x = trackRect.left + trackRect.width * (.06 + .88 * fraction);
+      const half = current.offsetWidth / 2;
+      const bounded = Math.max(panelRect.left + half + 4, Math.min(panelRect.right - half - 4, x));
+      current.style.left = (bounded - panelRect.left) + 'px';
+    }
   }
-  range.addEventListener('input', placeTimeOnThumb, true);
-  range.addEventListener('change', placeTimeOnThumb, true);
-  window.addEventListener('resize', placeTimeOnThumb, {passive:true});
-  window.addEventListener('orientationchange', () => requestAnimationFrame(placeTimeOnThumb), {passive:true});
-  window.addEventListener('earthlive:foreground', () => requestAnimationFrame(placeTimeOnThumb));
-  const observer = new MutationObserver(() => requestAnimationFrame(placeTimeOnThumb));
-  observer.observe(panel, {attributes:true, attributeFilter:['hidden','class']});
-  // Opening the panel changes its hidden attribute; the observer repositions the time.
-  // User-driven value changes are handled by input/change, avoiding a permanent animation loop.
+  range.addEventListener('input', () => requestAnimationFrame(sync));
+  range.addEventListener('change', sync);
+  window.addEventListener('resize', sync, {passive:true});
+  const observer = new MutationObserver(sync);
+  [start,end,readout,direction,status].filter(Boolean).forEach(el => observer.observe(el,{childList:true,subtree:true,characterData:true,attributes:true}));
+  document.addEventListener('click', e => { if (e.target && e.target.closest('#sunBtn')) setTimeout(sync, 80); });
+  window.addEventListener('earthlive:sun-updated', sync);
+  sync();
 })();
