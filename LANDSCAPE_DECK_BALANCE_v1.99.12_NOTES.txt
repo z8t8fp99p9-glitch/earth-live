@@ -1,0 +1,5 @@
+EARTH // LIVE v1.99.12 — Landscape Deck Balance
+
+Landscape-only refinement to v1.99.11: the continuous centered deck remains one plate, but the left and right control groups now share the deck width evenly. Orb artwork sizing is normalized so Live Location no longer visually dominates the other controls. Portrait rules are not changed. No astronomy, globe, location, gesture, or data-store code is included.
+
+Validation: ZIP integrity and JavaScript syntax checked. Visual/touch verification on the live iPhone remains necessary.
