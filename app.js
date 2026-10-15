@@ -1,214 +1,175 @@
 (() => {
   "use strict";
-
-  const globeElement = document.getElementById("globe");
   const errorMessage = document.getElementById("errorMessage");
-  let viewer = null;
+  const nasaPane = document.getElementById("nasaPane");
+  const esriPane = document.getElementById("esriPane");
+  const nasaElement = document.getElementById("nasaGlobe");
+  const esriElement = document.getElementById("esriGlobe");
+  const tabs = [...document.querySelectorAll(".mapTab")];
+  let viewers = {};
   let resizeFrame = 0;
-  let hasInitialFrame = false;
   let activeProfile = "portrait";
-  let nasaLayer = null;
-  let esriFallbackAdded = false;
-
-  // NASA Blue Marble: Next Generation, global base map with shaded topography.
-  // NASA publishes this 5400 x 2700 equirectangular JPEG for public use.
-  const nasaTextureUrl =
-    "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography/january/world.topo.200401.3x5400x2700.jpg";
-  const esriImageryUrl =
-    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-
+  let syncingCamera = false;
+  const nasaTextureUrl = "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography/january/world.topo.200401.3x5400x2700.jpg";
+  const esriImageryUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
   const profiles = {
     portrait: { initialHeight: 18500000, zoomFactor: 8, movementRatio: 0.075 },
-    compact:  { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ initialHeight: 24500000, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ initialHeight: 28000000, zoomFactor: 5, movementRatio: 0.1 }
+    compact: { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape: { initialHeight: 24500000, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide: { initialHeight: 28000000, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
-    console.error("EARTH // LIVE globe failed to start:", error);
+    console.error("EARTH // LIVE Map Lab failed to start:", error);
     errorMessage.hidden = false;
   }
-
-  function detectDisplayProfile() {
-    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
-    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
+  function detectDisplayProfile(element) {
+    const width = Math.max(1, element.clientWidth || window.innerWidth || 1);
+    const height = Math.max(1, element.clientHeight || window.innerHeight || 1);
     const ratio = width / height;
     if (ratio < 0.82) return "portrait";
     if (ratio < 1.12) return "compact";
     if (ratio > 2.15) return "ultrawide";
     return "landscape";
   }
-
-  function applyDisplayProfile({ initial = false } = {}) {
+  function applySettings(viewer, element, initial = false) {
     if (!viewer || viewer.isDestroyed()) return;
-    const nextProfile = detectDisplayProfile();
-    activeProfile = nextProfile;
-    const settings = profiles[nextProfile];
+    const profile = detectDisplayProfile(element);
+    activeProfile = profile;
+    const settings = profiles[profile];
     const controller = viewer.scene.screenSpaceCameraController;
-
-    // Adaptive touch/camera response. Preserve the user's existing zoom-out limit.
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
-    controller.minimumZoomDistance = 700000;
+    // Test unlock: allow zoom to within 1 km of the ellipsoid surface.
+    // We intentionally retain a minimum distance to avoid accidental camera clipping.
+    controller.minimumZoomDistance = 1000;
     controller.maximumZoomDistance = 40000000;
-
-    // Frame the initial globe for the display shape. Later rotations/resizes never
-    // reset the user's camera position or undo their zoom.
-    if (initial && !hasInitialFrame) {
+    if (initial) {
       viewer.camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(12, 18, settings.initialHeight),
-        orientation: {
-          heading: 0,
-          pitch: Cesium.Math.toRadians(-90),
-          roll: 0
-        }
+        orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0 }
       });
-      hasInitialFrame = true;
     }
-    document.documentElement.dataset.displayProfile = nextProfile;
+    viewer.scene.requestRender();
   }
-
-  function addEsriFallback(reason) {
-    if (esriFallbackAdded || !viewer || viewer.isDestroyed()) return;
-    esriFallbackAdded = true;
-    console.warn("NASA imagery could not be loaded; switching to Esri World Imagery.", reason || "");
-    try {
-      if (nasaLayer) {
-        viewer.imageryLayers.remove(nasaLayer, true);
-        nasaLayer = null;
-      }
-      const provider = new Cesium.UrlTemplateImageryProvider({
-        url: esriImageryUrl,
-        minimumLevel: 0,
-        maximumLevel: 8,
-        credit: new Cesium.Credit("Imagery © Esri and contributors")
+  function makeViewer(element, imagery) {
+    const viewer = new Cesium.Viewer(element, {
+      imageryProvider: false,
+      terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+      animation: false, timeline: false, baseLayerPicker: false,
+      geocoder: false, homeButton: false, sceneModePicker: false,
+      navigationHelpButton: false, fullscreenButton: false, infoBox: false,
+      selectionIndicator: false, shouldAnimate: false, scene3DOnly: true,
+      requestRenderMode: true, maximumRenderTimeChange: Infinity,
+      contextOptions: { webgl: { alpha: false, antialias: true, powerPreference: "high-performance" } }
+    });
+    viewer.imageryLayers.removeAll(false);
+    if (imagery === "nasa") {
+      const provider = new Cesium.SingleTileImageryProvider({
+        url: nasaTextureUrl,
+        credit: new Cesium.Credit("NASA Blue Marble: Next Generation — shaded topography")
       });
       viewer.imageryLayers.addImageryProvider(provider);
-      viewer.scene.requestRender();
-    } catch (error) {
-      console.error("Esri fallback failed:", error);
+      provider.errorEvent.addEventListener(error => console.warn("NASA Blue Marble imagery failed to load.", error));
+    } else {
+      viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+        url: esriImageryUrl,
+        minimumLevel: 0,
+        maximumLevel: 19,
+        credit: new Cesium.Credit("Imagery © Esri and contributors")
+      }));
     }
+    viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#030509");
+    viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#101820");
+    viewer.scene.globe.enableLighting = false;
+    viewer.scene.globe.dynamicAtmosphereLighting = false;
+    viewer.scene.globe.showGroundAtmosphere = true;
+    viewer.scene.skyAtmosphere.show = true;
+    viewer.scene.fog.enabled = true;
+    viewer.scene.globe.depthTestAgainstTerrain = false;
+    const controller = viewer.scene.screenSpaceCameraController;
+    controller.enableInputs = true;
+    controller.enableRotate = true;
+    controller.enableTilt = true;
+    controller.enableTranslate = true;
+    controller.enableZoom = true;
+    controller.enableLook = true;
+    applySettings(viewer, element, true);
+    return viewer;
   }
-
-  function addNasaImagery() {
-    const provider = new Cesium.SingleTileImageryProvider({
-      url: nasaTextureUrl,
-      credit: new Cesium.Credit("NASA Blue Marble: Next Generation — shaded topography")
-    });
-    nasaLayer = viewer.imageryLayers.addImageryProvider(provider);
-    if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
-      let firstErrorHandled = false;
-      provider.errorEvent.addEventListener(error => {
-        if (!firstErrorHandled) {
-          firstErrorHandled = true;
-          addEsriFallback(error);
-        }
+  function syncCamera(sourceName) {
+    if (syncingCamera) return;
+    const source = viewers[sourceName];
+    const targetName = sourceName === "nasa" ? "esri" : "nasa";
+    const target = viewers[targetName];
+    if (!source || !target || source.isDestroyed() || target.isDestroyed()) return;
+    syncingCamera = true;
+    try {
+      target.camera.setView({
+        destination: source.camera.positionWC,
+        orientation: { direction: source.camera.directionWC, up: source.camera.upWC }
       });
-    }
-    if (provider.readyPromise && typeof provider.readyPromise.catch === "function") {
-      provider.readyPromise.catch(addEsriFallback);
+      target.scene.requestRender();
+    } catch (error) {
+      console.warn("Map camera sync skipped:", error);
+    } finally {
+      syncingCamera = false;
     }
   }
-
+  function chooseMap(name) {
+    const showBoth = window.matchMedia("(min-width: 760px) and (orientation: landscape)").matches;
+    nasaPane.classList.toggle("mobile-active", name === "nasa");
+    esriPane.classList.toggle("mobile-active", name === "esri");
+    tabs.forEach(tab => {
+      const active = tab.dataset.map === name;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-pressed", String(active));
+    });
+    if (showBoth) {
+      nasaPane.classList.remove("mobile-active");
+      esriPane.classList.remove("mobile-active");
+    }
+    requestAnimationFrame(() => Object.values(viewers).forEach(viewer => {
+      if (viewer && !viewer.isDestroyed()) { viewer.resize(); viewer.scene.requestRender(); }
+    }));
+  }
   function resizeGlobe() {
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;
-      if (viewer && !viewer.isDestroyed()) {
+      Object.entries(viewers).forEach(([name, viewer]) => {
+        if (!viewer || viewer.isDestroyed()) return;
         viewer.resize();
-        applyDisplayProfile();
-        viewer.scene.requestRender();
-      }
+        const element = name === "nasa" ? nasaElement : esriElement;
+        applySettings(viewer, element, false);
+      });
     });
   }
-
-  function startGlobe() {
-    if (!window.Cesium) {
-      showError(new Error("Cesium did not load."));
-      return;
-    }
-
+  function start() {
+    if (!window.Cesium) { showError(new Error("Cesium did not load.")); return; }
     try {
-      viewer = new Cesium.Viewer(globeElement, {
-        imageryProvider: false,
-        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-        animation: false,
-        timeline: false,
-        baseLayerPicker: false,
-        geocoder: false,
-        homeButton: false,
-        sceneModePicker: false,
-        navigationHelpButton: false,
-        fullscreenButton: false,
-        infoBox: false,
-        selectionIndicator: false,
-        shouldAnimate: false,
-        scene3DOnly: true,
-        requestRenderMode: true,
-        maximumRenderTimeChange: Infinity,
-        contextOptions: {
-          webgl: { alpha: false, antialias: true, powerPreference: "high-performance" }
-        }
-      });
-
-      viewer.imageryLayers.removeAll(false);
-      addNasaImagery();
-
-      viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#030509");
-      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#101820");
-      viewer.scene.globe.enableLighting = false;
-      viewer.scene.globe.dynamicAtmosphereLighting = false;
-      viewer.scene.globe.showGroundAtmosphere = true;
-      viewer.scene.skyAtmosphere.show = true;
-      viewer.scene.fog.enabled = true;
-      viewer.scene.globe.depthTestAgainstTerrain = false;
-
-      const controller = viewer.scene.screenSpaceCameraController;
-      controller.enableInputs = true;
-      controller.enableRotate = true;
-      controller.enableTilt = true;
-      controller.enableTranslate = true;
-      controller.enableZoom = true;
-      controller.enableLook = true;
-      controller.minimumZoomDistance = 700000;
-      controller.maximumZoomDistance = 40000000;
-
-      applyDisplayProfile({ initial: true });
-
-      window.EarthLiveViewer = viewer;
-      window.EarthLiveAdaptiveDisplay = {
-        get profile() { return activeProfile; },
-        get settings() { return { ...profiles[activeProfile] }; },
-        get imagery() { return esriFallbackAdded ? "Esri World Imagery (fallback)" : "NASA Blue Marble shaded topography"; }
-      };
-
+      viewers.nasa = makeViewer(nasaElement, "nasa");
+      viewers.esri = makeViewer(esriElement, "esri");
+      // Keep the camera views aligned when the user finishes a pan, rotate, or zoom.
+      viewers.nasa.camera.moveEnd.addEventListener(() => syncCamera("nasa"));
+      viewers.esri.camera.moveEnd.addEventListener(() => syncCamera("esri"));
+      window.EarthLiveViewers = viewers;
+      window.EarthLiveAdaptiveDisplay = { get profile() { return activeProfile; }, zoomMinimumMeters: 1000 };
+      tabs.forEach(tab => tab.addEventListener("click", () => chooseMap(tab.dataset.map)));
+      chooseMap("nasa");
       window.addEventListener("resize", resizeGlobe, { passive: true });
       window.addEventListener("orientationchange", () => setTimeout(resizeGlobe, 180), { passive: true });
       window.addEventListener("pageshow", resizeGlobe, { passive: true });
-      document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) resizeGlobe();
-      }, { passive: true });
-
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) resizeGlobe(); }, { passive: true });
       if ("ResizeObserver" in window) {
         const observer = new ResizeObserver(resizeGlobe);
         observer.observe(document.getElementById("app"));
       }
-
-      resizeGlobe();
-
       if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-        navigator.serviceWorker.register("./service-worker.js").catch(error => {
-          console.warn("Service worker was not registered:", error);
-        });
+        navigator.serviceWorker.register("./service-worker.js").catch(error => console.warn("Service worker was not registered:", error));
       }
-    } catch (error) {
-      showError(error);
-    }
+    } catch (error) { showError(error); }
   }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startGlobe, { once: true });
-  } else {
-    startGlobe();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+  else start();
 })();
