@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "esri-zoom-limit-only-v1.2.0";
+window.EARTH_LIVE_VERSION = "esri-adaptive-gestures-v1.3.0";

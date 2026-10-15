@@ -32,6 +32,6 @@ body {
   text-align: center;
 }
 #errorMessage[hidden] { display: none; }
-/* Keep the existing adaptive display styling unchanged. */
+/* Existing adaptive display styling retained. */
 @media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; } }
 @media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }

@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-esri-zoom-limit-only-v1-2-0";
+const CACHE_NAME = "earth-live-esri-adaptive-gestures-v1-3-0";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {

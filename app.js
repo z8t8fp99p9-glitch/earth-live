@@ -7,18 +7,17 @@
   let resizeFrame = 0;
   let hasInitialFrame = false;
   let activeProfile = "portrait";
-  let esriLayer = null;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Preserve the existing camera-response values exactly. This test changes only
-  // the minimum zoom distance; no zoom factor, movement ratio, or framing changes.
+  // Preserve the established framing, zoom factor, and movement ratio.
+  // Only camera inertia is newly tuned by the available viewport profile.
   const profiles = {
-    portrait: { initialHeight: 18500000, zoomFactor: 8, movementRatio: 0.075 },
-    compact:  { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ initialHeight: 24500000, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ initialHeight: 28000000, zoomFactor: 5, movementRatio: 0.1 }
+    portrait:  { initialHeight: 18500000, zoomFactor: 8,   movementRatio: 0.075, inertiaSpin: 0.86, inertiaTranslate: 0.86, inertiaZoom: 0.84 },
+    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.88, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
+    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.90, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
+    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.92, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
   };
 
   function showError(error) {
@@ -43,11 +42,19 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    // Only experimental change: lower the minimum zoom distance from 700 km to 1 km.
+    // Zoom-limit test retained: 1 km minimum distance, 40,000 km maximum.
     controller.minimumZoomDistance = 1000;
     controller.maximumZoomDistance = 40000000;
+
+    // Existing adaptive response settings are preserved.
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
+
+    // Adaptive inertia: modestly controlled on touch-sized views and slightly
+    // longer on wide displays to keep large camera movements comfortable.
+    controller.inertiaSpin = settings.inertiaSpin;
+    controller.inertiaTranslate = settings.inertiaTranslate;
+    controller.inertiaZoom = settings.inertiaZoom;
 
     if (initial && !hasInitialFrame) {
       viewer.camera.setView({
@@ -70,7 +77,7 @@
       maximumLevel: 19,
       credit: new Cesium.Credit("Imagery © Esri and contributors")
     });
-    esriLayer = viewer.imageryLayers.addImageryProvider(provider);
+    viewer.imageryLayers.addImageryProvider(provider);
     if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
       provider.errorEvent.addEventListener(error => {
         console.warn("Esri World Imagery tile request failed:", error);
