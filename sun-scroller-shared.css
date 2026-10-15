@@ -295,3 +295,68 @@
  .sun-panel .sun-extra-info{top:64px!important;font-size:8px!important}
  .sun-panel .sun-timeline{transform:translateY(-10px)!important}
 }
+
+
+/* v1.99 — exact reference alignment: both endpoint labels AND times above the ember line. */
+.sun-panel .sun-floating-info{
+  left:6%!important; right:6%!important;
+  bottom:-46px!important; height:112px!important;
+  overflow:visible!important; pointer-events:none!important;
+  background:transparent!important; border:0!important; box-shadow:none!important;
+}
+.sun-panel .sun-endpoint{
+  top:0!important; gap:0!important; max-width:90px!important;
+  display:flex!important; flex-direction:column!important;
+}
+.sun-panel .sunrise-info{left:0!important;right:auto!important;align-items:flex-start!important;text-align:left!important}
+.sun-panel .sunset-info{right:0!important;left:auto!important;align-items:flex-end!important;text-align:right!important}
+.sun-panel .sun-info-label{display:block!important;line-height:1.2!important;font-size:9px!important;letter-spacing:1.25px!important}
+.sun-panel .sun-endpoint strong{
+  position:static!important; display:block!important; margin-top:4px!important;
+  line-height:1.15!important; font-size:13px!important; font-weight:700!important;
+  color:#fff0d0!important;
+}
+/* The live time is positioned in JS from the small range thumb's actual x-coordinate. */
+.sun-panel .sun-current-time{
+  position:absolute!important; left:50%; top:-3px!important; transform:translateX(-50%)!important;
+  z-index:5!important; white-space:nowrap!important; font-size:14px!important;
+  line-height:1.15!important; font-weight:800!important; color:#fff0bd!important;
+  text-shadow:0 0 9px rgba(255,190,85,.6),0 1px 3px rgba(0,0,0,.72)!important;
+}
+.sun-panel .sun-current-time:after{
+  content:""; position:absolute; left:50%; top:calc(100% + 3px); transform:translateX(-50%);
+  width:1.5px; height:17px; border-radius:2px;
+  background:linear-gradient(to bottom,#ffe6a0 0%,rgba(255,190,75,.82) 65%,rgba(255,190,75,0) 100%);
+  box-shadow:0 0 5px rgba(255,188,75,.42);
+}
+.sun-panel .sun-extra-info{
+  top:83px!important; left:50%!important; transform:translateX(-50%)!important;
+  max-width:88%!important; width:max-content!important; white-space:normal!important;
+  text-align:center!important; font-size:9px!important; line-height:1.2!important;
+  letter-spacing:.25px!important; color:#f1d39a!important;
+}
+.sun-panel .sun-timeline{transform:translateY(-17px)!important;z-index:2!important}
+.sun-panel .sun-range{background-size:100% 44px!important}
+@media(max-width:390px){
+ .sun-panel .sun-floating-info{bottom:-43px!important;height:106px!important}
+ .sun-panel .sun-info-label{font-size:8.5px!important;letter-spacing:1px!important}
+ .sun-panel .sun-endpoint strong{font-size:12px!important;margin-top:3px!important}
+ .sun-panel .sun-current-time{font-size:13px!important}
+ .sun-panel .sun-extra-info{top:80px!important;font-size:8.5px!important;letter-spacing:.1px!important}
+}
+@media(orientation:landscape){
+ .sun-panel .sun-floating-info{bottom:-39px!important;height:100px!important}
+ .sun-panel .sun-endpoint{top:0!important}
+ .sun-panel .sun-endpoint strong{font-size:12px!important;margin-top:3px!important}
+ .sun-panel .sun-current-time{font-size:13px!important}
+ .sun-panel .sun-extra-info{top:74px!important;font-size:9px!important}
+ .sun-panel .sun-timeline{transform:translateY(-13px)!important}
+}
+@media(orientation:landscape) and (max-height:430px){
+ .sun-panel .sun-floating-info{bottom:-34px!important;height:88px!important}
+ .sun-panel .sun-info-label{font-size:8px!important}
+ .sun-panel .sun-endpoint strong{font-size:11px!important;margin-top:2px!important}
+ .sun-panel .sun-current-time{font-size:12px!important}
+ .sun-panel .sun-extra-info{top:64px!important;font-size:8px!important}
+ .sun-panel .sun-timeline{transform:translateY(-10px)!important}
+}
