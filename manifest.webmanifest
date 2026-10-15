@@ -1,16 +1,16 @@
 {
-  "name": "EARTH // LIVE \u2014 Planetary Viewer",
+  "name": "EARTH // LIVE — Basic Globe",
   "short_name": "EARTH LIVE",
-  "description": "An independent planetary viewer with public earthquake data.",
+  "description": "A simple interactive 3D globe.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#060a12",
-  "theme_color": "#060a12",
+  "background_color": "#030509",
+  "theme_color": "#030509",
   "icons": [
     {
-      "src": "./icons/icon.svg",
+      "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

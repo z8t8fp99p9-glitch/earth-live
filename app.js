@@ -1,43 +1,129 @@
 (() => {
-'use strict';
-const $=id=>document.getElementById(id),errorEl=$('errorMessage'),statusEl=$('statusMessage'),basicBtn=$('basicBtn'),hdBtn=$('hdBtn'),app=$('app');
-const IMAGERY='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-const HILLSHADE='https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}';
-let viewer,imageryLayer,hillshadeLayer=null,quality='basic',resizeFrame=0,locationEntity=null,lastLocation=null,locationTimer=null,locationDeadline=0,moonHold=false,statusTimer=null,locationRequestSerial=0,locationTapSerial=0;
-function provider(url,max,credit){return new Cesium.UrlTemplateImageryProvider({url,minimumLevel:0,maximumLevel:max,credit:new Cesium.Credit(credit)});}
-function imagery(mode){return provider(IMAGERY,mode==='basic'?3:19,'Imagery © Esri and contributors');}
-function hillshade(){return provider(HILLSHADE,13,'World Hillshade © Esri, USGS, NGA, NASA, CGIAR, and GIS contributors');}
-function updateButtons(){basicBtn.classList.toggle('active',quality==='basic');hdBtn.classList.toggle('active',quality==='hd');basicBtn.setAttribute('aria-pressed',String(quality==='basic'));hdBtn.setAttribute('aria-pressed',String(quality==='hd'));}
-function setQuality(mode){
- if(!viewer||mode===quality)return;
- const cam=viewer.camera,saved={position:cam.position.clone(),direction:cam.direction.clone(),up:cam.up.clone()};
- try{const next=viewer.imageryLayers.addImageryProvider(imagery(mode)),old=imageryLayer;imageryLayer=next;if(old)viewer.imageryLayers.remove(old,true);
-  if(mode==='hd'&&!hillshadeLayer){hillshadeLayer=viewer.imageryLayers.addImageryProvider(hillshade());hillshadeLayer.alpha=.26;}
-  if(mode==='basic'&&hillshadeLayer){viewer.imageryLayers.remove(hillshadeLayer,true);hillshadeLayer=null;}
-  quality=mode;updateButtons();viewer.camera.setView({destination:saved.position,orientation:{direction:saved.direction,up:saved.up}});viewer.scene.requestRender();
- }catch(e){console.error('Map mode change failed',e);showStatus('Map quality could not be changed.');}}
-function syncViewport(){const standalone=(window.navigator.standalone===true)||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);document.documentElement.classList.toggle('standalone-app',!!standalone);if(resizeFrame)cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;app.style.height='';app.style.width='';if(viewer){viewer.resize();viewer.scene.requestRender();}});}
-function showStatus(message){statusEl.textContent=message;statusEl.hidden=false;if(statusTimer)clearTimeout(statusTimer);statusTimer=setTimeout(()=>{statusEl.hidden=true;statusTimer=null;},3600);}
-function updateLocationButton(){const on=(Date.now()<locationDeadline)||moonHold;$('locateBtn').classList.toggle('active',on);$('locateBtn').setAttribute('aria-pressed',String(on));}
-function removeLocationPointer(){if(viewer&&locationEntity){viewer.entities.remove(locationEntity);locationEntity=null;viewer.scene.requestRender();}lastLocation=null;updateLocationButton();}
-function clearLocationTimer(){if(locationTimer!==null){clearTimeout(locationTimer);locationTimer=null;}}
-function scheduleLocationExpiry(){clearLocationTimer();if(moonHold){updateLocationButton();return;}const remaining=locationDeadline-Date.now();if(remaining<=0){removeLocationPointer();return;}locationTimer=setTimeout(()=>{locationTimer=null;if(moonHold){updateLocationButton();return;}removeLocationPointer();},remaining);updateLocationButton();}
-function holdLocationForMoon(hold){moonHold=!!hold;if(moonHold){clearLocationTimer();updateLocationButton();}else if(locationDeadline<=Date.now()){removeLocationPointer();}else scheduleLocationExpiry();}
-function getCurrentLocation({refresh=false}={}){return new Promise((resolve,reject)=>{if(!refresh&&lastLocation&&Date.now()-lastLocation.capturedAt<20000){resolve(lastLocation);return;}if(!navigator.geolocation){reject(new Error('Location is not available in this browser.'));return;}const requestSerial=++locationRequestSerial;navigator.geolocation.getCurrentPosition(pos=>{if(requestSerial!==locationRequestSerial){reject(new Error('A newer location request replaced this one.'));return;}const loc={latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy:pos.coords.accuracy,capturedAt:Date.now()};lastLocation=loc;resolve(loc);},err=>{if(requestSerial===locationRequestSerial)reject(err);else reject(new Error('A newer location request replaced this one.'));},{enableHighAccuracy:false,maximumAge:0,timeout:12000});});}
-function placeLocation(loc,{fly=true}={}){if(!viewer||!window.Cesium)return;const position=Cesium.Cartesian3.fromDegrees(loc.longitude,loc.latitude,30);if(locationEntity)viewer.entities.remove(locationEntity);locationEntity=viewer.entities.add({position,name:'You Here? May Be',point:{pixelSize:12,color:Cesium.Color.fromCssColorString('#5EC8FF'),outlineColor:Cesium.Color.WHITE,outlineWidth:2,heightReference:Cesium.HeightReference.CLAMP_TO_GROUND},label:{text:'You Here? May Be',font:'600 13px system-ui',fillColor:Cesium.Color.WHITE,outlineColor:Cesium.Color.fromCssColorString('#07111D'),outlineWidth:3,style:Cesium.LabelStyle.FILL_AND_OUTLINE,pixelOffset:new Cesium.Cartesian2(0,-22),horizontalOrigin:Cesium.HorizontalOrigin.CENTER,verticalOrigin:Cesium.VerticalOrigin.BOTTOM,heightReference:Cesium.HeightReference.CLAMP_TO_GROUND}});if(fly){const camera=viewer.camera;const height=Math.max(1400000,camera.positionCartographic.height);const orientation={heading:camera.heading,pitch:camera.pitch,roll:camera.roll};viewer.camera.flyTo({destination:Cesium.Cartesian3.fromDegrees(loc.longitude,loc.latitude,height),orientation,duration:1.45,complete:()=>viewer.scene.requestRender()});}viewer.scene.requestRender();}
-async function locateTap(){const tapSerial=++locationTapSerial;locationDeadline=Date.now()+20000;clearLocationTimer();updateLocationButton();scheduleLocationExpiry();showStatus('Finding your location…');try{const loc=await getCurrentLocation({refresh:true});if(tapSerial!==locationTapSerial)return;if(Date.now()>locationDeadline&&!moonHold){removeLocationPointer();return;}placeLocation(loc,{fly:true});updateLocationButton();showStatus('Location found. Camera moved to your position.');scheduleLocationExpiry();if(window.EarthLiveCelestial&&window.EarthLiveCelestial.isMoonActive())window.EarthLiveCelestial.refreshLocation(loc);}catch(e){if(tapSerial!==locationTapSerial)return;showStatus(e&&e.code===1?'Location permission was denied. Enable it in iPhone Settings.':'Could not get location. Check permission and try again.');scheduleLocationExpiry();}}
-function init(){if(!window.Cesium){errorEl.hidden=false;return;}try{viewer=new Cesium.Viewer('globe',{imageryProvider:false,terrainProvider:new Cesium.EllipsoidTerrainProvider(),animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,shouldAnimate:false,requestRenderMode:true,maximumRenderTimeChange:Infinity,scene3DOnly:true,contextOptions:{webgl:{alpha:false,antialias:true,powerPreference:'high-performance'}}});viewer.imageryLayers.removeAll(false);imageryLayer=viewer.imageryLayers.addImageryProvider(imagery('basic'));viewer.scene.backgroundColor=Cesium.Color.fromCssColorString('#030509');viewer.scene.globe.baseColor=Cesium.Color.fromCssColorString('#101820');
-  // Day/night shading is deliberately OFF until the Sun control is tapped.
-  viewer.scene.globe.enableLighting=false;viewer.scene.globe.dynamicAtmosphereLighting=false;viewer.scene.globe.dynamicAtmosphereLightingFromSun=true;viewer.scene.globe.showGroundAtmosphere=true;viewer.scene.skyAtmosphere.show=true;viewer.scene.fog.enabled=true;viewer.scene.globe.depthTestAgainstTerrain=false;
-  // Restore the v1.47 gesture/zoom tuning for reliable touch movement in portrait and landscape.
-  viewer.scene.screenSpaceCameraController.enableInputs=true;viewer.scene.screenSpaceCameraController.enableRotate=true;viewer.scene.screenSpaceCameraController.enableTilt=true;viewer.scene.screenSpaceCameraController.enableTranslate=true;viewer.scene.screenSpaceCameraController.enableZoom=true;viewer.scene.screenSpaceCameraController.enableLook=true;viewer.scene.screenSpaceCameraController.minimumZoomDistance=1;viewer.scene.screenSpaceCameraController.maximumZoomDistance=40000000;viewer.scene.screenSpaceCameraController.zoomFactor=8;viewer.scene.screenSpaceCameraController.maximumMovementRatio=0.1;
-  viewer.camera.setView({destination:Cesium.Cartesian3.fromDegrees(12,18,24500000),orientation:{heading:0,pitch:Cesium.Math.toRadians(-90),roll:0}});
-  window.EarthLiveViewer=viewer;
-  window.EarthLiveLocation={getCurrentLocation,placeLocation,holdForMoon:holdLocationForMoon,clear:removeLocationPointer,showStatus,getLast:()=>lastLocation};
-  window.dispatchEvent(new CustomEvent('earthlive:viewer-ready',{detail:{viewer}}));
-  updateButtons();syncViewport();
-  if(window.visualViewport){window.visualViewport.addEventListener('resize',syncViewport,{passive:true});window.visualViewport.addEventListener('scroll',syncViewport,{passive:true});}window.addEventListener('resize',syncViewport,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(syncViewport,200),{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden){syncViewport();setTimeout(syncViewport,250);window.dispatchEvent(new Event('earthlive:foreground'));}}, {passive:true});window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,250);window.dispatchEvent(new Event('earthlive:foreground'));},{passive:true});if('ResizeObserver' in window){const observer=new ResizeObserver(()=>{if(viewer){viewer.resize();viewer.scene.requestRender();}});observer.observe(app);}
- }catch(e){console.error(e);errorEl.hidden=false;}}
-basicBtn.addEventListener('click',()=>setQuality('basic'));hdBtn.addEventListener('click',()=>setQuality('hd'));$('locateBtn').addEventListener('click',locateTap);
-init();
+  "use strict";
+
+  const globeElement = document.getElementById("globe");
+  const errorMessage = document.getElementById("errorMessage");
+  let viewer = null;
+  let resizeFrame = 0;
+
+  const imageryUrl =
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+
+  function showError(error) {
+    console.error("EARTH // LIVE globe failed to start:", error);
+    errorMessage.hidden = false;
+  }
+
+  function resizeGlobe() {
+    if (resizeFrame) cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => {
+      resizeFrame = 0;
+      if (viewer && !viewer.isDestroyed()) {
+        viewer.resize();
+        viewer.scene.requestRender();
+      }
+    });
+  }
+
+  function startGlobe() {
+    if (!window.Cesium) {
+      showError(new Error("Cesium did not load."));
+      return;
+    }
+
+    try {
+      viewer = new Cesium.Viewer(globeElement, {
+        imageryProvider: false,
+        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+        animation: false,
+        timeline: false,
+        baseLayerPicker: false,
+        geocoder: false,
+        homeButton: false,
+        sceneModePicker: false,
+        navigationHelpButton: false,
+        fullscreenButton: false,
+        infoBox: false,
+        selectionIndicator: false,
+        shouldAnimate: false,
+        scene3DOnly: true,
+        requestRenderMode: true,
+        maximumRenderTimeChange: Infinity,
+        contextOptions: {
+          webgl: { alpha: false, antialias: true, powerPreference: "high-performance" }
+        }
+      });
+
+      viewer.imageryLayers.removeAll(false);
+      const imageryProvider = new Cesium.UrlTemplateImageryProvider({
+        url: imageryUrl,
+        minimumLevel: 0,
+        maximumLevel: 8,
+        credit: new Cesium.Credit("Imagery © Esri and contributors")
+      });
+      viewer.imageryLayers.addImageryProvider(imageryProvider);
+
+      viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#030509");
+      viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#101820");
+      viewer.scene.globe.enableLighting = false;
+      viewer.scene.globe.dynamicAtmosphereLighting = false;
+      viewer.scene.globe.showGroundAtmosphere = true;
+      viewer.scene.skyAtmosphere.show = true;
+      viewer.scene.fog.enabled = true;
+      viewer.scene.globe.depthTestAgainstTerrain = false;
+
+      const cameraController = viewer.scene.screenSpaceCameraController;
+      cameraController.enableInputs = true;
+      cameraController.enableRotate = true;
+      cameraController.enableTilt = true;
+      cameraController.enableTranslate = true;
+      cameraController.enableZoom = true;
+      cameraController.enableLook = true;
+      cameraController.minimumZoomDistance = 700000;
+      cameraController.maximumZoomDistance = 40000000;
+      cameraController.zoomFactor = 5;
+      cameraController.maximumMovementRatio = 0.1;
+
+      // A simple, centered globe with space around it. No app controls or overlays.
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(12, 18, 24500000),
+        orientation: {
+          heading: 0,
+          pitch: Cesium.Math.toRadians(-90),
+          roll: 0
+        }
+      });
+
+      window.EarthLiveViewer = viewer;
+      window.addEventListener("resize", resizeGlobe, { passive: true });
+      window.addEventListener("orientationchange", () => {
+        setTimeout(resizeGlobe, 180);
+      }, { passive: true });
+      window.addEventListener("pageshow", resizeGlobe, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) resizeGlobe();
+      }, { passive: true });
+
+      if ("ResizeObserver" in window) {
+        const observer = new ResizeObserver(resizeGlobe);
+        observer.observe(document.getElementById("app"));
+      }
+
+      resizeGlobe();
+
+      if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+        navigator.serviceWorker.register("./service-worker.js").catch(error => {
+          console.warn("Service worker was not registered:", error);
+        });
+      }
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startGlobe, { once: true });
+  } else {
+    startGlobe();
+  }
 })();

@@ -1,5 +1,47 @@
-const CACHE='earth-live-shell-v1-102';
-const SHELL=['./','./index.html','./style.css','./landscape-dock.css','./sun-sky.css','./sun-scroller-shared.css','./celestial-path-refinement.css','./liquid-glass.css','./celestial-path-refinement.js','./app-version.js','./data-store.js','./moon-dataset.js','./sun-moon-tracker.js','./sun-sky-view.js','./sun-floating-info.js','./app.js','./icon-earth-basic.webp','./icon-earth-hd.webp','./icon-location.webp','./icon-sun-observer.webp','./icon-moon-observer.webp','./icon-stacks.webp','./icon-sun-dragger.svg','./icon-moon-dragger.svg','./icon-moon-dragger-vertical.svg','./solar-atmosphere.svg','./lunar-atmosphere.svg','./mountains-warm.svg','./mountains-night.svg','./cinematic-sun-atmosphere.svg','./cinematic-moon-atmosphere.svg','./cinematic-mountains-warm.svg','./cinematic-mountains-night.svg'];
-self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).catch(error=>console.warn('EARTH // LIVE shell cache skipped:',error)).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('earth-live-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
-self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin)return;if(!(/\.(html|css|js|webp|svg)$/.test(url.pathname)||url.pathname.endsWith('/')))return;event.respondWith(fetch(request,{cache:'no-cache'}).then(response=>{if(response&&response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});}return response;}).catch(()=>caches.match(request).then(cached=>cached||caches.match('./index.html'))));});
+const CACHE_NAME = "earth-live-basic-v1";
+const SHELL = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./app-version.js",
+  "./manifest.webmanifest"
+];
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(SHELL))
+      .catch(error => console.warn("EARTH LIVE shell cache skipped:", error))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(key => key.startsWith("earth-live-") && key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", event => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (!(/\.(html|css|js|webmanifest|svg|webp|jpg|png)$/.test(url.pathname) ||
+        url.pathname.endsWith("/"))) return;
+
+  event.respondWith(
+    fetch(request, { cache: "no-cache" }).then(response => {
+      if (response && response.ok) {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {});
+      }
+      return response;
+    }).catch(() => caches.match(request).then(cached => cached || caches.match("./index.html")))
+  );
+});

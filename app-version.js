@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION='v1.99.14 Original CSS Size Baseline';
+window.EARTH_LIVE_VERSION = "basic-globe-v1.0.0";
