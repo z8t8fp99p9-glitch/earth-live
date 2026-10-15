@@ -42,8 +42,8 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    // Zoom adjustment: allow closer approach (1 km minimum) while retaining the standard Cesium gesture handling.
-    controller.minimumZoomDistance = 1000;
+    // Zoom adjustment: allow closer approach (1 metre minimum) while retaining the standard Cesium gesture handling.
+    controller.minimumZoomDistance = 1;
     controller.maximumZoomDistance = 40000000;
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
