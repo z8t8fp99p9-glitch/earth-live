@@ -1,0 +1,58 @@
+/* EARTH // LIVE v1.99.9 — Orb & Deck Design System
+   One scoped material module. Default selectors preserve the v1.99.2 glass appearance.
+   Decorative surfaces never intercept pointer/touch events. */
+#app .appearance-settings{display:grid;gap:10px;margin:4px 0 16px;padding:12px;border:1px solid rgba(188,216,242,.18);border-radius:16px;background:rgba(3,10,19,.42)}
+#app .appearance-row{display:grid;gap:6px}
+#app .appearance-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(226,238,250,.72);font-weight:750}
+#app .appearance-options{display:flex;flex-wrap:wrap;gap:6px}
+#app .appearance-choice{flex:1 1 112px;min-height:36px;padding:8px 10px;border:1px solid rgba(192,218,244,.22);border-radius:11px;background:rgba(13,25,39,.82);color:rgba(230,241,252,.82);font-size:12px;font-weight:700;line-height:1.15;touch-action:manipulation}
+#app .appearance-choice.is-selected{color:#fff;border-color:rgba(102,194,255,.8);background:linear-gradient(145deg,rgba(31,121,190,.34),rgba(9,26,45,.9));box-shadow:0 0 0 1px rgba(65,171,245,.12),0 0 12px rgba(30,144,230,.15)}
+#app .appearance-choice[data-orb-choice="sand"].is-selected,#app .appearance-choice[data-deck-choice="sand"].is-selected{border-color:rgba(219,171,108,.88);background:linear-gradient(145deg,rgba(139,91,42,.44),rgba(37,25,16,.92));box-shadow:0 0 0 1px rgba(205,153,88,.12),0 0 12px rgba(181,117,49,.14)}
+#app .appearance-note{margin:0;color:rgba(205,220,236,.58);font-size:10px;line-height:1.35}
+#app .appearance-feed-heading{margin-top:5px}
+#app #stacksPanel{max-height:min(72dvh,620px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+
+/* SAND DECK: same capsule silhouette, thin profile, real-looking compacted-sand texture. */
+#app[data-deck-family="sand"] .bottom-ui::before,
+#app[data-deck-family="sand"] .dock-left-group::before,
+#app[data-deck-family="sand"] .dock-right-group::before{
+  background-image:linear-gradient(180deg,rgba(255,224,174,.12),rgba(105,68,35,.04) 38%,rgba(34,22,13,.28) 100%),url("./sand-deck-texture.webp");
+  background-size:100% 100%,cover;background-position:center;background-repeat:no-repeat;
+  border:1px solid rgba(190,144,91,.76)!important;
+  box-shadow:0 9px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,223,173,.48),inset 0 -3px 5px rgba(33,20,10,.52)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#app[data-deck-family="sand"] .bottom-ui::after,
+#app[data-deck-family="sand"] .dock-left-group::after,
+#app[data-deck-family="sand"] .dock-right-group::after{
+  background:linear-gradient(180deg,rgba(196,145,87,.86),rgba(86,56,32,.96) 54%,rgba(27,20,15,.98))!important;
+  border-top:1px solid rgba(255,219,166,.58);box-shadow:0 4px 8px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,232,192,.18)!important;
+}
+#app[data-deck-family="sand"] .bottom-ui{border:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+#app[data-deck-family="sand"] .dock-left-group,#app[data-deck-family="sand"] .dock-right-group{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* SAND GLASS ORBS: natural mineral rim, a pinch of dust, clear artwork; no extra glass casing. */
+#app[data-orb-family="sand"] .dock-item::before,
+#app[data-orb-family="sand"] .dock-item::after{content:none!important;display:none!important}
+#app[data-orb-family="sand"] .dock-art{
+  padding:0!important;border:0!important;background:transparent!important;box-shadow:0 3px 6px rgba(0,0,0,.28)!important;overflow:visible!important;
+}
+#app[data-orb-family="sand"] .dock-art img,
+#app[data-orb-family="sand"] .quality-segment img{
+  opacity:1!important;filter:none!important;border:0!important;border-radius:50%!important;
+  box-shadow:0 2px 5px rgba(0,0,0,.25)!important;object-fit:cover!important;
+}
+#app[data-orb-family="sand"] .dock-art{position:relative!important;isolation:isolate!important}
+#app[data-orb-family="sand"] .dock-art::after{
+  content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:2;opacity:.17;
+  background-image:radial-gradient(circle at 19% 24%,rgba(245,211,161,.85) 0 .55px,transparent .95px),radial-gradient(circle at 76% 20%,rgba(40,28,17,.8) 0 .6px,transparent 1px),radial-gradient(circle at 83% 69%,rgba(231,191,137,.72) 0 .55px,transparent .95px),radial-gradient(circle at 28% 82%,rgba(43,30,19,.75) 0 .6px,transparent 1px);
+  -webkit-mask-image:radial-gradient(circle,transparent 57%,#000 75%);mask-image:radial-gradient(circle,transparent 57%,#000 75%);
+}
+#app[data-orb-family="sand"] .dock-item.active .dock-art img,
+#app[data-orb-family="sand"] .dock-item[aria-pressed="true"] .dock-art img,
+#app[data-orb-family="sand"] .quality-segment.active img{filter:saturate(1.04) contrast(1.03)!important}
+#app[data-orb-family="sand"] .dock-item.active,#app[data-orb-family="sand"] .dock-item[aria-pressed="true"],#app[data-orb-family="sand"] .quality-segment.active{filter:drop-shadow(0 4px 5px rgba(43,151,225,.34))!important}
+#app[data-orb-family="sand"] #sunBtn.active,#app[data-orb-family="sand"] #sunBtn[aria-pressed="true"]{filter:drop-shadow(0 4px 5px rgba(255,177,62,.42))!important}
+#app[data-orb-family="sand"] .dock-item .dock-label,#app[data-orb-family="sand"] .quality-segment span{text-shadow:0 1px 3px rgba(0,0,0,.94)!important}
+
+@media (prefers-reduced-motion:reduce){#app .appearance-choice{transition:none!important}}

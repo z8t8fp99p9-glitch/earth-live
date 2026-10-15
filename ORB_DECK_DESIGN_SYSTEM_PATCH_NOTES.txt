@@ -1,0 +1,16 @@
+EARTH // LIVE — v1.99.9 Orb & Deck Design System (candidate)
+
+FILES IN THIS PATCH
+- index.html — adds the appearance selector and links the new design modules; preserves existing controls and geometry.
+- app-version.js — labels this candidate build.
+- orb-deck-design-system.css / .js — one scoped design module for independent deck and orb families.
+- orb-sand-*.webp — pre-rendered, lightweight Sand Glass artwork assets derived from the existing orb artwork, with the outer casing reduced and a restrained mineral/dust rim.
+- sand-deck-texture.webp — a static texture used by the Sand Deck surface.
+
+HOW TO USE
+Upload the flat files in this ZIP to the repository root, replacing matching files. Do not upload a containing folder. Do not change data-store.js.
+After deployment, open Stacks / More Options > Deck & Orb Design. Choose Glass Slab or Sand & Stone independently from Futuristic Glass or Sand Glass. Choices are saved locally on the device.
+
+SAFETY / VALIDATION
+This is a candidate patch built from the v1.99.2 known-good index plus the existing full-project source files. It does not modify app.js, data-store.js, globe imagery, camera, gestures, location, Sun/Moon calculations, or astronomy. CSS textures are static and the deck's decorative surfaces use pointer-events:none.
+The ZIP and markup/script syntax are checked. The app has not been run in an iPhone browser from this environment; please treat visual layout and touch behavior as needing your on-device confirmation before considering it verified.
