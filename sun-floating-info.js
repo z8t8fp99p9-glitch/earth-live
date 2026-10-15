@@ -18,17 +18,27 @@
       const state = status ? tidy(status.textContent).split('·').pop().trim() : '';
       extra.textContent = [dir, state].filter(Boolean).join('  ·  ');
     }
-    const track = range.closest('.sun-timeline');
     const panel = range.closest('.sun-panel');
-    if (track && panel && current) {
+    if (panel && current) {
       const max = Number(range.max) || 1, min = Number(range.min) || 0;
       const fraction = Math.max(0, Math.min(1, (Number(range.value) - min) / (max - min)));
-      const thumbHalf = 20;
-      const trackRect = track.getBoundingClientRect(), panelRect = panel.getBoundingClientRect();
-      const x = trackRect.left + trackRect.width * (.06 + .88 * fraction);
-      const half = current.offsetWidth / 2;
-      const bounded = Math.max(panelRect.left + half + 4, Math.min(panelRect.right - half - 4, x));
-      current.style.left = (bounded - panelRect.left) + 'px';
+      const rangeRect = range.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+
+      // Track the SMALL Sun thumb using the rendered range input's own bounds.
+      // This is UI geometry only; it does not read or alter the astronomical Sun position.
+      let thumbSize = 39;
+      try {
+        const thumbStyle = getComputedStyle(range, '::-webkit-slider-thumb');
+        const measured = parseFloat(thumbStyle.width);
+        if (Number.isFinite(measured) && measured > 0) thumbSize = measured;
+      } catch (_) {}
+      const thumbHalf = thumbSize / 2;
+      const thumbCenter = rangeRect.left + thumbHalf + (rangeRect.width - thumbSize) * fraction;
+      const halfLabel = current.offsetWidth / 2;
+      const bounded = Math.max(panelRect.left + halfLabel + 4,
+        Math.min(panelRect.right - halfLabel - 4, thumbCenter));
+      current.style.left = `${bounded - panelRect.left}px`;
     }
   }
   range.addEventListener('input', () => requestAnimationFrame(sync));

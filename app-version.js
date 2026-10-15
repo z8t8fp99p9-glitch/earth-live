@@ -1,1 +1,1 @@
-(function(){const version='v1.96.1 Altitude Box Removed';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
+(function(){const version='v1.96.2 Scroller-Linked Time';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
