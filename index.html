@@ -25,6 +25,43 @@
   #sunPanel { bottom: calc(env(safe-area-inset-bottom, 0px) + 89px) !important; }
 }
 </style>
+
+<style id="landscape-rebuild-v1982">
+/* v1.98.2: Landscape-only split dock and vertical Sun timer support. Portrait layout remains the original centered dock. */
+.dock-left-group,.dock-right-group{display:contents}
+@media (orientation:landscape){
+  .bottom-ui{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 9px);transform:none;width:auto;max-width:none;padding:0;gap:0;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none;display:flex;align-items:center;justify-content:space-between;overflow:visible}
+  .dock-left-group,.dock-right-group{display:flex;align-items:center;gap:clamp(7px,1.3vw,15px);padding:7px 9px;border-radius:24px;background:linear-gradient(145deg,rgba(24,37,54,.88),rgba(5,11,21,.91));border:1px solid rgba(184,216,246,.28);box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);-webkit-backdrop-filter:blur(18px) saturate(135%);backdrop-filter:blur(18px) saturate(135%);pointer-events:auto;will-change:transform;transition:transform 560ms cubic-bezier(.2,.78,.22,1),opacity 420ms ease}
+  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 5.5vw);transform:translateX(0);}
+  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 5.5vw);transform:translateX(0);}
+  /* A restrained outward unfold leaves a clear centre for the sky. */
+  #app.landscape-dock-split .dock-left-group{transform:translateX(-7px)}
+  #app.landscape-dock-split .dock-right-group{transform:translateX(7px)}
+  .dock-item{width:clamp(45px,7.2vh,58px);flex:0 0 clamp(45px,7.2vh,58px);min-height:clamp(46px,8.5vh,62px);padding:2px 0}
+  .dock-art{width:clamp(36px,6.7vh,48px);height:clamp(36px,6.7vh,48px)}
+  .quality-segment{width:clamp(39px,6vh,50px)}
+  .quality-segment img{width:clamp(24px,4.8vh,32px);height:clamp(24px,4.8vh,32px)}
+  .time-panel.sun-panel{left:auto;right:calc(env(safe-area-inset-right,0px) + 10px);top:50%;bottom:auto;transform:translateY(-50%);width:96px;max-width:96px;padding:8px 7px;border-radius:18px}
+  .sun-panel .sun-timeline{display:block!important;width:100%!important;height:clamp(135px,38vh,220px)!important;min-height:0!important;}
+  .sun-panel .sun-range{position:absolute!important;left:50%!important;right:auto!important;top:50%!important;inset-inline:auto!important;width:clamp(135px,38vh,220px)!important;height:36px!important;transform:translate(-50%,-50%) rotate(-90deg)!important;transform-origin:center!important;touch-action:pan-y!important;}
+  .sun-panel .sun-range::-webkit-slider-thumb{width:35px!important;height:35px!important;margin-top:0!important}
+  .sun-panel .sun-range::-moz-range-thumb{width:35px!important;height:35px!important}
+}
+@media (orientation:landscape) and (max-height:430px){
+  .dock-left-group,.dock-right-group{gap:6px;padding:5px 6px;border-radius:20px}
+  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 4.5vw)}
+  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 4.5vw)}
+  .dock-item{width:42px;flex-basis:42px;min-height:42px}
+  .dock-art{width:32px;height:32px}
+  .time-panel.sun-panel{width:84px;max-width:84px;padding:6px 5px}
+  .sun-panel .sun-timeline{height:clamp(112px,34vh,150px)!important}
+  .sun-panel .sun-range{width:clamp(112px,34vh,150px)!important;height:32px!important}
+  .sun-panel .sun-range::-webkit-slider-thumb{width:31px!important;height:31px!important}
+  .sun-panel .sun-range::-moz-range-thumb{width:31px!important;height:31px!important}
+}
+@media (prefers-reduced-motion:reduce){.dock-left-group,.dock-right-group{transition:none!important}}
+</style>
+
 </head>
 <body>
 <main id="app">
@@ -44,7 +81,7 @@
     <div class="sky-compass" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
     <div class="sky-horizon" aria-hidden="true"><div class="horizon-mountains"></div><div class="horizon-glow"></div></div>
     <div id="skySun" class="sky-sun" aria-hidden="true"></div>
-    <!-- Sun direction/altitude display intentionally removed; astronomy calculations remain active. -->
+    
   </section>
   <div class="app-stamp" aria-label="EARTH // LIVE"><span class="app-stamp-dot" aria-hidden="true"></span><span class="app-stamp-copy"><span class="app-stamp-name">EARTH <i>//</i> LIVE</span><span class="app-stamp-version" id="appVersion">Loading version…</span></span></div>
 
@@ -65,15 +102,19 @@
   </section>
 
   <div class="bottom-ui glass" aria-label="Main dock">
-    <div class="quality-group" role="group" aria-label="Earth quality selector"><button class="quality-segment active" id="basicBtn" aria-pressed="true"><img src="./icon-earth-basic.webp" alt=""><span>Basic</span></button><button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button></div>
-    <button class="dock-item" id="locateBtn" aria-label="Refresh live location" title="Live Location"><span class="dock-art"><img src="./icon-location.webp" alt=""></span><span class="dock-label">Live Location</span></button>
-    <button class="dock-item dock-sun" id="sunBtn" aria-label="Open Sun Sky View" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
-    <button class="dock-item dock-moon" id="moonBtn" aria-label="Open Moon Sky View" title="Moon View" aria-pressed="false"><span class="dock-art"><img src="./icon-moon-observer.webp" alt=""></span><span class="dock-label">Moon</span></button>
-    <button class="dock-item" id="layersBtn" aria-label="Open More Options" title="More Options" aria-pressed="false"><span class="dock-art"><img src="./icon-stacks.webp" alt=""></span><span class="dock-label">Stacks</span></button>
+    <div class="dock-left-group" aria-label="Earth controls">
+      <div class="quality-group" role="group" aria-label="Earth quality selector"><button class="quality-segment active" id="basicBtn" aria-pressed="true"><img src="./icon-earth-basic.webp" alt=""><span>Basic</span></button><button class="quality-segment" id="hdBtn" aria-pressed="false"><img src="./icon-earth-hd.webp" alt=""><span>HD</span></button></div>
+      <button class="dock-item" id="locateBtn" aria-label="Refresh live location" title="Live Location"><span class="dock-art"><img src="./icon-location.webp" alt=""></span><span class="dock-label">Live Location</span></button>
+    </div>
+    <div class="dock-right-group" aria-label="Sky controls">
+      <button class="dock-item dock-sun" id="sunBtn" aria-label="Open Sun Sky View" title="Sun View" aria-pressed="false"><span class="dock-art"><img src="./icon-sun-observer.webp" alt=""></span><span class="dock-label">Sun</span></button>
+      <button class="dock-item dock-moon" id="moonBtn" aria-label="Open Moon Sky View" title="Moon View" aria-pressed="false"><span class="dock-art"><img src="./icon-moon-observer.webp" alt=""></span><span class="dock-label">Moon</span></button>
+      <button class="dock-item" id="layersBtn" aria-label="Open More Options" title="More Options" aria-pressed="false"><span class="dock-art"><img src="./icon-stacks.webp" alt=""></span><span class="dock-label">Stacks</span></button>
+    </div>
   </div>
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.97.3"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.97.3"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.98.2"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.98.2"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));</script>
 </body></html>

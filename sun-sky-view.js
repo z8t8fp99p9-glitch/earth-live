@@ -42,7 +42,6 @@ function setTime(date){if(viewer&&window.Cesium){viewer.clock.currentTime=Cesium
 function compass(az){return ['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];}
 function updateSun(date){if(!active||!locationFix)return;const p=solarPosition(date,locationFix),x=6+88*clamp((p.azimuth-90)/180,0,1),y=34+clamp(p.altitude,0,75)*0.48;
   const orb=$('skySun');orb.style.left=x+'%';orb.style.bottom=y+'%';orb.style.opacity=p.altitude>=HORIZON?'1':'.3';
-  // Direction/altitude readout removed; p.altitude is still used for Sun positioning and horizon status.
   $('sunSkyStatus').textContent=`${fmt(date)} · ${p.altitude>=HORIZON?'SUN ABOVE HORIZON':'SUN BELOW HORIZON'}`;
   sunReadout.value=fmt(date);sunReadout.textContent=fmt(date);setTime(date);
 }

@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.97.2 — refined horizon Sun icons with a quiet, transparent ember finish. */
+/* EARTH // LIVE v1.98.2 — landscape vertical timer and refined horizon Sun icons with a quiet, transparent ember finish. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
@@ -80,25 +80,46 @@
     if (startLabel && startLabel.textContent.trim()) sunriseTime.textContent = startLabel.textContent.trim();
     if (endLabel && endLabel.textContent.trim()) sunsetTime.textContent = endLabel.textContent.trim();
     const sunThumb = thumbWidth();
-    const markerY = rect.top + rect.height / 2 - sunThumb / 2 - 17;
-    const minX = rect.left + sunThumb / 2;
-    const maxX = rect.right - sunThumb / 2;
-    sunrise.style.left = `${minX}px`;
-    sunrise.style.top = `${markerY}px`;
-    sunrise.style.display = 'block';
-    sunset.style.left = `${maxX}px`;
-    sunset.style.top = `${markerY}px`;
-    sunset.style.display = 'block';
     const min = Number(range.min || 0), max = Number(range.max || 100), value = Number(range.value || 0);
     const fraction = max > min ? Math.min(1, Math.max(0, (value - min) / (max - min))) : 0;
     const thumb = thumbWidth();
     const inset = thumb / 2;
-    const x = rect.left + inset + fraction * Math.max(0, rect.width - thumb);
-    // Anchor to the slider's thumb center, with a 7 px visual gap above it.
-    const y = rect.top + rect.height / 2 - thumb / 2 - 7;
+    const landscape = window.matchMedia('(orientation: landscape)').matches;
+    if (landscape) {
+      // Rotated range: min is at the bottom and max at the top.
+      const xCenter = rect.left + rect.width / 2;
+      const yCenter = rect.bottom - inset - fraction * Math.max(0, rect.height - thumb);
+      sunrise.style.left = `${xCenter}px`;
+      sunrise.style.top = `${rect.bottom - inset - 12}px`;
+      sunrise.style.transform = 'translate(-50%, 0)';
+      sunrise.style.display = 'block';
+      sunset.style.left = `${xCenter}px`;
+      sunset.style.top = `${rect.top + inset + 12}px`;
+      sunset.style.transform = 'translate(-50%, -100%)';
+      sunset.style.display = 'block';
+      // Keep the selected time just above the moving Sun thumb.
+      timer.style.transform = 'translate(-50%, -100%)';
+      timer.style.left = `${xCenter}px`;
+      timer.style.top = `${yCenter - 7}px`;
+    } else {
+      const markerY = rect.top + rect.height / 2 - sunThumb / 2 - 17;
+      const minX = rect.left + sunThumb / 2;
+      const maxX = rect.right - sunThumb / 2;
+      sunrise.style.left = `${minX}px`;
+      sunrise.style.top = `${markerY}px`;
+      sunrise.style.transform = 'translate(-50%, -100%)';
+      sunrise.style.display = 'block';
+      sunset.style.left = `${maxX}px`;
+      sunset.style.top = `${markerY}px`;
+      sunset.style.transform = 'translate(-50%, -100%)';
+      sunset.style.display = 'block';
+      const x = rect.left + inset + fraction * Math.max(0, rect.width - thumb);
+      const y = rect.top + rect.height / 2 - thumb / 2 - 7;
+      timer.style.transform = 'translate(-50%, -100%)';
+      timer.style.left = `${x}px`;
+      timer.style.top = `${y}px`;
+    }
     timer.textContent = timeText();
-    timer.style.left = `${x}px`;
-    timer.style.top = `${y}px`;
     timer.style.display = 'block';
   }
 
