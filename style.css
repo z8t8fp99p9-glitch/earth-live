@@ -1,37 +1,12 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body {
-  width: 100%; height: 100%; margin: 0; overflow: hidden;
-  background: #030509; color: #fff;
-}
-body {
-  position: fixed; inset: 0; overscroll-behavior: none;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-#app {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  height: 100dvh; width: 100vw; overflow: hidden; background: #030509; isolation: isolate;
-}
-#globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer,
-.cesium-widget, .cesium-widget canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  outline: none; touch-action: none;
-}
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #030509; color: #fff; }
+body { position: fixed; inset: 0; overscroll-behavior: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+#app { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; width: 100vw; overflow: hidden; background: #030509; isolation: isolate; }
+#globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer, .cesium-widget, .cesium-widget canvas { position: absolute; inset: 0; width: 100%; height: 100%; outline: none; touch-action: none; }
 .cesium-viewer { overflow: hidden; }
-.cesium-viewer-bottom {
-  left: auto !important; right: max(8px, env(safe-area-inset-right)) !important;
-  bottom: max(5px, env(safe-area-inset-bottom)) !important;
-  max-width: 75vw; text-align: right; opacity: .8;
-}
+.cesium-viewer-bottom { left: auto !important; right: max(8px, env(safe-area-inset-right)) !important; bottom: max(5px, env(safe-area-inset-bottom)) !important; max-width: 75vw; text-align: right; opacity: .8; }
 .cesium-widget-credits { font-size: 9px !important; }
-#errorMessage {
-  position: absolute; z-index: 10; left: 50%; top: 50%;
-  transform: translate(-50%, -50%); width: min(86vw, 340px);
-  padding: 16px 18px; border: 1px solid rgba(255,255,255,.16);
-  border-radius: 14px; background: rgba(8,12,20,.92);
-  color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.5;
-  text-align: center;
-}
+#errorMessage { position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(86vw, 340px); padding: 16px 18px; border: 1px solid rgba(255,255,255,.16); border-radius: 14px; background: rgba(8,12,20,.92); color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.5; text-align: center; }
 #errorMessage[hidden] { display: none; }
-/* Existing adaptive display styling retained. */
 @media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; } }
 @media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }

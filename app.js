@@ -11,13 +11,13 @@
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Preserve the established framing, zoom factor, and movement ratio.
-  // Only camera inertia is newly tuned by the available viewport profile.
+  // Portrait profile has a small zoom-response and zoom-inertia refinement.
+  // Rotation inertia is reduced across all profiles so the globe settles sooner after a drag.
   const profiles = {
-    portrait:  { initialHeight: 18500000, zoomFactor: 8,   movementRatio: 0.075, inertiaSpin: 0.86, inertiaTranslate: 0.86, inertiaZoom: 0.84 },
-    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.88, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
-    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.90, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
-    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.92, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
+    portrait:  { initialHeight: 18500000, zoomFactor: 8.5, movementRatio: 0.075, inertiaSpin: 0.72, inertiaTranslate: 0.86, inertiaZoom: 0.86 },
+    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.72, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
+    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.72, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
+    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.72, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
   };
 
   function showError(error) {
@@ -42,16 +42,12 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    // Zoom-limit test retained: 1 km minimum distance, 40,000 km maximum.
     controller.minimumZoomDistance = 1000;
     controller.maximumZoomDistance = 40000000;
-
-    // Existing adaptive response settings are preserved.
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
 
-    // Adaptive inertia: modestly controlled on touch-sized views and slightly
-    // longer on wide displays to keep large camera movements comfortable.
+    // Apply the tuned rotation and zoom gesture settings for the active display profile.
     controller.inertiaSpin = settings.inertiaSpin;
     controller.inertiaTranslate = settings.inertiaTranslate;
     controller.inertiaZoom = settings.inertiaZoom;
