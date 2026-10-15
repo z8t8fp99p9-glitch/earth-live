@@ -76,7 +76,7 @@
   .sun-panel .sun-range::-moz-range-thumb { width:32px !important; height:32px !important; }
 }
 
-/* v1.94 — Ember Light is the control itself: no deck, belt, rail, title, or caption. */
+/* v1.95 — Shorter, calmer Ember Line is the control itself: no deck, belt, rail, title, or caption. */
 .sun-panel {
   position:absolute !important;
   z-index:8 !important;
@@ -115,9 +115,11 @@
 }
 .sun-panel .sun-range {
   position:absolute !important;
-  inset:0 !important;
+  inset:0 6% !important;
+  left:6% !important;
+  right:auto !important;
   display:block !important;
-  width:100% !important;
+  width:88% !important;
   height:44px !important;
   min-width:0 !important;
   margin:0 !important;
@@ -128,7 +130,7 @@
   outline:none !important;
   box-shadow:none !important;
   background-color:transparent !important;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 44' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23A34E13'/%3E%3Cstop offset='.22' stop-color='%23E98720'/%3E%3Cstop offset='.5' stop-color='%23FFD27A'/%3E%3Cstop offset='.78' stop-color='%23E98720'/%3E%3Cstop offset='1' stop-color='%23944716'/%3E%3C/linearGradient%3E%3Cfilter id='glow' x='-10%25' y='-100%25' width='120%25' height='300%25'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M2 22 C22 22 22 15 42 15 S62 29 82 29 S102 16 122 16 S142 27 162 27 S182 15 202 15 S222 28 242 28 S262 17 282 17 S302 27 322 27 S342 14 362 14 S382 28 402 28 S422 17 442 17 S462 27 482 27 S502 15 522 15 S542 28 562 28 S582 19 598 22' fill='none' stroke='%23FF8A20' stroke-width='8' stroke-linecap='round' opacity='.55' filter='url(%23glow)'/%3E%3Cpath d='M2 22 C22 22 22 15 42 15 S62 29 82 29 S102 16 122 16 S142 27 162 27 S182 15 202 15 S222 28 242 28 S262 17 282 17 S302 27 322 27 S342 14 362 14 S382 28 402 28 S422 17 442 17 S462 27 482 27 S502 15 522 15 S542 28 562 28 S582 19 598 22' fill='none' stroke='url(%23g)' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg fill='%23FFD98B'%3E%3Ccircle cx='17' cy='14' r='1.1'/%3E%3Ccircle cx='31' cy='31' r='.8'/%3E%3Ccircle cx='52' cy='8' r='1.1'/%3E%3Ccircle cx='73' cy='36' r='1.2'/%3E%3Ccircle cx='92' cy='21' r='.8'/%3E%3Ccircle cx='108' cy='7' r='1.3'/%3E%3Ccircle cx='132' cy='35' r='.9'/%3E%3Ccircle cx='151' cy='11' r='1.1'/%3E%3Ccircle cx='174' cy='34' r='1.2'/%3E%3Ccircle cx='198' cy='7' r='.9'/%3E%3Ccircle cx='218' cy='36' r='1.1'/%3E%3Ccircle cx='242' cy='10' r='1.2'/%3E%3Ccircle cx='261' cy='34' r='.8'/%3E%3Ccircle cx='282' cy='8' r='1.1'/%3E%3Ccircle cx='303' cy='36' r='1.1'/%3E%3Ccircle cx='326' cy='7' r='.8'/%3E%3Ccircle cx='349' cy='35' r='1.2'/%3E%3Ccircle cx='370' cy='8' r='1.1'/%3E%3Ccircle cx='390' cy='36' r='.9'/%3E%3Ccircle cx='414' cy='8' r='1.1'/%3E%3Ccircle cx='434' cy='35' r='1.2'/%3E%3Ccircle cx='455' cy='9' r='.9'/%3E%3Ccircle cx='478' cy='36' r='1.1'/%3E%3Ccircle cx='499' cy='7' r='1.2'/%3E%3Ccircle cx='520' cy='35' r='.9'/%3E%3Ccircle cx='542' cy='9' r='1.1'/%3E%3Ccircle cx='563' cy='34' r='1.2'/%3E%3Ccircle cx='584' cy='12' r='1'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%2044%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23A34E13%22%2F%3E%3Cstop%20offset%3D%22.18%22%20stop-color%3D%22%23E98720%22%2F%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23FFE0A0%22%2F%3E%3Cstop%20offset%3D%22.82%22%20stop-color%3D%22%23E98720%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23944716%22%2F%3E%3C%2FlinearGradient%3E%3Cfilter%20id%3D%22glow%22%20x%3D%22-10%25%22%20y%3D%22-100%25%22%20width%3D%22120%25%22%20height%3D%22300%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%223.2%22%2F%3E%3C%2Ffilter%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M3%2023%20C72%2021%20100%2017%20150%2020%20S235%2026%20300%2022%20S410%2018%20465%2022%20S545%2024%20597%2021%22%20fill%3D%22none%22%20stroke%3D%22%23FF8A20%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.62%22%20filter%3D%22url(%23glow)%22%2F%3E%3Cpath%20d%3D%22M3%2023%20C72%2021%20100%2017%20150%2020%20S235%2026%20300%2022%20S410%2018%20465%2022%20S545%2024%20597%2021%22%20fill%3D%22none%22%20stroke%3D%22url(%23g)%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M12%2023%20C90%2022%20132%2019%20196%2022%20S318%2024%20382%2021%20S506%2022%20588%2021%22%20fill%3D%22none%22%20stroke%3D%22%23FFF0C4%22%20stroke-width%3D%22.8%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.7%22%2F%3E%3Cg%20fill%3D%22%23FFD98B%22%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2217%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22139%22%20cy%3D%2229%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22224%22%20cy%3D%2214%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22306%22%20cy%3D%2229%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22386%22%20cy%3D%2214%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22464%22%20cy%3D%2228%22%20r%3D%22.9%22%2F%3E%3Ccircle%20cx%3D%22535%22%20cy%3D%2216%22%20r%3D%221.1%22%2F%3E%3Ccircle%20cx%3D%22578%22%20cy%3D%2226%22%20r%3D%22.8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") !important;
   background-repeat:no-repeat !important;
   background-position:center center !important;
   background-size:100% 44px !important;
@@ -190,7 +192,7 @@
     transform:none !important;
   }
   .sun-panel .sun-timeline { display:block !important; width:100% !important; height:44px !important; }
-  .sun-panel .sun-range { position:absolute !important; inset:0 !important; width:100% !important; height:44px !important; transform:none !important; touch-action:pan-y !important; }
+  .sun-panel .sun-range { position:absolute !important; inset:0 6% !important; left:6% !important; right:auto !important; width:88% !important; height:44px !important; transform:none !important; touch-action:pan-y !important; }
 }
 @media (orientation:landscape) and (max-height:430px) {
   .sun-panel { bottom:calc(env(safe-area-inset-bottom,0px) + 79px) !important; }
