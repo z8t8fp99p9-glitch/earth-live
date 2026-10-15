@@ -26,23 +26,7 @@ function horizontalPosition(date,loc){const m=moonPosition(date);if(!m)return nu
 function crossingBetween(t1,t2,a1,a2,type){const rise=a1<HORIZON&&a2>=HORIZON,set=a1>=HORIZON&&a2<HORIZON;if((type==='rise'&&!rise)||(type==='set'&&!set))return null;let lo=t1,hi=t2;for(let i=0;i<22&&hi-lo>15000;i++){const mid=Math.floor((lo+hi)/2),alt=horizontalPosition(new Date(mid),moonLocation).altitude;if(type==='rise'){if(alt>=HORIZON)hi=mid;else lo=mid;}else{if(alt<HORIZON)hi=mid;else lo=mid;}}return new Date(Math.round((lo+hi)/2));}
 function findCrossing(startMs,direction,type){let t=startMs,alt=horizontalPosition(new Date(t),moonLocation).altitude;const steps=Math.ceil(SEARCH_DAYS*24*60/5);for(let i=0;i<steps;i++){const next=t+direction*SEARCH_STEP,nextAlt=horizontalPosition(new Date(next),moonLocation).altitude;let earlier,later,aEarlier,aLater;if(direction>0){earlier=t;later=next;aEarlier=alt;aLater=nextAlt;}else{earlier=next;later=t;aEarlier=nextAlt;aLater=alt;}const result=crossingBetween(earlier,later,aEarlier,aLater,type);if(result)return result;t=next;alt=nextAlt;}return null;}
 function calculateMoonWindow(loc){moonLocation=loc;const now=Date.now(),alt=horizontalPosition(new Date(now),loc).altitude;let start,end,initial;if(alt>=HORIZON){start=findCrossing(now,-1,'rise');end=findCrossing(now,1,'set');initial=new Date(now);}else{start=findCrossing(now,1,'rise');if(!start)return null;end=findCrossing(start.getTime()+1000,1,'set');initial=new Date(start.getTime());}if(!start||!end||end<=start)return null;return {start,end,initial,currentlyVisible:alt>=HORIZON};}
-function projectedX(skyId,azimuth){
-  const sky=$(skyId);
-  const normalized=Math.max(0,Math.min(1,(azimuth-90)/180));
-  // In landscape, reserve the right-hand scroller plus a gap so the celestial object
-  // remains in the visible sky column. Portrait keeps the established 6–94% mapping.
-  if(sky&&window.matchMedia&&window.matchMedia('(orientation: landscape) and (min-width: 600px)').matches){
-    const panel=$(skyId==='skySun'?'sunPanel':'moonPanel');
-    if(panel&&!panel.hidden){
-      const width=sky.clientWidth||window.innerWidth;
-      const reserved=(panel.getBoundingClientRect().width||116)+24;
-      const usable=Math.max(width*0.55,width-reserved);
-      return ((12+normalized*Math.max(0,usable-24))/width)*100;
-    }
-  }
-  return 6+88*normalized;
-}
-function projectMoon(coords){return {x:projectedX('moonSky',coords.azimuth),bottom:34+Math.max(0,Math.min(75,coords.altitude))*.48};}
+function projectMoon(coords){return window.EarthLiveSkyProjection?window.EarthLiveSkyProjection.project(coords,'moonSky','skyMoon'):{x:6+88*Math.max(0,Math.min(1,(coords.azimuth-90)/180)),bottom:34+Math.max(0,Math.min(75,coords.altitude))*.48};}
 function updateSky(date){if(!moonActive||!moonLocation)return;const coords=horizontalPosition(date,moonLocation);if(!coords)return;lastMoonCoords=coords;moonDate=new Date(date);const point=projectMoon(coords);const moon=$('skyMoon');moon.style.left=point.x+'%';moon.style.bottom=point.bottom+'%';moon.style.opacity=coords.altitude>=HORIZON?'1':'.25';$('skyDirection').textContent=`${Math.round(coords.azimuth)}° ${compass(coords.azimuth)} · ${Math.max(0,coords.altitude).toFixed(0)}° altitude`;$('skyStatus').textContent=`${fmtTime(date,true)} · ${coords.phase} · ${Math.round(coords.illumination)}% illuminated`;moonReadout.value=fmtTime(date,true);moonReadout.textContent=fmtTime(date,true);setViewerTime(date);}
 function compass(az){return ['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];}
 function setupMoonScroller(win){moonWindow=win;const duration=Math.max(1,Math.round((win.end-win.start)/60000));moonRange.min='0';moonRange.max=String(duration);moonRange.step='1';moonRange.value=String(Math.max(0,Math.min(duration,Math.round((win.initial-win.start)/60000))));$('moonRiseLabel').textContent=fmtTime(win.start);$('moonSetLabel').textContent=fmtTime(win.end);$('moonWindowLabel').textContent=win.currentlyVisible?'LIVE · MOON ABOVE HORIZON':'NEXT MOONRISE';updateSky(new Date(win.start.getTime()+Number(moonRange.value)*60000));}
@@ -55,5 +39,7 @@ sunBtn.addEventListener('click',toggleSun);moonBtn.addEventListener('click',togg
 document.querySelectorAll('.feed-card').forEach(btn=>btn.addEventListener('click',()=>{if(window.EarthLiveLocation)window.EarthLiveLocation.showStatus(`${btn.querySelector('span:nth-child(2)')?.textContent||'This feed'} is planned for a future update and is not connected yet.`);}));
 window.addEventListener(viewerReadyEvent,event=>{viewer=event.detail.viewer;sunActive=false;moonActive=false;stacksActive=false;sunPanel.hidden=true;moonPanel.hidden=true;moonSky.hidden=true;stacksPanel.hidden=true;viewer.scene.globe.enableLighting=false;syncSun();});
 window.addEventListener('earthlive:foreground',()=>{if(moonActive&&moonWindow)updateSky(moonDate);});
+window.addEventListener('resize',()=>{if(moonActive&&moonWindow)updateSky(moonDate);},{passive:true});
+window.addEventListener('orientationchange',()=>{if(moonActive&&moonWindow)updateSky(moonDate);},{passive:true});
 window.EarthLiveCelestial={isMoonActive:()=>moonActive,isSunActive:()=>sunActive,refreshLocation:loc=>{if(moonActive&&loc){moonLocation=loc;const win=calculateMoonWindow(loc);if(win)setupMoonScroller(win);}},closeMoon:deactivateMoon};
 })();

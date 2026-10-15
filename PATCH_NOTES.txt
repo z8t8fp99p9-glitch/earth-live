@@ -1,0 +1,12 @@
+EARTH // LIVE — Celestial path containment/alignment patch
+
+Files: sun-sky-view.js, sun-moon-tracker.js, celestial-path-refinement.js
+
+Changes:
+- Adds one shared azimuth/altitude-to-screen projection for the live Sun, live Moon, and their trajectory paths.
+- Reserves the landscape timeline panel width and keeps object centers inset enough for the full disc to remain visible at path endpoints.
+- Recomputes live object positions and clears/rebuilds viewport-dependent paths on resize/orientation changes.
+- Does not change astronomical calculations, scroller windows, wallpaper, mountains, dock, or controls.
+
+Validation: node --check passed for all three JavaScript files.
+Not yet device-verified. Please back up the current files, replace these three files, then test sunrise/sunset and moonrise/moonset in portrait and landscape.

@@ -39,24 +39,30 @@ function lunar(date, loc) {
   p.altitude -= parallax*Math.cos(p.altitude*DEG);
   return p;
 }
-/* Match the live object's projection. In landscape, reserve the right-side timeline
-   so the path cannot run underneath it or appear to leave the visible sky. */
-function projectedX(skyId,azimuth) {
-  const sky=$(skyId), normalized=clamp((azimuth-90)/180,0,1);
-  if(sky&&window.matchMedia&&window.matchMedia('(orientation: landscape) and (min-width: 600px)').matches){
+/* One shared projection for the path and its live object. Reserve the landscape
+   timeline panel and keep the object's centre far enough inside the viewport that
+   its full disc remains visible at rise/set. Astronomy values are never altered. */
+function project(p, skyId, objectId) {
+  const sky=$(skyId), object=$(objectId);
+  if(!sky) return {x:6+88*clamp((p.azimuth-90)/180,0,1),bottom:34+clamp(p.altitude,0,75)*.48};
+  const width=sky.clientWidth||window.innerWidth;
+  let usable=width;
+  const landscape=window.matchMedia&&window.matchMedia('(orientation: landscape) and (min-width: 600px)').matches;
+  if(landscape){
     const panel=$(skyId==='sunSky'?'sunPanel':'moonPanel');
     if(panel&&!panel.hidden){
-      const width=sky.clientWidth||window.innerWidth;
-      const reserved=(panel.getBoundingClientRect().width||116)+24;
-      const usable=Math.max(width*.55,width-reserved);
-      return ((12+normalized*Math.max(0,usable-24))/width)*100;
+      const rect=panel.getBoundingClientRect();
+      const panelWidth=rect.width||116;
+      usable=Math.max(width*.62,width-panelWidth-24);
     }
   }
-  return 6+88*normalized;
+  const radius=object?Math.max(object.offsetWidth,object.offsetHeight)/2:24;
+  const margin=Math.max(8,radius+8);
+  const minX=Math.min(12,margin/width*100), maxX=Math.max(minX+1,(usable-margin)/width*100);
+  const fraction=clamp((p.azimuth-90)/180,0,1);
+  return {x:minX+(maxX-minX)*fraction,bottom:34+clamp(p.altitude,0,75)*.48};
 }
-function project(p,skyId) {
-  return { x:projectedX(skyId,p.azimuth), bottom:34+clamp(p.altitude,0,75)*.48 };
-}
+window.EarthLiveSkyProjection={project};
 function locationKey(loc) {
   if (!loc || !Number.isFinite(Number(loc.latitude)) || !Number.isFinite(Number(loc.longitude))) return '';
   // Cache in 0.001 degree bins (~111 m latitude); exact coordinates remain in use for the active object.
@@ -93,7 +99,7 @@ function makePath(skyId,pathId,kind,startMs,endMs,loc) {
         if(chunk.length>1) chunks.push(chunk);
         chunk=[]; continue;
       }
-      const q=project(p,skyId); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
+      const q=project(p,skyId,skyId==='sunSky'?'skySun':'skyMoon'); chunk.push({x:q.x*10,y:(100-q.bottom)*10});
     }
     if(chunk.length>1) chunks.push(chunk);
     pathCache.set(key,chunks);
@@ -155,8 +161,8 @@ const observer=new MutationObserver(records=>{
 });
 ['sunSky','moonSky'].forEach(id=>{const n=$(id);if(n)observer.observe(n,{attributes:true,attributeFilter:['hidden']});});
 ['sunStartLabel','sunEndLabel','moonRiseLabel','moonSetLabel'].forEach(id=>{const n=$(id);if(n)observer.observe(n,{childList:true,characterData:true,subtree:true});});
-window.addEventListener('resize',refresh,{passive:true});
-window.addEventListener('orientationchange',refresh,{passive:true});
+window.addEventListener('resize',()=>{pathCache.clear();refresh();},{passive:true});
+window.addEventListener('orientationchange',()=>{pathCache.clear();refresh();},{passive:true});
 window.addEventListener('earthlive:foreground',refresh);
 init();
 })();
