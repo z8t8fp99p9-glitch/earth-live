@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.96.6 — amber celestial-time badge anchored to the Sun scroller thumb. */
+/* EARTH // LIVE v1.96.7 — transparent ember-red celestial timer anchored to the Sun scroller thumb. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
@@ -14,11 +14,11 @@
   Object.assign(timer.style, {
     position: 'fixed', zIndex: '1000', display: 'none', pointerEvents: 'none',
     transform: 'translate(-50%, -100%)', padding: '3px 8px', borderRadius: '999px',
-    color: '#ffd28a', background: 'rgba(43, 23, 10, 0.88)',
-    border: '1px solid rgba(255, 184, 83, 0.72)',
-    boxShadow: '0 0 10px rgba(255, 164, 48, 0.28), inset 0 0 5px rgba(255, 205, 125, 0.08)',
+    color: '#ffb0a5', background: 'transparent',
+    border: 'none',
+    boxShadow: 'none',
     font: '600 12px/1.2 -apple-system, BlinkMacSystemFont, sans-serif',
-    letterSpacing: '0.04em', whiteSpace: 'nowrap', textShadow: '0 0 7px rgba(255, 177, 71, 0.42)'
+    letterSpacing: '0.04em', whiteSpace: 'nowrap', textShadow: '0 0 3px rgba(255, 105, 91, 0.95), 0 0 8px rgba(255, 92, 76, 0.68), 0 0 14px rgba(255, 75, 62, 0.35)'
   });
   document.body.appendChild(timer);
 
