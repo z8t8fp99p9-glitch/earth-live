@@ -7,16 +7,17 @@
   let resizeFrame = 0;
   let hasInitialFrame = false;
   let activeProfile = "portrait";
+  let esriLayer = null;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Portrait zoom is tuned slightly further. Globe-drag inertia is restored; two-finger twist is tuned separately.
+  // Keep Cesium default gesture behaviour. Only the portrait zoom factor and minimum zoom distance are tuned; no custom gesture handlers or inertia overrides.
   const profiles = {
-    portrait:  { initialHeight: 18500000, zoomFactor: 8.63, movementRatio: 0.075, inertiaSpin: 0.86, inertiaTranslate: 0.86, inertiaZoom: 0.86 },
-    compact:   { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085, inertiaSpin: 0.88, inertiaTranslate: 0.88, inertiaZoom: 0.85 },
-    landscape: { initialHeight: 24500000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.90, inertiaTranslate: 0.90, inertiaZoom: 0.86 },
-    ultrawide: { initialHeight: 28000000, zoomFactor: 5,   movementRatio: 0.1,   inertiaSpin: 0.92, inertiaTranslate: 0.92, inertiaZoom: 0.87 }
+    portrait: { initialHeight: 18500000, zoomFactor: 8.63, movementRatio: 0.075 },
+    compact:  { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape:{ initialHeight: 24500000, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ initialHeight: 28000000, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
@@ -41,15 +42,11 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
+    // Zoom adjustment: allow closer approach (1 km minimum) while retaining the standard Cesium gesture handling.
     controller.minimumZoomDistance = 1000;
     controller.maximumZoomDistance = 40000000;
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
-
-    // Apply the tuned rotation and zoom gesture settings for the active display profile.
-    controller.inertiaSpin = settings.inertiaSpin;
-    controller.inertiaTranslate = settings.inertiaTranslate;
-    controller.inertiaZoom = settings.inertiaZoom;
 
     if (initial && !hasInitialFrame) {
       viewer.camera.setView({
@@ -72,53 +69,12 @@
       maximumLevel: 19,
       credit: new Cesium.Credit("Imagery © Esri and contributors")
     });
-    viewer.imageryLayers.addImageryProvider(provider);
+    esriLayer = viewer.imageryLayers.addImageryProvider(provider);
     if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
       provider.errorEvent.addEventListener(error => {
         console.warn("Esri World Imagery tile request failed:", error);
       });
     }
-  }
-
-  // Detect two-finger twist separately from one-finger globe dragging.
-  // A modest multiplier makes map-heading rotation less sensitive while leaving pinch zoom available.
-  function installTwoFingerTwist() {
-    let previousAngle = null;
-    const twistSensitivity = 0.65;
-    const normalizeAngle = angle => {
-      while (angle > Math.PI) angle -= Math.PI * 2;
-      while (angle < -Math.PI) angle += Math.PI * 2;
-      return angle;
-    };
-    globeElement.addEventListener("touchstart", event => {
-      if (event.touches.length === 2) {
-        const a = event.touches[0];
-        const b = event.touches[1];
-        previousAngle = Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
-      } else {
-        previousAngle = null;
-      }
-    }, { passive: true });
-    globeElement.addEventListener("touchmove", event => {
-      if (event.touches.length !== 2 || !viewer || viewer.isDestroyed()) {
-        previousAngle = null;
-        return;
-      }
-      const a = event.touches[0];
-      const b = event.touches[1];
-      const angle = Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
-      if (previousAngle !== null) {
-        const delta = normalizeAngle(angle - previousAngle);
-        if (Math.abs(delta) < 0.35) {
-          viewer.camera.rotateRight(delta * twistSensitivity);
-          viewer.scene.requestRender();
-        }
-      }
-      previousAngle = angle;
-    }, { passive: true });
-    const resetTwist = () => { previousAngle = null; };
-    globeElement.addEventListener("touchend", resetTwist, { passive: true });
-    globeElement.addEventListener("touchcancel", resetTwist, { passive: true });
   }
 
   function resizeGlobe() {
@@ -183,7 +139,6 @@
       controller.enableLook = true;
 
       applyDisplayProfile({ initial: true });
-      installTwoFingerTwist();
 
       window.EarthLiveViewer = viewer;
       window.EarthLiveAdaptiveDisplay = {
