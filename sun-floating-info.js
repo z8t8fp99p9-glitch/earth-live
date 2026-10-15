@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.96.9 — compact black sunrise label with ember glow and transparent background anchored to the Sun scroller thumb. */
+/* EARTH // LIVE v1.97.0 — compact paired sunrise/sunset ember markers with a quiet, transparent finish. */
 (() => {
   'use strict';
   const range = document.getElementById('sunTimeRange');
@@ -22,22 +22,33 @@
   });
   document.body.appendChild(timer);
 
-  // Sunrise marker: uses the actual calculated start time supplied by Sun Sky View.
-  const sunrise = document.createElement('div');
-  sunrise.id = 'sunriseScrollerMarker';
-  sunrise.setAttribute('aria-label', 'Sunrise time');
-  Object.assign(sunrise.style, {
-    position: 'fixed', zIndex: '999', display: 'none', pointerEvents: 'none',
-    transform: 'translate(0, -100%)', padding: '0', borderRadius: '0',
-    color: '#17100d', background: 'transparent',
-    border: 'none',
-    boxShadow: 'none',
-    font: '800 9px/1.2 -apple-system, BlinkMacSystemFont, sans-serif',
-    letterSpacing: '0.035em', whiteSpace: 'nowrap', textAlign: 'center',
-    textShadow: '0 0 3px rgba(255, 102, 68, 0.95), 0 0 7px rgba(255, 91, 54, 0.78), 0 0 12px rgba(255, 75, 45, 0.5)'
-  });
-  sunrise.innerHTML = '<span style="display:block;font-weight:800">SUNRISE</span><span id="sunriseScrollerTime" style="display:block;font-size:10px;font-weight:800;letter-spacing:.02em;margin-top:1px">—</span>';
-  document.body.appendChild(sunrise);
+  // Compact paired celestial markers: sunrise at the start, sunset at the end.
+  function makeEndpointMarker(id, ariaLabel, title, timeId, iconSvg, color, glow) {
+    const marker = document.createElement('div');
+    marker.id = id;
+    marker.setAttribute('aria-label', ariaLabel);
+    Object.assign(marker.style, {
+      position: 'fixed', zIndex: '999', display: 'none', pointerEvents: 'none',
+      transform: 'translate(-50%, -100%)', padding: '0', margin: '0',
+      color: '#fff0dc', background: 'transparent', border: 'none', boxShadow: 'none',
+      font: '800 8px/1.15 -apple-system, BlinkMacSystemFont, sans-serif',
+      letterSpacing: '0.055em', whiteSpace: 'nowrap', textAlign: 'center',
+      textShadow: `0 0 2px ${glow}, 0 0 5px ${glow}, 0 0 9px ${color}`
+    });
+    marker.innerHTML = `<span aria-hidden="true" style="display:block;width:15px;height:10px;margin:0 auto 2px;filter:drop-shadow(0 0 3px ${glow})">${iconSvg}</span><span style="display:block;font-weight:800">${title}</span><span id="${timeId}" style="display:block;font-size:10px;font-weight:800;letter-spacing:.025em;margin-top:2px">—</span>`;
+    document.body.appendChild(marker);
+    return marker;
+  }
+  const sunrise = makeEndpointMarker(
+    'sunriseScrollerMarker', 'Sunrise time', 'SUNRISE', 'sunriseScrollerTime',
+    '<svg viewBox="0 0 24 16" width="15" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M2 13H22M6 13a6 6 0 0 1 12 0" fill="none" stroke="#FFC77A" stroke-width="1.7" stroke-linecap="round"/><path d="M12 1v3M4.7 4l2 2M19.3 4l-2 2" stroke="#FFC77A" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    'rgba(255,160,92,.45)', 'rgba(255,184,113,.85)'
+  );
+  const sunset = makeEndpointMarker(
+    'sunsetScrollerMarker', 'Sunset time', 'SUNSET', 'sunsetScrollerTime',
+    '<svg viewBox="0 0 24 16" width="15" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M2 7H22M6 7a6 6 0 0 1 12 0" fill="none" stroke="#FF9A80" stroke-width="1.7" stroke-linecap="round"/><path d="M12 10v3M4.7 10l2 2M19.3 10l-2 2" stroke="#FF9A80" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    'rgba(255,105,91,.42)', 'rgba(255,155,132,.8)'
+  );
 
   function timeText() {
     const text = readout ? readout.textContent.replace(/\s+/g, ' ').trim() : '';
@@ -59,16 +70,25 @@
   function update() {
     const panelVisible = !panel.hidden && getComputedStyle(panel).display !== 'none';
     const skyVisible = (() => { const sky = document.getElementById('sunSky'); return !!sky && !sky.hidden; })();
-    if (!panelVisible || !skyVisible) { timer.style.display = 'none'; sunrise.style.display = 'none'; return; }
+    if (!panelVisible || !skyVisible) { timer.style.display = 'none'; sunrise.style.display = 'none'; sunset.style.display = 'none'; return; }
     const rect = range.getBoundingClientRect();
-    if (!rect.width || !rect.height) { timer.style.display = 'none'; sunrise.style.display = 'none'; return; }
+    if (!rect.width || !rect.height) { timer.style.display = 'none'; sunrise.style.display = 'none'; sunset.style.display = 'none'; return; }
     const startLabel = document.getElementById('sunStartLabel');
+    const endLabel = document.getElementById('sunEndLabel');
     const sunriseTime = document.getElementById('sunriseScrollerTime');
+    const sunsetTime = document.getElementById('sunsetScrollerTime');
     if (startLabel && startLabel.textContent.trim()) sunriseTime.textContent = startLabel.textContent.trim();
+    if (endLabel && endLabel.textContent.trim()) sunsetTime.textContent = endLabel.textContent.trim();
     const sunThumb = thumbWidth();
-    sunrise.style.left = `${rect.left + sunThumb / 2}px`;
-    sunrise.style.top = `${rect.top + rect.height / 2 - sunThumb / 2 - 15}px`;
+    const markerY = rect.top + rect.height / 2 - sunThumb / 2 - 17;
+    const minX = rect.left + sunThumb / 2;
+    const maxX = rect.right - sunThumb / 2;
+    sunrise.style.left = `${minX}px`;
+    sunrise.style.top = `${markerY}px`;
     sunrise.style.display = 'block';
+    sunset.style.left = `${maxX}px`;
+    sunset.style.top = `${markerY}px`;
+    sunset.style.display = 'block';
     const min = Number(range.min || 0), max = Number(range.max || 100), value = Number(range.value || 0);
     const fraction = max > min ? Math.min(1, Math.max(0, (value - min) / (max - min))) : 0;
     const thumb = thumbWidth();
