@@ -41,7 +41,7 @@
  #app .dock-left-group::before,#app .dock-right-group::before{content:"";position:absolute;left:7%;right:7%;top:1px;height:2px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(235,248,255,.55),rgba(255,255,255,.06));box-shadow:0 0 5px rgba(180,220,255,.12);pointer-events:none}
  /* Orb button body: round, glossy, dimensional, with a visible contact shadow on the plate. */
  #app .dock-item{position:relative!important;isolation:isolate;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:3px!important;width:clamp(62px,9.6vh,78px)!important;flex:0 0 clamp(62px,9.6vh,78px)!important;min-height:clamp(74px,12.5vh,92px)!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transition:transform 220ms ease!important}
- #app .dock-item::before{content:"";position:absolute;z-index:-1;top:0;left:50%;width:clamp(49px,7.7vh,63px);height:clamp(49px,7.7vh,63px);transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 31% 19%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.28) 7%,rgba(255,255,255,.08) 19%,rgba(36,68,105,.22) 45%,rgba(2,9,20,.72) 72%,rgba(178,224,255,.32) 83%,rgba(255,255,255,.08) 90%,rgba(0,0,0,.4) 100%);border:1px solid rgba(229,245,255,.68);box-shadow:inset 0 2px 3px rgba(255,255,255,.5),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 7px rgba(0,0,0,.38),0 0 0 1px rgba(10,23,39,.5)}
+ #app .dock-item::before{content:"";position:absolute;z-index:-1;top:0;left:50%;width:clamp(38px,10vw,42px);height:clamp(38px,10vw,42px);transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 31% 19%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.28) 7%,rgba(255,255,255,.08) 19%,rgba(36,68,105,.22) 45%,rgba(2,9,20,.72) 72%,rgba(178,224,255,.32) 83%,rgba(255,255,255,.08) 90%,rgba(0,0,0,.4) 100%);border:1px solid rgba(229,245,255,.68);box-shadow:inset 0 2px 3px rgba(255,255,255,.5),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 7px rgba(0,0,0,.38),0 0 0 1px rgba(10,23,39,.5)}
  #app .dock-item::after{content:"";position:absolute;z-index:-1;top:3px;left:50%;width:clamp(36px,5.8vh,47px);height:clamp(14px,2.5vh,20px);transform:translateX(-60%) rotate(-22deg);border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.02));filter:blur(1px);pointer-events:none}
  #app .dock-art{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;width:clamp(58px,8.8vh,72px)!important;height:clamp(58px,8.8vh,72px)!important;flex:0 0 auto!important;margin:0!important;border-radius:50%!important;overflow:hidden!important;background:radial-gradient(circle at 33% 23%,rgba(255,255,255,.24),rgba(3,10,22,.1) 48%,rgba(0,0,0,.4) 100%)!important;border:1px solid rgba(223,242,255,.45)!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.4),inset 0 -3px 5px rgba(0,0,0,.45),0 3px 6px rgba(0,0,0,.32)!important}
  #app .dock-art img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;filter:saturate(1.08) contrast(1.04)!important}
@@ -57,11 +57,11 @@
  #app #sunBtn.active .dock-art,#app #sunBtn[aria-pressed="true"] .dock-art{border-color:rgba(255,218,147,.9);box-shadow:inset 0 1px 2px rgba(255,255,255,.55),inset 0 -3px 5px rgba(0,0,0,.4),0 0 11px rgba(255,174,55,.5)!important}
  #app .quality-group{display:flex!important;align-items:flex-start!important;gap:clamp(6px,1vw,12px)!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
  #app .quality-segment{position:relative!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:3px!important;width:clamp(54px,8.6vh,70px)!important;min-width:0!important;min-height:clamp(68px,11.8vh,86px)!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;color:rgba(245,249,255,.86)!important;font-size:10px!important}
- #app .quality-segment::before{content:"";position:absolute;z-index:-1;top:0;left:50%;width:clamp(49px,7.7vh,63px);height:clamp(49px,7.7vh,63px);transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 31% 19%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.28) 7%,rgba(255,255,255,.08) 19%,rgba(36,68,105,.22) 45%,rgba(2,9,20,.72) 72%,rgba(178,224,255,.32) 83%,rgba(255,255,255,.08) 90%,rgba(0,0,0,.4) 100%);border:1px solid rgba(229,245,255,.68);box-shadow:inset 0 2px 3px rgba(255,255,255,.5),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 7px rgba(0,0,0,.38)}
+ #app .quality-segment::before{content:"";position:absolute;z-index:-1;top:0;left:50%;width:clamp(38px,10vw,42px);height:clamp(38px,10vw,42px);transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 31% 19%,rgba(255,255,255,.85) 0%,rgba(255,255,255,.28) 7%,rgba(255,255,255,.08) 19%,rgba(36,68,105,.22) 45%,rgba(2,9,20,.72) 72%,rgba(178,224,255,.32) 83%,rgba(255,255,255,.08) 90%,rgba(0,0,0,.4) 100%);border:1px solid rgba(229,245,255,.68);box-shadow:inset 0 2px 3px rgba(255,255,255,.5),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 7px rgba(0,0,0,.38)}
  #app .quality-segment img{position:relative!important;display:block!important;width:clamp(58px,8.8vh,72px)!important;height:clamp(58px,8.8vh,72px)!important;object-fit:cover!important;border-radius:50%!important;border:1px solid rgba(223,242,255,.45)!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.4),0 3px 6px rgba(0,0,0,.32)!important}
  #app .quality-segment span{display:block!important;position:relative!important;margin-top:2px!important;line-height:1!important;font-size:10px!important;text-shadow:0 1px 3px rgba(0,0,0,.85)!important}
  #app .quality-segment.active::before{border-color:rgba(103,202,255,.96);box-shadow:inset 0 2px 3px rgba(255,255,255,.62),inset 0 -5px 8px rgba(0,0,0,.48),0 5px 7px rgba(0,0,0,.35),0 0 13px rgba(45,161,255,.6)}
- #app .quality-segment.active img{box-shadow:0 0 11px rgba(37,164,255,.52)!important}
+ #app .quality-segment.active img{border-color:rgba(126,215,255,.85)!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.55),inset 0 -3px 5px rgba(0,0,0,.4),0 0 10px rgba(37,164,255,.42)!important}
  #sunPanel{left:auto!important;right:calc(env(safe-area-inset-right,0px) + 10px)!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important}
  .time-panel.sun-panel{left:auto;right:calc(env(safe-area-inset-right,0px) + 10px);top:50%;bottom:auto;transform:translateY(-50%);width:96px;max-width:96px;padding:8px 7px;border-radius:18px}
  .sun-panel .sun-timeline{display:block!important;width:100%!important;height:clamp(135px,38vh,220px)!important;min-height:0!important}
@@ -74,7 +74,7 @@
  .dock-left-group{margin-left:calc(env(safe-area-inset-left,0px) + 3.5vw)!important}
  .dock-right-group{margin-right:calc(env(safe-area-inset-right,0px) + 3.5vw)!important}
  #app .dock-item,#app .quality-segment{width:46px!important;flex-basis:46px!important;min-height:52px!important}
- #app .dock-item::before,#app .quality-segment::before{width:42px!important;height:42px!important} #app .dock-art{width:58px!important;height:58px!important} #app .quality-segment img{width:58px!important;height:58px!important}
+ #app .dock-item::before,#app .quality-segment::before{width:42px!important;height:42px!important} #app .dock-art{width:58px!important;height:58px!important} #app .quality-segment img{width:34px!important;height:34px!important}
  #app .dock-item::after{width:28px!important;height:11px!important}
  #app .dock-item .dock-label,#app .quality-segment span{font-size:9px!important}
  #sunPanel{right:calc(env(safe-area-inset-right,0px) + 8px)!important}
@@ -134,7 +134,7 @@
   #app .dock-item::after{content:"";position:absolute;z-index:-1;top:3px;left:50%;width:27px;height:11px;transform:translateX(-60%) rotate(-22deg);border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.02));filter:blur(1px);pointer-events:none}
   #app .dock-art,#app .quality-segment img{
     position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;
-    width:clamp(32px,8.2vw,37px)!important;height:clamp(32px,8.2vw,37px)!important;flex:0 0 auto!important;
+    width:clamp(38px,10vw,42px)!important;height:clamp(38px,10vw,42px)!important;flex:0 0 auto!important;
     margin:0!important;object-fit:cover!important;border-radius:50%!important;overflow:hidden!important;
     border:1px solid rgba(223,242,255,.48)!important;
     box-shadow:inset 0 1px 2px rgba(255,255,255,.4),inset 0 -3px 5px rgba(0,0,0,.45),0 3px 5px rgba(0,0,0,.32)!important;
@@ -151,9 +151,9 @@
 }
 @media (max-width:390px) and (orientation:portrait){
   #app .bottom-ui{gap:2px!important;padding:6px 5px 9px!important;max-width:calc(100vw - 8px)!important}
-  #app .dock-item,#app .quality-segment{width:clamp(32px,8.9vw,36px)!important;flex-basis:clamp(32px,8.9vw,36px)!important;min-height:44px!important}
+  #app .dock-item,#app .quality-segment{width:clamp(38px,10vw,40px)!important;flex-basis:clamp(38px,10vw,40px)!important;min-height:48px!important}
   #app .dock-item::before,#app .quality-segment::before{width:31px!important;height:31px!important}
-  #app .dock-art{width:30px!important;height:30px!important} #app .quality-segment img{width:30px!important;height:30px!important}
+  #app .dock-art,#app .quality-segment img{width:clamp(38px,10vw,40px)!important;height:clamp(38px,10vw,40px)!important}
 }
 @media (prefers-reduced-motion:reduce){#app .dock-item{transition:none!important}}
 </style>
@@ -212,7 +212,7 @@
 
   <div id="statusMessage" class="status-message glass" role="status" aria-live="polite" hidden></div><div id="errorMessage" class="error glass" hidden>Earth could not load. Check your connection and reload.</div>
 </main>
-<script src="./app-version.js?v=1.99.7"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.99.7"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
+<script src="./app-version.js?v=1.99.8"></script><script src="./data-store.js"></script><script src="./moon-dataset.js"></script><script src="./sun-moon-tracker.js"></script><script src="./sun-sky-view.js"></script><script src="./sun-floating-info.js?v=1.99.8"></script><script src="./celestial-path-refinement.js"></script><script src="./app.js"></script>
 <script>
 (()=>{const app=document.getElementById('app');if(!app)return;let first=true;const mq=window.matchMedia('(orientation: landscape)');const sync=()=>{app.classList.remove('landscape-dock-split');if(mq.matches){requestAnimationFrame(()=>requestAnimationFrame(()=>app.classList.add('landscape-dock-split')))}else{app.classList.remove('landscape-dock-split')}first=false};sync();if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);window.addEventListener('orientationchange',()=>setTimeout(sync,80),{passive:true});})();
 </script>

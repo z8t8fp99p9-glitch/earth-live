@@ -1,1 +1,1 @@
-(function(){const version='v1.99.7 Basic-HD Orb Size Matched';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
+(function(){const version='v1.99.8 Six Orbs Matched Geometry';const label=document.getElementById('appVersion');if(label)label.textContent=version;})();
