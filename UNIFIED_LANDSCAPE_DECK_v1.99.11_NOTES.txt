@@ -1,0 +1,6 @@
+EARTH // LIVE v1.99.11 — Unified Landscape Deck
+
+Focused change: landscape now uses one continuous centered deck surface spanning behind both control groups. The controls remain in their existing left/right positions on the same shared deck; they are not separated onto individual plates. Sand & Stone texture is applied to the shared deck surface. Portrait layout and app behavior are intended to remain unchanged.
+
+Files: index.html, app-version.js, orb-deck-design-system.css, notes. Flat ZIP.
+Validation: archive integrity and JavaScript syntax checked. Live iPhone visual/touch verification still required.

@@ -1,4 +1,4 @@
-/* EARTH // LIVE v1.99.9 — Orb & Deck Design System
+/* EARTH // LIVE v1.99.11 — Orb & Deck Design System
    One scoped material module. Default selectors preserve the v1.99.2 glass appearance.
    Decorative surfaces never intercept pointer/touch events. */
 #app .appearance-settings{display:grid;gap:10px;margin:4px 0 16px;padding:12px;border:1px solid rgba(188,216,242,.18);border-radius:16px;background:rgba(3,10,19,.42)}
@@ -17,15 +17,16 @@
 #app[data-deck-family="sand"] .dock-left-group::before,
 #app[data-deck-family="sand"] .dock-right-group::before{
   background-image:linear-gradient(180deg,rgba(255,224,174,.12),rgba(105,68,35,.04) 38%,rgba(34,22,13,.28) 100%),url("./sand-deck-texture.webp");
-  background-size:100% 100%,cover;background-position:center;background-repeat:no-repeat;
+  background-size:100% 100%,100% 100%;background-position:center;background-repeat:no-repeat;background-blend-mode:normal,normal;
   border:1px solid rgba(190,144,91,.76)!important;
+  background-color:#6c5137!important;
   box-shadow:0 9px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,223,173,.48),inset 0 -3px 5px rgba(33,20,10,.52)!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
 #app[data-deck-family="sand"] .bottom-ui::after,
 #app[data-deck-family="sand"] .dock-left-group::after,
 #app[data-deck-family="sand"] .dock-right-group::after{
-  background:linear-gradient(180deg,rgba(196,145,87,.86),rgba(86,56,32,.96) 54%,rgba(27,20,15,.98))!important;
+  background:linear-gradient(180deg,rgba(186,143,94,.92),rgba(93,64,39,.98) 48%,rgba(31,23,17,1))!important;
   border-top:1px solid rgba(255,219,166,.58);box-shadow:0 4px 8px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,232,192,.18)!important;
 }
 #app[data-deck-family="sand"] .bottom-ui{border:0!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
@@ -56,3 +57,63 @@
 #app[data-orb-family="sand"] .dock-item .dock-label,#app[data-orb-family="sand"] .quality-segment span{text-shadow:0 1px 3px rgba(0,0,0,.94)!important}
 
 @media (prefers-reduced-motion:reduce){#app .appearance-choice{transition:none!important}}
+
+
+/* v1.99.10 — visual finish pass. Static artwork + restrained CSS lighting only. */
+#app .dock-item.active .dock-art,
+#app .dock-item[aria-pressed="true"] .dock-art,
+#app .quality-segment.active img{
+  border-color:rgba(126,215,255,.92)!important;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.42),inset 0 -2px 4px rgba(0,0,0,.32),0 0 0 1px rgba(48,158,244,.24),0 0 11px rgba(37,164,255,.52),0 0 20px rgba(37,164,255,.22)!important;
+}
+#app #sunBtn.active .dock-art,
+#app #sunBtn[aria-pressed="true"] .dock-art{
+  border-color:rgba(255,219,150,.96)!important;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.42),inset 0 -2px 4px rgba(0,0,0,.32),0 0 0 1px rgba(255,181,65,.22),0 0 12px rgba(255,174,55,.58),0 0 21px rgba(255,174,55,.24)!important;
+}
+#app[data-orb-family="futuristic"] .dock-art img,
+#app[data-orb-family="futuristic"] .quality-segment img{
+  filter:saturate(1.1) contrast(1.05)!important;
+}
+#app[data-orb-family="futuristic"] .dock-item.active .dock-art img,
+#app[data-orb-family="futuristic"] .dock-item[aria-pressed="true"] .dock-art img,
+#app[data-orb-family="futuristic"] .quality-segment.active img{
+  filter:saturate(1.13) contrast(1.06)!important;
+}
+/* Sand & Stone remains the same rounded deck silhouette; show its material across the face. */
+#app[data-deck-family="sand"] .bottom-ui::before,
+#app[data-deck-family="sand"] .dock-left-group::before,
+#app[data-deck-family="sand"] .dock-right-group::before{
+  background-image:linear-gradient(180deg,rgba(255,229,185,.10),rgba(123,83,46,.02) 45%,rgba(35,23,14,.30)),url("./sand-deck-texture.webp")!important;
+  background-size:100% 100%,100% 100%!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-color:#735638!important;
+  border-color:rgba(192,150,101,.82)!important;
+  box-shadow:0 9px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,226,182,.42),inset 0 -3px 5px rgba(33,20,10,.5)!important;
+  pointer-events:none!important;
+}
+#app[data-deck-family="sand"] .bottom-ui::after,
+#app[data-deck-family="sand"] .dock-left-group::after,
+#app[data-deck-family="sand"] .dock-right-group::after{
+  pointer-events:none!important;
+}
+/* Sand Glass: matte mineral edge and just a trace of dust; no added glass shell. */
+#app[data-orb-family="sand"] .dock-art{background:transparent!important;border:0!important;box-shadow:0 2px 5px rgba(0,0,0,.34)!important}
+#app[data-orb-family="sand"] .dock-art::after{opacity:.10!important}
+#app[data-orb-family="sand"] .dock-item.active .dock-art,
+#app[data-orb-family="sand"] .dock-item[aria-pressed="true"] .dock-art,
+#app[data-orb-family="sand"] .quality-segment.active img{
+  box-shadow:0 0 0 1px rgba(126,215,255,.22),0 0 10px rgba(37,164,255,.48),0 0 18px rgba(37,164,255,.18)!important;
+}
+#app[data-orb-family="sand"] #sunBtn.active .dock-art,
+#app[data-orb-family="sand"] #sunBtn[aria-pressed="true"] .dock-art{
+  box-shadow:0 0 0 1px rgba(255,219,150,.2),0 0 11px rgba(255,174,55,.5),0 0 18px rgba(255,174,55,.18)!important;
+}
+@media(prefers-reduced-motion:reduce){#app .dock-art,#app .dock-art img{transition:none!important}}
+
+/* v1.99.11: unified landscape deck surface. Sand material covers the same continuous parent. */
+@media (orientation:landscape){
+ #app[data-deck-family="sand"] .bottom-ui::before{background-image:linear-gradient(180deg,rgba(255,229,185,.10),rgba(123,83,46,.02) 45%,rgba(35,23,14,.30)),url("./sand-deck-texture.webp")!important;background-size:100% 100%,100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;background-color:#735638!important;border-color:rgba(192,150,101,.82)!important;box-shadow:0 9px 20px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,226,182,.42),inset 0 -3px 5px rgba(33,20,10,.5)!important}
+ #app[data-deck-family="sand"] .bottom-ui::after{background:linear-gradient(180deg,rgba(186,143,94,.92),rgba(93,64,39,.98) 48%,rgba(31,23,17,1))!important;border-top:1px solid rgba(255,219,166,.58)!important}
+}
