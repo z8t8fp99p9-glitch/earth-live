@@ -767,7 +767,7 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 }
 
 
-/* v1.5.33 — brighter Location search ring; remove Sun/Moon screen wash. */
+/* v1.5.34 — keep the brighter Location ring; restore Sun/Moon light at half the previous subtle intensity. */
 .screen-effect-location.screen-effect-playing::after {
   opacity: .72;
   filter: drop-shadow(0 0 8px rgba(255,42,67,.45));
@@ -776,16 +776,45 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   opacity: .58;
 }
 
-/* Sun and Moon retain only the falling particle layer, no screen-wide light wash. */
+.screen-effect-magma.screen-effect-playing { opacity: .32 !important; }
+.screen-effect-magma.screen-effect-playing::before { opacity: .27 !important; animation: screen-effect-fade-subtle 5s ease-out both !important; }
+.screen-effect-magma.screen-effect-playing::after { opacity: .24 !important; animation-duration: 5s !important; }
+.screen-effect-frost.screen-effect-playing { opacity: .30 !important; }
+.screen-effect-frost.screen-effect-playing::before { opacity: .26 !important; animation: screen-effect-fade-subtle 4.65s ease-out both !important; }
+.screen-effect-frost.screen-effect-playing::after { opacity: .22 !important; animation-duration: 4.65s !important; }
+
+
+/* v1.5.35 — Earth 1.5s; Sun/Moon particles 5s, emitted light fades after 2.5s; Location 2s at moderate intensity. */
 .screen-effect-magma.screen-effect-playing,
 .screen-effect-frost.screen-effect-playing {
-  background: transparent !important;
   opacity: 1 !important;
-}
-.screen-effect-magma.screen-effect-playing::before,
-.screen-effect-magma.screen-effect-playing::after,
-.screen-effect-frost.screen-effect-playing::before,
-.screen-effect-frost.screen-effect-playing::after {
-  opacity: 0 !important;
   animation: none !important;
+}
+.screen-effect-magma.screen-effect-playing::before {
+  opacity: .27 !important;
+  animation: screen-effect-fade-subtle 2.5s ease-out both !important;
+  animation-duration: 2.5s !important;
+}
+.screen-effect-magma.screen-effect-playing::after {
+  opacity: .24 !important;
+  animation-duration: 2.5s !important;
+}
+.screen-effect-frost.screen-effect-playing::before {
+  opacity: .26 !important;
+  animation: screen-effect-fade-subtle 2.5s ease-out both !important;
+  animation-duration: 2.5s !important;
+}
+.screen-effect-frost.screen-effect-playing::after {
+  opacity: .22 !important;
+  animation-duration: 2.5s !important;
+}
+.screen-effect-location.screen-effect-playing { opacity: .46 !important; }
+.screen-effect-location.screen-effect-playing::before {
+  opacity: .42 !important;
+  animation-duration: 2s !important;
+}
+.screen-effect-location.screen-effect-playing::after {
+  opacity: .48 !important;
+  animation-duration: 2s !important;
+  filter: drop-shadow(0 0 5px rgba(255,42,67,.3)) !important;
 }

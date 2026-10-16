@@ -1,7 +1,11 @@
-EARTH // LIVE v1.5.33 — Lava & Snow Long Scene
-- Location search ring made brighter; its pulse duration/speed remains about 1.9 seconds.
-- Removed Sun/Moon screen-wide glow and wave overlays; only falling lava/snow particles remain.
-- Sun lava duration increased to 64 seconds; Moon snow to about 63.65 seconds (one minute longer than previous build).
-- Particle counts reduced and drawing capped near 30 FPS to reduce processing, but prolonged animation may still use battery and create heat.
-- No network requests added. ZIP integrity checked; not yet visually tested on iPhone.
-Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave images and other files untouched.
+EARTH // LIVE v1.5.35 — Refined Effect Timing
+
+Changes:
+- Basic Earth and HD Earth cosmic effect: 1.5 seconds.
+- Sun falling lava: 5 seconds. Sun screen-wide light fades out after 2.5 seconds while particles continue.
+- Moon falling snow: 5 seconds. Moon screen-wide light fades out after 2.5 seconds while particles continue.
+- Live Location scan: 2 seconds with moderate light intensity.
+- Stacks electric effect remains 1 second.
+- Existing particle count and 30 FPS cap retained.
+
+Install: upload index.html, style.css, and app.js to the repository root, replacing those files only. Leave all images and other files untouched.

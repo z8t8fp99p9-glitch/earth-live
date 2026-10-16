@@ -341,7 +341,7 @@
     if (effect === "magma" || effect === "frost") overlay.classList.add("screen-effect-long");
     void overlay.offsetWidth;
     overlay.classList.add("screen-effect-playing");
-    const durations = { cosmic: 1800, magma: 64000, frost: 63650, electric: 1000, location: 1900 };
+    const durations = { cosmic: 1500, magma: 5000, frost: 5000, electric: 1000, location: 2000 };
     const duration = durations[effect] || 1800;
     if (effect === "magma") runFallingParticles("lava", duration);
     if (effect === "frost") runFallingParticles("snow", duration);
