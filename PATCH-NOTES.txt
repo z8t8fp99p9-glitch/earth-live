@@ -1,18 +1,19 @@
-EARTH // LIVE — Adaptive Display Zoom Stability v1.4.5
+EARTH // LIVE — Adaptive Display Zoom Controls v1.4.7
 
-Patch based on Adaptive Display v1.4.4.
+Changes
+- Restores the minimum camera distance to 10 metres.
+- Reduces Cesium zoomFactor to 2.5 across display profiles for a gentler zoom response.
+- Disables tilt, translate/pan, and look controls so the camera interaction is focused on globe rotation or zoom.
+- Keeps v1.4.6 resize/camera decoupling: resize events resize the drawing surface and do not reset camera framing.
+- Preserves adaptive portrait/landscape composition targets, imagery, deck, and database files.
 
-Changes:
-- Align Cesium's actual minimum camera zoom distance with the existing advertised 1,000-metre minimum.
-- Keep the adaptive portrait/landscape composition targets and existing native Cesium gestures.
-- Update app version/cache identifiers so the browser can fetch the patch instead of reusing the previous service-worker cache.
-
-Files in this ZIP (replace matching files in the repository root):
+Files included
 - app.js
 - index.html
 - app-version.js
 - service-worker.js
 - PATCH-NOTES.txt
 
-Validation performed: JavaScript syntax check and ZIP integrity check.
-Not yet tested in a live browser or on the user's iPhone. This is a conservative first stability patch, not a claim that every pinch behaviour is fixed. After upload, test repeated pinch-in/pinch-out in landscape and portrait. If the jump persists, the next step is to instrument Cesium camera height during the gesture and tune its pinch handling without changing the adaptive layout.
+Validation
+- JavaScript syntax and ZIP integrity checked locally.
+- Not tested in a live browser or on iPhone. Please test pinch zoom, one-finger globe rotation, and orientation changes.

@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "adaptive-display-zoom-stability-v1.4.5";
+window.EARTH_LIVE_VERSION = "adaptive-display-zoom-controls-v1.4.7";

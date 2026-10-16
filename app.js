@@ -132,14 +132,22 @@
   }
 
   function resizeGlobe() {
+    // A viewport resize must resize Cesium's drawing surface only. It must never
+    // recalculate the camera composition during a pinch or ordinary zoom gesture.
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;
-      if (viewer && !viewer.isDestroyed()) {
-        viewer.resize();
-        applyDisplayProfile({ forceLayout: true });
-        viewer.scene.requestRender();
-      }
+      if (!viewer || viewer.isDestroyed()) return;
+
+      viewer.resize();
+      const nextProfile = detectDisplayProfile();
+      activeProfile = nextProfile;
+      const settings = profiles[nextProfile];
+      const controller = viewer.scene.screenSpaceCameraController;
+      controller.zoomFactor = settings.zoomFactor;
+      controller.maximumMovementRatio = settings.movementRatio;
+      document.documentElement.dataset.displayProfile = nextProfile;
+      viewer.scene.requestRender();
     });
   }
 
@@ -192,7 +200,8 @@
       controller.enableZoom = true;
       controller.enableLook = true;
 
-      // If the user has started moving/zooming the globe, never override their camera position on rotation.
+      // Any deliberate touch permanently hands camera framing to the user for this session.
+      // Resize events below never call setView or reapply the adaptive camera composition.
       ["pointerdown", "touchstart", "wheel"].forEach(eventName => {
         globeElement.addEventListener(eventName, () => { hasUserInteracted = true; }, { passive: true });
       });
