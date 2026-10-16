@@ -308,3 +308,63 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 .deck-theme-grid { padding-bottom:6px; }
 .theme-swatch.fire { background:linear-gradient(145deg,#ffca63,#9d1b08 60%,#1a0906); border-color:#ff8b32; }
 @media (orientation:landscape) { .orb-deck-art { inset:-7px -1.5% -3px; width:103%; height:calc(100% + 10px); } }
+
+/* v1.5.21 — adaptive centered dock: orb size is bounded; deck follows the six-orb group. */
+.primary-dock {
+  left: 50%;
+  right: auto;
+  width: min(96vw, 900px);
+  min-height: 0;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  column-gap: clamp(0px, 0.6vw, 6px);
+  row-gap: 0;
+  padding: 8px clamp(4px, 1.2vw, 12px) 10px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+.primary-dock > .orb-button { min-width: 0; width: 100%; }
+.primary-dock .orb-button img {
+  width: clamp(42px, 12vw, 62px);
+  height: clamp(42px, 12vw, 62px);
+  max-width: 100%;
+  aspect-ratio: 1;
+}
+.primary-dock .orb-label {
+  max-width: 100%;
+  font-size: clamp(8px, 2.55vw, 12px);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+.primary-dock .orb-indicator { flex: 0 0 3px; }
+.primary-dock .orb-deck-plate {
+  inset: 22px 0 0;
+  width: 100%;
+  height: auto;
+}
+.primary-dock .orb-deck-art {
+  inset: -5px -1% -3px;
+  width: 102%;
+  height: calc(100% + 8px);
+  object-fit: fill;
+  object-position: center;
+}
+@media (orientation: landscape) {
+  .primary-dock {
+    width: min(96vw, 980px);
+    bottom: max(8px, env(safe-area-inset-bottom));
+    padding: 5px clamp(6px, 1vw, 12px) 7px;
+    column-gap: clamp(2px, 0.7vw, 9px);
+  }
+  .primary-dock .orb-button img {
+    width: clamp(40px, 9.5vh, 62px);
+    height: clamp(40px, 9.5vh, 62px);
+  }
+  .primary-dock .orb-label { font-size: clamp(9px, 2.1vh, 12px); }
+  .primary-dock .orb-deck-plate { inset: 18px 0 0; }
+  .primary-dock .orb-deck-art { inset: -5px -1% -3px; width: 102%; height: calc(100% + 8px); }
+}
+@media (max-height: 390px) and (orientation: landscape) {
+  .primary-dock { padding-top: 3px; padding-bottom: 4px; }
+  .primary-dock .orb-button img { width: clamp(34px, 10vh, 42px); height: clamp(34px, 10vh, 42px); }
+  .primary-dock .orb-label { font-size: 9px; }
+}

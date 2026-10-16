@@ -1,9 +1,13 @@
-EARTH // LIVE v1.5.20 — Deck Code Only Patch
+EARTH // LIVE — v1.5.21 adaptive deck/orb layout patch
 
-Upload these five root-level files to GitHub main, replacing matching app code files. The 10 deck images are already uploaded separately and are intentionally not included.
+Upload these six files to the ROOT of GitHub main, replacing matching files:
+- index.html
+- style.css
+- app.js
+- app-version.js
+- service-worker.js
+- PATCH-NOTES.txt
 
-Adds the selectable rendered deck images to the existing deck UI: smoked glass, clear glass, frosted glass, neon edge glass, desert sand, dark sand, mixed stone, volcanic stone, ice, and fire. Keeps the existing orb images out of this patch. Removes the Crystal Glass option because that image is not in the 10-image decks-only upload.
+This patch adjusts the existing six-orb dock so it stays horizontally centered and bottom-anchored. Orb artwork scales within minimum/maximum bounds for portrait, landscape, and short landscape displays. The deck artwork follows the dock width and remains behind the orbs. Existing orb assets and deck images are not included; keep the images already uploaded at repository root.
 
-Protected: no data-store.js, database, or orb artwork included.
-
-Candidate only: syntax and ZIP checks performed; not tested on iPhone or live GitHub Pages. Keep the known-good recovery ZIP.
+Do NOT replace data-store.js or protected database files. This ZIP has syntax/archive checks only; it has not been verified live on the user's iPhone. If a cache persists, fully close/reopen the site or reload after deployment.
