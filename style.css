@@ -100,3 +100,20 @@ body {
   color: rgba(255,255,255,.68) !important;
   text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
 }
+
+
+/* Six equal-sized controls using the browser's default button appearance. */
+#primaryControls {
+  position: absolute; z-index: 20; left: 8px; right: 8px;
+  bottom: max(18px, calc(env(safe-area-inset-bottom) + 12px));
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 4px; align-items: center;
+}
+#primaryControls button {
+  appearance: auto; -webkit-appearance: button;
+  min-width: 0; min-height: 36px; padding: 4px 2px;
+  font: 11px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  white-space: normal; overflow-wrap: anywhere;
+}
+@media (max-width: 360px) { #primaryControls { gap: 2px; left: 5px; right: 5px; } #primaryControls button { font-size: 10px; } }
+@media (min-aspect-ratio: 215/100) { #primaryControls { left: 50%; right: auto; width: min(720px, 84vw); transform: translateX(-50%); bottom: max(12px, calc(env(safe-area-inset-bottom) + 8px)); } }
