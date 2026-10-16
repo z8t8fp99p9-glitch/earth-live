@@ -14,44 +14,19 @@
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Adaptive display targets: size is derived from the actual viewport and Cesium frustum.
-  // Portrait and landscape target 60% of the relevant viewport dimension.
+  // Adaptive display targets: portrait 80% of viewport width; landscape 75% of usable height.
+  // Automatic legacy camera composition is disabled; one adaptive initial frame applies both size and top inset.
   const EARTH_RADIUS_METERS = 6378137;
   const profiles = {
-    portrait: { sizeFraction: 0.60, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
-    compact:  { sizeFraction: 0.60, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
+    compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
     console.error("EARTH // LIVE globe failed to start:", error);
     errorMessage.hidden = false;
-  }
-
-  function detectDisplayProfile() {
-    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
-    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
-    const ratio = width / height;
-    if (ratio < 0.82) return "portrait";
-    if (ratio < 1.12) return "compact";
-    if (ratio > 2.15) return "ultrawide";
-    return "landscape";
-  }
-
-  function applyLandscapeComposition(nextProfile) {
-    const wantsLandscape = nextProfile === "landscape" || nextProfile === "ultrawide";
-    if (!viewer || viewer.isDestroyed() || hasUserInteracted) return;
-
-    if (wantsLandscape && !landscapeOffsetApplied) {
-      const height = profiles[nextProfile].initialHeight;
-      viewer.camera.moveUp(-height * LANDSCAPE_LIFT_RATIO);
-      landscapeOffsetApplied = true;
-    } else if (!wantsLandscape && landscapeOffsetApplied) {
-      const height = profiles.portrait.initialHeight;
-      viewer.camera.moveUp(height * LANDSCAPE_LIFT_RATIO);
-      landscapeOffsetApplied = false;
-    }
   }
 
   function detectDisplayProfile() {
@@ -98,18 +73,15 @@
         orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0 }
       });
 
-      // In landscape, place the globe's top edge near the top safe boundary.
-      // Translate the camera downward in camera coordinates; keep canvas and gesture surface full-screen.
-      if (settings.sizeAxis === "height") {
-        const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
-        const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
-        const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
-        const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
-        const verticalShiftFraction = 0.5 - targetCenterY;
-        const shiftAngle = Math.atan(verticalShiftFraction * 2 * Math.tan(fovy / 2));
-        const cameraDistance = EARTH_RADIUS_METERS + cameraHeight;
-        viewer.camera.moveDown(cameraDistance * Math.tan(shiftAngle));
-      }
+      // Apply the approved top inset in BOTH portrait and landscape.
+      // The globe's projected center must sit at topInset + half its target diameter.
+      // This is a one-time adaptive placement only; resize/gesture handlers do not reframe the camera.
+      const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
+      const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
+      const verticalShiftFraction = 0.5 - targetCenterY;
+      const shiftAngle = Math.atan(verticalShiftFraction * 2 * Math.tan(fovy / 2));
+      const cameraDistance = EARTH_RADIUS_METERS + cameraHeight;
+      viewer.camera.moveDown(cameraDistance * Math.tan(shiftAngle));
       lastAppliedProfile = nextProfile;
       hasInitialFrame = true;
     }
@@ -214,7 +186,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
-        targets: { portraitWidth: 0.60, compactWidth: 0.60, landscapeHeight: 0.60, ultrawideHeight: 0.60, topInset: 0.025 }
+        targets: { portraitWidth: 0.80, landscapeHeight: 0.75, topInset: 0.025 }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });

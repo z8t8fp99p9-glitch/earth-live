@@ -1,19 +1,10 @@
-EARTH // LIVE — Adaptive Display + Gesture Recovery v1.4.8
+EARTH // LIVE — Adaptive Position Only v1.5.0
 
-Purpose
-- Preserve the adaptive display composition from v1.4.7.
-- Restore the earlier 10-metre minimum camera distance requested by the user.
-- Keep the earlier per-orientation zoom tuning: portrait 8.63, compact 6.5, landscape/ultrawide 5.
-- Keep Cesium native camera gesture controls enabled; this patch does not introduce custom gesture recognizers.
-- Resize handler remains limited to resizing the renderer and updating profile sensitivity; it does not reframe/reset the camera.
-- Deck CSS is unchanged. Database and unrelated features are untouched.
+Based on the user-confirmed v1.4.8 gesture recovery build.
+- Restores approved targets: portrait 80% viewport width; landscape 75% usable viewport height.
+- Applies the 2.5% top inset in both orientations during initial adaptive framing.
+- Removes the obsolete competing landscape composition helper.
+- Leaves resize events from resetting/reframing the camera, preserving user gestures.
+- No changes to index.html, service-worker.js, dock CSS, imagery, earthquake data, or data-store.js.
 
-Checks
-- JavaScript syntax check and ZIP integrity check performed.
-- Not tested in a live browser or on the user's iPhone.
-- One-gesture-at-a-time exclusion of pinch-vs-rotation is not yet custom-enforced; native Cesium gestures are preserved in this pass to avoid damaging the previously tuned interaction feel. Test this build before adding a dedicated gesture lock.
-
-Upload the extracted files at repository root, replacing matching files: app.js, index.html, app-version.js, service-worker.js. PATCH-NOTES.txt is informational only and should not be uploaded to the site unless desired.
-
-
-Adaptive display update v1.4.9: changed target globe size to 60% of viewport width in portrait/compact and 60% of viewport height in landscape/ultrawide. Preserved gesture controls, camera limits, imagery, HTML, CSS, and service worker from v1.4.8.
+Candidate only. Not tested on the user's iPhone.
