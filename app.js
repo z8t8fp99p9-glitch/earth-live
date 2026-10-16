@@ -84,7 +84,7 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    controller.minimumZoomDistance = 1;
+    controller.minimumZoomDistance = 1000;
     controller.maximumZoomDistance = 40000000;
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;

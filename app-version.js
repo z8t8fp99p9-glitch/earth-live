@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "adaptive-display-v1.4.4";
+window.EARTH_LIVE_VERSION = "adaptive-display-zoom-stability-v1.4.5";

@@ -1,17 +1,18 @@
-EARTH // LIVE — Adaptive Display v1.4.4
+EARTH // LIVE — Adaptive Display Zoom Stability v1.4.5
 
-Changed files (flat ZIP, repository root):
-- app.js: replace fixed camera-space lift with viewport/frustum-derived initial globe framing.
-- index.html: update cache-busting version query strings.
-- app-version.js: version stamp.
-- service-worker.js: cache version.
+Patch based on Adaptive Display v1.4.4.
 
-Layout targets:
-- Portrait: globe apparent diameter targets 80% of viewport width.
-- Landscape/ultrawide: globe apparent diameter targets 75% of viewport height, with its top edge targeted near 2.5% below the viewport top.
-- Actual size is calculated from Cesium's frustum and current viewport; no CSS canvas translation is used.
-- Initial layout can adapt on resize/orientation changes until the user begins interacting. After user interaction, their camera is not reset.
+Changes:
+- Align Cesium's actual minimum camera zoom distance with the existing advertised 1,000-metre minimum.
+- Keep the adaptive portrait/landscape composition targets and existing native Cesium gestures.
+- Update app version/cache identifiers so the browser can fetch the patch instead of reusing the previous service-worker cache.
 
-Preserved: full-screen globe canvas and native Cesium gestures, imagery setup, database, and deck CSS. No orb assets or Stacks UI added.
+Files in this ZIP (replace matching files in the repository root):
+- app.js
+- index.html
+- app-version.js
+- service-worker.js
+- PATCH-NOTES.txt
 
-Validation: JavaScript syntax and ZIP integrity checks only. Not tested in a live browser or on iPhone. Please test portrait and landscape after upload.
+Validation performed: JavaScript syntax check and ZIP integrity check.
+Not yet tested in a live browser or on the user's iPhone. This is a conservative first stability patch, not a claim that every pinch behaviour is fixed. After upload, test repeated pinch-in/pinch-out in landscape and portrait. If the jump persists, the next step is to instrument Cesium camera height during the gesture and tune its pinch handling without changing the adaptive layout.
