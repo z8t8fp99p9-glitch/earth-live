@@ -9,22 +9,20 @@
   let activeProfile = "portrait";
   let esriLayer = null;
   let hasUserInteracted = false;
-  let landscapeOffsetApplied = false;
+  let lastAppliedProfile = null;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Keep Cesium's native gestures. Display profiles adapt zoom response without replacing gesture handling.
+  // Adaptive display targets: size is derived from the actual viewport and Cesium frustum.
+  // Portrait targets 80% of viewport width; landscape targets 75% of usable height.
+  const EARTH_RADIUS_METERS = 6378137;
   const profiles = {
-    portrait: { initialHeight: 27500000, zoomFactor: 8.63, movementRatio: 0.075 },
-    compact:  { initialHeight: 27500000, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
+    compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
   };
-
-  // A modest camera-space offset lifts the globe in landscape without resizing the globe or canvas.
-  // Reverse the offset when returning to portrait only until the user begins interacting with the globe.
-  const LANDSCAPE_LIFT_RATIO = 0.105;
 
   function showError(error) {
     console.error("EARTH // LIVE globe failed to start:", error);
@@ -56,7 +54,30 @@
     }
   }
 
-  function applyDisplayProfile({ initial = false } = {}) {
+  function detectDisplayProfile() {
+    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
+    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
+    const ratio = width / height;
+    if (ratio < 0.82) return "portrait";
+    if (ratio < 1.12) return "compact";
+    if (ratio > 2.15) return "ultrawide";
+    return "landscape";
+  }
+
+  function calculateCameraHeight(settings) {
+    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
+    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
+    const frustum = viewer.camera.frustum;
+    const verticalFov = Number.isFinite(frustum.fovy) ? frustum.fovy : Cesium.Math.toRadians(60);
+    const aspect = width / height;
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
+    const targetFov = settings.sizeAxis === "width" ? horizontalFov : verticalFov;
+    const halfAngle = Math.atan(settings.sizeFraction * Math.tan(targetFov / 2));
+    const cameraDistance = EARTH_RADIUS_METERS / Math.sin(halfAngle);
+    return Math.max(1000, cameraDistance - EARTH_RADIUS_METERS);
+  }
+
+  function applyDisplayProfile({ initial = false, forceLayout = false } = {}) {
     if (!viewer || viewer.isDestroyed()) return;
     const nextProfile = detectDisplayProfile();
     activeProfile = nextProfile;
@@ -68,19 +89,30 @@
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
 
-    if (initial && !hasInitialFrame) {
+    // Reframe only before the user takes control, or on the first render. Never reset a manually moved globe.
+    const mayReframe = initial || (!hasUserInteracted && (forceLayout || lastAppliedProfile !== nextProfile));
+    if (mayReframe) {
+      const cameraHeight = calculateCameraHeight(settings);
       viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(12, 18, settings.initialHeight),
-        orientation: {
-          heading: 0,
-          pitch: Cesium.Math.toRadians(-90),
-          roll: 0
-        }
+        destination: Cesium.Cartesian3.fromDegrees(12, 18, cameraHeight),
+        orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0 }
       });
+
+      // In landscape, place the globe's top edge near the top safe boundary.
+      // Translate the camera downward in camera coordinates; keep canvas and gesture surface full-screen.
+      if (settings.sizeAxis === "height") {
+        const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
+        const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
+        const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
+        const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
+        const verticalShiftFraction = 0.5 - targetCenterY;
+        const shiftAngle = Math.atan(verticalShiftFraction * 2 * Math.tan(fovy / 2));
+        const cameraDistance = EARTH_RADIUS_METERS + cameraHeight;
+        viewer.camera.moveDown(cameraDistance * Math.tan(shiftAngle));
+      }
+      lastAppliedProfile = nextProfile;
       hasInitialFrame = true;
     }
-
-    applyLandscapeComposition(nextProfile);
     document.documentElement.dataset.displayProfile = nextProfile;
   }
 
@@ -105,7 +137,7 @@
       resizeFrame = 0;
       if (viewer && !viewer.isDestroyed()) {
         viewer.resize();
-        applyDisplayProfile();
+        applyDisplayProfile({ forceLayout: true });
         viewer.scene.requestRender();
       }
     });
@@ -173,7 +205,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 1000,
-        landscapeLiftRatio: LANDSCAPE_LIFT_RATIO
+        targets: { portraitWidth: 0.80, landscapeHeight: 0.75, landscapeTopInset: 0.025 }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });

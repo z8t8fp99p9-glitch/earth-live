@@ -1,17 +1,17 @@
-EARTH // LIVE — Adaptive Globe Composition v1.4.3
+EARTH // LIVE — Adaptive Display v1.4.4
 
-Purpose
-- Add a modest landscape camera-space lift so the globe sits higher in landscape without scaling the Earth or shrinking the full-screen Cesium interaction surface.
-- Reverse the offset when returning to portrait only while the user has not begun interacting with the globe.
-- Once the user starts dragging, pinching, or scrolling the globe, orientation changes no longer override their camera position.
-- Keep the deck unchanged and independent. No orb art, button controls, Stacks menu, database, or earthquake/Sun/Moon systems are added or modified.
+Changed files (flat ZIP, repository root):
+- app.js: replace fixed camera-space lift with viewport/frustum-derived initial globe framing.
+- index.html: update cache-busting version query strings.
+- app-version.js: version stamp.
+- service-worker.js: cache version.
 
-Files in this flat patch
-- index.html
-- app.js
-- app-version.js
-- service-worker.js
+Layout targets:
+- Portrait: globe apparent diameter targets 80% of viewport width.
+- Landscape/ultrawide: globe apparent diameter targets 75% of viewport height, with its top edge targeted near 2.5% below the viewport top.
+- Actual size is calculated from Cesium's frustum and current viewport; no CSS canvas translation is used.
+- Initial layout can adapt on resize/orientation changes until the user begins interacting. After user interaction, their camera is not reset.
 
-Upload all four files to the repository root, replacing files with the same names.
+Preserved: full-screen globe canvas and native Cesium gestures, imagery setup, database, and deck CSS. No orb assets or Stacks UI added.
 
-Validation performed: JavaScript syntax checks and ZIP integrity. No browser or iPhone runtime test has been performed. The lift amount is an initial candidate and should be reviewed in portrait and landscape screenshots.
+Validation: JavaScript syntax and ZIP integrity checks only. Not tested in a live browser or on iPhone. Please test portrait and landscape after upload.
