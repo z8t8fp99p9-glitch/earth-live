@@ -167,7 +167,6 @@
       resizeFrame = requestAnimationFrame(() => {
         resizeFrame = 0;
         if (!viewer || viewer.isDestroyed()) return;
-        const before = activeProfile;
         const display = synchronizeCesiumViewport();
         const nextProfile = display.orientation;
         activeProfile = nextProfile;
@@ -175,13 +174,11 @@
         const controller = viewer.scene.screenSpaceCameraController;
         controller.zoomFactor = settings.zoomFactor;
         controller.maximumMovementRatio = settings.movementRatio;
-        // On orientation transitions, recalculate range using the new frustum
-        // dimensions while preserving the current geographic view and orientation.
-        if (before !== nextProfile || lastOrientation !== nextProfile) {
-          applyDisplayProfile({ forceLayout: true });
-        } else {
-          document.documentElement.dataset.displayProfile = nextProfile;
-        }
+        // Rotation is a viewport resize, NOT a camera command. Cesium keeps the
+        // existing camera position, heading, pitch, and zoom; only its drawing
+        // surface/frustum is synchronized to the new display rectangle.
+        lastOrientation = nextProfile;
+        document.documentElement.dataset.displayProfile = nextProfile;
         viewer.scene.requestRender();
       });
     });
@@ -214,12 +211,15 @@
       document.documentElement.dataset.displayMode = choice.value;
       window.EarthLiveDisplay.mode = choice.value;
       try { localStorage.setItem("earthLiveDisplayMode", choice.value); } catch (_) {}
-      // Re-measure the selected rectangle after its CSS bounds have updated.
-      // All orientation-specific sizing reads from window.EarthLiveDisplay.area.
+      // A display-mode choice changes the viewport bounds, not the user's view.
+      // Resize Cesium after CSS settles; never call setView or alter camera range.
       requestAnimationFrame(() => requestAnimationFrame(() => {
         if (!viewer || viewer.isDestroyed()) return;
         synchronizeCesiumViewport();
-        applyDisplayProfile({ forceLayout: true });
+        const display = measureDisplayArea();
+        activeProfile = display.orientation;
+        lastOrientation = display.orientation;
+        document.documentElement.dataset.displayProfile = display.orientation;
         viewer.scene.requestRender();
       }));
     }));

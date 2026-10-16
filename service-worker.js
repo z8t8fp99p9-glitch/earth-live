@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-orientation-safe-area-fix-v1-5-11";
+const CACHE_NAME = "earth-live-preserve-camera-on-rotation-v1-5-12";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {

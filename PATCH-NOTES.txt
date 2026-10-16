@@ -18,3 +18,12 @@ v1.5.11 — Orientation-safe-area fix
 - In landscape, selected portrait top/bottom safe edges rotate to left/right.
 - Prevents bottom/both display modes from incorrectly shrinking the landscape viewport vertically.
 - Keeps the existing map synchronization and gesture handlers unchanged.
+
+
+v1.5.12 — Preserve camera on rotation and display-mode changes
+- Orientation changes only resize/synchronize the Cesium viewport; they do not call camera.setView or recalculate camera distance.
+- Switching Full Screen / cutout modes preserves the current geographic view and zoom.
+- Initial startup framing remains unchanged.
+- Gesture handlers and data-store.js remain untouched.
+
+Validation: app.js syntax and ZIP integrity checked; real-device verification remains necessary.
