@@ -14,3 +14,6 @@ Checks
 - One-gesture-at-a-time exclusion of pinch-vs-rotation is not yet custom-enforced; native Cesium gestures are preserved in this pass to avoid damaging the previously tuned interaction feel. Test this build before adding a dedicated gesture lock.
 
 Upload the extracted files at repository root, replacing matching files: app.js, index.html, app-version.js, service-worker.js. PATCH-NOTES.txt is informational only and should not be uploaded to the site unless desired.
+
+
+Adaptive display update v1.4.9: changed target globe size to 60% of viewport width in portrait/compact and 60% of viewport height in landscape/ultrawide. Preserved gesture controls, camera limits, imagery, HTML, CSS, and service worker from v1.4.8.

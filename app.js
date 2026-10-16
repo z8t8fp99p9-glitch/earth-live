@@ -15,13 +15,13 @@
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
   // Adaptive display targets: size is derived from the actual viewport and Cesium frustum.
-  // Portrait targets 80% of viewport width; landscape targets 75% of usable height.
+  // Portrait and landscape target 60% of the relevant viewport dimension.
   const EARTH_RADIUS_METERS = 6378137;
   const profiles = {
-    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
-    compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { sizeFraction: 0.60, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
+    compact:  { sizeFraction: 0.60, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
@@ -214,7 +214,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
-        targets: { portraitWidth: 0.80, landscapeHeight: 0.75, landscapeTopInset: 0.025 }
+        targets: { portraitWidth: 0.60, compactWidth: 0.60, landscapeHeight: 0.60, ultrawideHeight: 0.60, topInset: 0.025 }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });
