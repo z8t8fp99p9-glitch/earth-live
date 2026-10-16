@@ -1,16 +1,9 @@
-EARTH // LIVE — v1.5.25 Celestial Platter Polish
-
-Upload/replace ONLY these two files at the root of the GitHub main branch:
-- index.html
-- style.css
-
-What changed:
-- Slightly wider dock/deck footprint (390px to 402px maximum).
-- Added soft colour pools behind existing orb artwork.
-- Added refined rim glow, contact shadows and subtle glass reflections.
-- Improved active-state lighting transitions and label contrast.
-- Kept orb sizing width-driven and circular.
-
-Preserved: app.js, app-version.js, all artwork/assets, data-store.js, globe camera/zoom/rotation/gestures, and existing app functions.
-
-This ZIP is integrity-checked, but the visual result still needs to be checked on the user's iPhone after upload.
+EARTH // LIVE v1.5.26 — Torch Dock
+- Keeps only the two deck choices shown in the latest screenshots: Clear Glass and Desert Sand.
+- Sets Clear Glass as the default deck.
+- Removes the six colored status bars beneath orb labels.
+- Adds lightweight CSS-only colored torch beams beneath each orb.
+- Increases dock maximum width to 402px while preserving width-driven orb sizing.
+- Preserves globe camera and gesture code; app.js changes are limited to deck theme selection and cache-version token.
+- ZIP integrity checked. Not yet visually tested on an iPhone.
+Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave all image assets and other files untouched.

@@ -288,15 +288,12 @@
     }));
 
     const deckAssets = {
-      "smoked-glass":"deck-smoked-glass.png", "clear-glass":"deck-clear-glass.png",
-      "frosted-glass":"deck-frosted-glass.png", "neon-edge-glass":"deck-neon-edge-glass.png",
-      "desert-sand":"deck-desert-sand.png", "dark-sand":"deck-dark-sand.png",
-      "mixed-stone":"deck-mixed-stone.png", "volcanic-stone":"deck-volcanic-stone.png",
-      "ice":"deck-ice.png", "fire":"deck-fire.png"
+      "clear-glass":"deck-clear-glass.png",
+      "desert-sand":"deck-desert-sand.png"
     };
     const deckArt = document.querySelector(".orb-deck-art");
     const applyDeckTheme = theme => {
-      const safeTheme = Object.prototype.hasOwnProperty.call(deckAssets, theme) ? theme : "smoked-glass";
+      const safeTheme = Object.prototype.hasOwnProperty.call(deckAssets, theme) ? theme : "clear-glass";
       document.documentElement.dataset.deckTheme = safeTheme;
       if (deckArt) deckArt.src = "./" + deckAssets[safeTheme];
       themeChoices.forEach(item => {
@@ -306,7 +303,7 @@
       });
       return safeTheme;
     };
-    let savedTheme = "smoked-glass";
+    let savedTheme = "clear-glass";
     try { savedTheme = localStorage.getItem("earthLiveDeckTheme") || savedTheme; } catch (_) {}
     savedTheme = applyDeckTheme(savedTheme);
     themeChoices.forEach(choice => choice.addEventListener("click", () => {

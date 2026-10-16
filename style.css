@@ -506,3 +506,40 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   .primary-dock > .orb-button::after,
   .primary-dock .orb-button img { transition: none; }
 }
+
+
+/* v1.5.26 — subtle coded torch beams; status bars removed. */
+.primary-dock { --dock-max-width: 402px; }
+.primary-dock .orb-indicator { display: none !important; }
+.primary-dock > .orb-button { position: relative; overflow: visible; }
+.primary-dock .orb-button .orb-beam {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: clamp(39px, calc(var(--orb-size) * .72), 57px);
+  width: clamp(34px, calc(var(--orb-size) * .82), 62px);
+  height: clamp(24px, calc(var(--orb-size) * .52), 40px);
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: .58;
+  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
+  filter: blur(2px);
+  background: linear-gradient(to bottom, var(--orb-glow) 0%, var(--orb-core) 36%, transparent 100%);
+  transition: opacity .2s ease, filter .2s ease;
+}
+.primary-dock .orb-button[data-orb="basic"] .orb-beam,
+.primary-dock .orb-button[data-orb="hd"] .orb-beam { background: linear-gradient(to bottom, rgba(55,164,255,.8), rgba(55,164,255,.2), transparent); }
+.primary-dock .orb-button[data-orb="location"] .orb-beam { background: linear-gradient(to bottom, rgba(255,45,61,.8), rgba(255,45,61,.2), transparent); }
+.primary-dock .orb-button[data-orb="sun"] .orb-beam { background: linear-gradient(to bottom, rgba(255,177,57,.8), rgba(255,177,57,.2), transparent); }
+.primary-dock .orb-button[data-orb="moon"] .orb-beam { background: linear-gradient(to bottom, rgba(83,167,255,.8), rgba(83,167,255,.2), transparent); }
+.primary-dock .orb-button[data-orb="stacks"] .orb-beam { background: linear-gradient(to bottom, rgba(28,239,226,.8), rgba(28,239,226,.2), transparent); }
+.primary-dock .orb-button[aria-pressed="true"] .orb-beam { opacity: .76; filter: blur(2.5px); }
+.primary-dock .orb-button img,
+.primary-dock .orb-button .orb-label { position: relative; z-index: 2; }
+.primary-dock .orb-button .orb-label { text-shadow: 0 1px 5px #000, 0 0 4px rgba(0,0,0,.8); }
+@media (prefers-reduced-motion: reduce) {
+  .primary-dock .orb-button .orb-beam { transition: none; }
+}
+
+/* Two available deck materials only. */
+.deck-theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
