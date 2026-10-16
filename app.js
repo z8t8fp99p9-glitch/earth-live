@@ -10,6 +10,7 @@
   let esriLayer = null;
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
+  let touchGestureState = null;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -116,6 +117,113 @@
     document.documentElement.dataset.displayProfile = nextProfile;
   }
 
+  // Gesture arbitration is deliberately separate from adaptive framing.
+  // Two-finger actions lock to one mode until the fingers lift: pinch, twist, or tilt.
+  function installGestureArbitration() {
+    const controller = viewer.scene.screenSpaceCameraController;
+    const base = {
+      rotate: controller.enableRotate,
+      tilt: controller.enableTilt,
+      translate: controller.enableTranslate,
+      zoom: controller.enableZoom,
+      look: controller.enableLook
+    };
+    const distance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+    const angle = (a, b) => Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
+    const center = (a, b) => ({ x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 });
+    const angleDelta = (a, b) => {
+      let d = b - a;
+      while (d > Math.PI) d -= Math.PI * 2;
+      while (d < -Math.PI) d += Math.PI * 2;
+      return d;
+    };
+    function setMode(mode) {
+      if (mode === "single" || mode === "idle") {
+        controller.enableRotate = base.rotate;
+        controller.enableTilt = base.tilt;
+        controller.enableTranslate = base.translate;
+        controller.enableZoom = base.zoom;
+        controller.enableLook = base.look;
+      } else if (mode === "pinch") {
+        controller.enableRotate = false;
+        controller.enableTilt = false;
+        controller.enableTranslate = false;
+        controller.enableZoom = base.zoom;
+        controller.enableLook = false;
+      } else if (mode === "undecided" || mode === "twist") {
+        controller.enableRotate = false;
+        controller.enableTilt = false;
+        controller.enableTranslate = false;
+        controller.enableZoom = false;
+        controller.enableLook = false;
+      } else if (mode === "tilt") {
+        controller.enableRotate = false;
+        controller.enableTilt = base.tilt;
+        controller.enableTranslate = false;
+        controller.enableZoom = false;
+        controller.enableLook = false;
+      }
+    }
+    globeElement.addEventListener("touchstart", event => {
+      hasUserInteracted = true;
+      if (event.touches.length === 1) {
+        touchGestureState = { mode: "single" };
+        setMode("single");
+      } else if (event.touches.length >= 2) {
+        const a = event.touches[0], b = event.touches[1], c = center(a, b);
+        touchGestureState = {
+          mode: "undecided", startDistance: distance(a, b), lastDistance: distance(a, b),
+          startAngle: angle(a, b), lastAngle: angle(a, b), startCenter: c, lastCenter: c
+        };
+        // Pause camera actions briefly until the dominant two-finger movement is clear.
+        setMode("undecided");
+      }
+    }, { passive: true, capture: true });
+
+    globeElement.addEventListener("touchmove", event => {
+      if (!touchGestureState || event.touches.length < 2 || !viewer || viewer.isDestroyed()) return;
+      const a = event.touches[0], b = event.touches[1], state = touchGestureState;
+      const d = distance(a, b), ang = angle(a, b), c = center(a, b);
+      const totalDistanceChange = Math.abs(d - state.startDistance);
+      const totalTwist = Math.abs(angleDelta(state.startAngle, ang));
+      const totalVertical = Math.abs(c.y - state.startCenter.y);
+      const rotationChange = angleDelta(state.lastAngle, ang);
+
+      if (state.mode === "undecided") {
+        // A clear angular movement wins twist; vertical centroid travel wins tilt.
+        // Otherwise, distance change wins pinch, which is safest for shaky hands.
+        if (totalTwist > 0.10 && totalTwist * Math.max(24, d) > totalDistanceChange * 1.15 && totalTwist * Math.max(24, d) > totalVertical * 1.2) {
+          state.mode = "twist";
+          setMode("twist");
+        } else if (totalVertical > 24 && totalVertical > totalDistanceChange * 1.5 && totalVertical > totalTwist * Math.max(24, d) * 1.35) {
+          state.mode = "tilt";
+          setMode("tilt");
+        } else if (totalDistanceChange > 8 || totalTwist > 0.18 || totalVertical > 28) {
+          state.mode = "pinch";
+          setMode("pinch");
+        }
+      } else if (state.mode === "twist") {
+        // Custom twist only; native zoom and tilt remain disabled for this touch sequence.
+        viewer.camera.rotateRight(-rotationChange * 0.85);
+      }
+      state.lastDistance = d;
+      state.lastAngle = ang;
+      state.lastCenter = c;
+    }, { passive: true, capture: true });
+
+    const finish = event => {
+      if (!event.touches || event.touches.length === 0) {
+        touchGestureState = null;
+        setMode("idle");
+      } else if (event.touches.length === 1) {
+        touchGestureState = { mode: "single" };
+        setMode("single");
+      }
+    };
+    globeElement.addEventListener("touchend", finish, { passive: true, capture: true });
+    globeElement.addEventListener("touchcancel", finish, { passive: true, capture: true });
+  }
+
   function addEsriImagery() {
     const provider = new Cesium.UrlTemplateImageryProvider({
       url: esriImageryUrl,
@@ -199,6 +307,7 @@
       controller.enableTranslate = true;
       controller.enableZoom = true;
       controller.enableLook = true;
+      installGestureArbitration();
 
       // Any deliberate touch permanently hands camera framing to the user for this session.
       // Resize events below never call setView or reapply the adaptive camera composition.

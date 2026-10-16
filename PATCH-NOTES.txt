@@ -1,16 +1,14 @@
-EARTH // LIVE — Adaptive Display + Gesture Recovery v1.4.8
+EARTH // LIVE — v1.4.9 Gesture Lock + Adaptive Display
 
-Purpose
-- Preserve the adaptive display composition from v1.4.7.
-- Restore the earlier 10-metre minimum camera distance requested by the user.
-- Keep the earlier per-orientation zoom tuning: portrait 8.63, compact 6.5, landscape/ultrawide 5.
-- Keep Cesium native camera gesture controls enabled; this patch does not introduce custom gesture recognizers.
-- Resize handler remains limited to resizing the renderer and updating profile sensitivity; it does not reframe/reset the camera.
-- Deck CSS is unchanged. Database and unrelated features are untouched.
+Files in this ZIP are flat and belong in the repository root.
 
-Checks
-- JavaScript syntax check and ZIP integrity check performed.
-- Not tested in a live browser or on the user's iPhone.
-- One-gesture-at-a-time exclusion of pinch-vs-rotation is not yet custom-enforced; native Cesium gestures are preserved in this pass to avoid damaging the previously tuned interaction feel. Test this build before adding a dedicated gesture lock.
+Changes:
+- Preserves the adaptive portrait/landscape camera framing targets and deck CSS (no CSS file is replaced).
+- Keeps the requested 10-metre minimum camera distance.
+- Adds a separate two-finger gesture arbitration layer: pinch zoom, twist rotation, and tilt are classified and locked to one mode until fingers lift.
+- One-finger globe rotation and native Cesium controls remain enabled.
+- Resize events continue to resize Cesium without deliberately resetting camera framing.
+- Updates app version/cache identifiers.
 
-Upload the extracted files at repository root, replacing matching files: app.js, index.html, app-version.js, service-worker.js. PATCH-NOTES.txt is informational only and should not be uploaded to the site unless desired.
+Validation performed: node --check on app.js and ZIP integrity.
+Not yet validated: live browser behavior, iPhone touch classification, and all screen sizes. Gesture recognition must be tested on-device; this is a candidate, not a verified fix.
