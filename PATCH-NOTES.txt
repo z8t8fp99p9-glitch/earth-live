@@ -1,35 +1,9 @@
-EARTH // LIVE v1.5.38 — Cumulative Full-Screen Effect Personalisation
+EARTH // LIVE v1.5.43
 
-This single ZIP includes the recent full-screen effect timing, light, and personalisation changes. Upload index.html, style.css, and app.js to the repository root; leave all image assets and other files untouched.
+Cosmic Expansion color refinement:
+- Basic Earth: soft light-yellow fading into green.
+- HD Earth: soft orange fading into blue.
+- Each palette is tied only to its own full-screen Cosmic Expansion.
+- Preserves 1.5-second duration, intensity/light controls, and all other orb effects.
 
-Full-screen durations: Basic Earth 1.5s; HD Earth 1.5s; Live Location 2s; Sun lava 5s; Moon snow 5s; Stacks electric 1s.
-Sun and Moon atmospheric light fades after 2.5s while lava/snow continues until 5s. Effect intensity and atmospheric-light on/off/intensity are separately adjustable for all six full-screen orb effects. Settings persist on the device.
-
-Added “Restore Our Defaults” to return all six full-screen effects to EARTH // LIVE defaults: effects on, effect intensity 100%, atmospheric light on, light intensity 50%. Small-orb artwork, glow rings, shadows, and signature small-orb effects are not controlled or changed by these settings.
-
-
-v1.5.39 — Fix independent light intensity
-- Removed root-level atmospheric gradients that bypassed the light-intensity slider.
-- Light intensity now controls the full-screen atmospheric light layers independently.
-- Lava/snow particle intensity remains controlled by the separate effect-intensity slider.
-- Small-orb visuals and behavior are unchanged.
-
-
-v1.5.40 — Simplified effect personalisation
-- Each orb now labels its first control with the actual full-screen effect (Cosmic expansion, Scanning pulse, Lava, Snow, or Electric energy) and its intensity.
-- The second control remains Atmospheric light with its own toggle and intensity.
-- Kept small-orb visuals outside these settings.
-- Added explicit zero-intensity suppression for the atmospheric light and particle canvas.
-
-
-v1.5.41 — Smooth atmospheric-light intensity
-- Corrected light slider mapping to a true 0–100% multiplier.
-- Removed brittle CSS text matching that could behave like an intensity threshold.
-- At 0%, atmospheric light is explicitly hidden; intermediate values scale progressively.
-- Effect intensity remains independent. Small-orb visuals are unchanged.
-
-
-v1.5.42 — Restore visible Earth cosmic expansion
-- Found that the v1.5.40 transparency rule was also clearing the cosmic effect background.
-- Restricted transparent backgrounds to the particle-led Sun/Moon effects and restored the cosmic radial expansion background.
-- Preserved the separate effect and light intensity controls.
+Upload index.html, style.css, and app.js from this ZIP to the root of the main branch. Leave all other files untouched.

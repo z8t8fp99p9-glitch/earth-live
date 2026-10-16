@@ -439,6 +439,9 @@
     overlay.style.setProperty("--effect-x", `${x}px`);
     overlay.style.setProperty("--effect-y", `${y}px`);
     overlay.classList.add(`screen-effect-${effect}`);
+    if (effect === "cosmic" && (orb === "basic" || orb === "hd")) {
+      overlay.classList.add(`screen-effect-cosmic-${orb}`);
+    }
     if (effect === "magma" || effect === "frost") overlay.classList.add("screen-effect-long");
     void overlay.offsetWidth;
     overlay.classList.add("screen-effect-playing");
