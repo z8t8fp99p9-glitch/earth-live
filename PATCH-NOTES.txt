@@ -1,13 +1,13 @@
-EARTH // LIVE — v1.5.21 adaptive deck/orb layout patch
+EARTH // LIVE — Adaptive Dock v1.5.22 (code-only patch)
 
-Upload these six files to the ROOT of GitHub main, replacing matching files:
-- index.html
-- style.css
-- app.js
-- app-version.js
-- service-worker.js
-- PATCH-NOTES.txt
+Changes:
+- Locks the dock to a portrait-master maximum width of 390px in portrait and landscape.
+- Keeps six equal columns and the same orb sizing rules in both orientations.
+- Removes the wide landscape expansion and landscape-specific orb scaling.
+- Keeps a small-height safety fallback only for unusually short landscape screens.
+- Uses CSS only for dock layout; no continuous JavaScript resize calculations or polling.
 
-This patch adjusts the existing six-orb dock so it stays horizontally centered and bottom-anchored. Orb artwork scales within minimum/maximum bounds for portrait, landscape, and short landscape displays. The deck artwork follows the dock width and remains behind the orbs. Existing orb assets and deck images are not included; keep the images already uploaded at repository root.
+Install: Extract and upload the six files to the root of GitHub main, replacing matching app-code files.
+Keep all existing deck PNGs and orb artwork in place. Do not replace data-store.js or protected database files.
 
-Do NOT replace data-store.js or protected database files. This ZIP has syntax/archive checks only; it has not been verified live on the user's iPhone. If a cache persists, fully close/reopen the site or reload after deployment.
+Validation: ZIP integrity and JavaScript syntax checks only; not live/iPhone verified.
