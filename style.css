@@ -404,3 +404,105 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
     min-height: 2.1em;
   }
 }
+
+
+/* v1.5.25 — celestial platter polish: keep original artwork and interactions. */
+.primary-dock {
+  width: min(97vw, 402px);
+  padding: 9px clamp(5px, 1.35vw, 12px) 12px;
+  row-gap: 0;
+  isolation: isolate;
+}
+.primary-dock > .orb-button {
+  position: relative;
+  z-index: 1;
+  gap: 4px;
+  padding: 0 1px 2px;
+  overflow: visible;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Soft coloured pool of light behind each orb, like a little display stand. */
+.primary-dock > .orb-button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 86%;
+  aspect-ratio: 1;
+  top: 1%;
+  left: 7%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-core) 0%, transparent 70%);
+  opacity: .48;
+  filter: blur(7px);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.primary-dock > .orb-button[aria-pressed="true"]::before {
+  opacity: .98;
+  transform: scale(1.18);
+}
+/* More dimensional orb rims and a subtle contact shadow on the platter. */
+.primary-dock .orb-button img {
+  position: relative;
+  z-index: 1;
+  filter: brightness(.82) saturate(.98) drop-shadow(0 4px 3px rgba(0,0,0,.68));
+  transition: filter .24s ease, transform .24s ease, box-shadow .24s ease, border-color .24s ease;
+  backface-visibility: hidden;
+}
+.primary-dock .orb-button[aria-pressed="false"] img {
+  box-shadow: 0 0 0 1px rgba(193,224,245,.30), 0 4px 7px rgba(0,0,0,.72), inset 0 0 0 1px rgba(255,255,255,.10);
+}
+.primary-dock .orb-button[aria-pressed="true"] img {
+  filter: brightness(1.12) saturate(1.14) drop-shadow(0 5px 5px rgba(0,0,0,.72));
+  box-shadow: 0 0 0 1px rgba(238,250,255,.92), 0 0 7px var(--orb-glow), 0 0 18px var(--orb-glow), 0 0 30px var(--orb-core), 0 5px 9px rgba(0,0,0,.68), inset 0 0 0 1px rgba(255,255,255,.2);
+}
+/* Plate sits a little closer to the orb centres, with extra room around the group. */
+.primary-dock .orb-deck-plate {
+  inset: 17px -1.2% 0;
+  border-radius: 18px;
+  overflow: visible;
+  filter: drop-shadow(0 7px 10px rgba(0,0,0,.42));
+}
+.primary-dock .orb-deck-art {
+  inset: -7px -1.2% -4px;
+  width: 102.4%;
+  height: calc(100% + 11px);
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,.40)) drop-shadow(0 0 5px rgba(78,176,255,.12));
+}
+/* Small, soft colour reflections on the glass beneath each orb. */
+.primary-dock > .orb-button::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 23%;
+  right: 23%;
+  top: calc(clamp(42px, 12vw, 62px) + 3px);
+  height: 9px;
+  border-radius: 50%;
+  background: var(--orb-glow);
+  opacity: .12;
+  filter: blur(7px);
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.primary-dock > .orb-button[aria-pressed="true"]::after { opacity: .58; }
+.primary-dock .orb-label {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 3px #000, 0 0 5px rgba(0,0,0,.9);
+}
+.primary-dock .orb-indicator { position: relative; z-index: 2; }
+@media (orientation: landscape) {
+  .primary-dock { width: min(97vw, 402px); }
+}
+@media (max-height: 390px) and (orientation: landscape) {
+  .primary-dock { padding-top: 3px; padding-bottom: 5px; }
+  .primary-dock .orb-deck-plate { inset: 14px -1.2% 0; }
+  .primary-dock > .orb-button::after { top: 45px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary-dock > .orb-button::before,
+  .primary-dock > .orb-button::after,
+  .primary-dock .orb-button img { transition: none; }
+}

@@ -1,19 +1,16 @@
-EARTH // LIVE v1.5.24 — width-driven adaptive orb sizing
+EARTH // LIVE — v1.5.25 Celestial Platter Polish
 
-Upload these files to the repository root on main, replacing matching files:
+Upload/replace ONLY these two files at the root of the GitHub main branch:
 - index.html
 - style.css
 
-Design rules:
-- Orb diameter is controlled by CSS width (clamp), not viewport height.
-- Height follows width with aspect-ratio: 1 / 1, preserving circular orbs.
-- The dock stays centered, bottom-anchored, and capped at 390 CSS px in both orientations.
-- Six equal grid columns keep the orbs evenly distributed.
-- Labels can wrap within each column.
-- A short-landscape fallback reduces orb diameter only for very short screens.
-- No JavaScript resize loop or camera logic was added or modified.
-- Existing image assets, app.js, app-version.js, data-store.js, and database files are untouched.
+What changed:
+- Slightly wider dock/deck footprint (390px to 402px maximum).
+- Added soft colour pools behind existing orb artwork.
+- Added refined rim glow, contact shadows and subtle glass reflections.
+- Improved active-state lighting transitions and label contrast.
+- Kept orb sizing width-driven and circular.
 
-Validation:
-- ZIP structure checked.
-- This patch has not been verified live on an iPhone; check portrait and landscape after deployment.
+Preserved: app.js, app-version.js, all artwork/assets, data-store.js, globe camera/zoom/rotation/gestures, and existing app functions.
+
+This ZIP is integrity-checked, but the visual result still needs to be checked on the user's iPhone after upload.
