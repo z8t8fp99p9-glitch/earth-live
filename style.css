@@ -900,12 +900,20 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   filter: none !important;
   animation: none !important;
 }
-.screen-effect.screen-effect-playing[style*="--light-intensity: 0"]::before,
-.screen-effect.screen-effect-playing[style*="--light-intensity: 0"]::after {
+.screen-effect.screen-effect-playing.screen-effect-lights-zero::before,
+.screen-effect.screen-effect-playing.screen-effect-lights-zero::after {
   opacity: 0 !important;
   animation: none !important;
 }
 /* Scale canvas particles using the effect slider; 0% suppresses the canvas entirely. */
 .screen-effect.screen-effect-playing[style*="--effect-intensity: 0"] #effect-particles {
   visibility: hidden !important;
+}
+
+
+/* v1.5.41 — genuinely continuous light intensity (0–100%), no threshold behavior.
+   The slider maps linearly to a 0–1 multiplier; only exact zero uses the zero-light class. */
+.screen-effect.screen-effect-playing::before,
+.screen-effect.screen-effect-playing::after {
+  transition: opacity .12s linear !important;
 }

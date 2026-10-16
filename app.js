@@ -433,9 +433,9 @@
     stopEffectParticles();
     overlay.className = "screen-effect";
     const preferences = orbEffectSettings[orb];
-    overlay.style.setProperty("--light-intensity", String(preferences.lightIntensity / 50));
+    overlay.style.setProperty("--light-intensity", String(preferences.lightIntensity / 100));
     overlay.style.setProperty("--effect-intensity", String(preferences.effectIntensity / 100));
-    if (!preferences.light) overlay.classList.add("screen-effect-lights-off");
+    if (!preferences.light || preferences.lightIntensity <= 0) overlay.classList.add("screen-effect-lights-off");
     overlay.style.setProperty("--effect-x", `${x}px`);
     overlay.style.setProperty("--effect-y", `${y}px`);
     overlay.classList.add(`screen-effect-${effect}`);
