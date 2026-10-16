@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-esri-default-gestures-zoom-tuned-v1-3-5";
+const CACHE_NAME = "earth-live-esri-default-gestures-zoom-tuned-v1-3-6";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {

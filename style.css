@@ -23,6 +23,8 @@ body {
   max-width: 75vw; text-align: right; opacity: .8;
 }
 .cesium-widget-credits { font-size: 9px !important; }
+/* Hide the Cesium logo only; keep required text attribution visible. */
+.cesium-credit-logoContainer { display: none !important; }
 #errorMessage {
   position: absolute; z-index: 10; left: 50%; top: 50%;
   transform: translate(-50%, -50%); width: min(86vw, 340px);
@@ -33,5 +35,7 @@ body {
 }
 #errorMessage[hidden] { display: none; }
 /* Keep the existing adaptive display styling unchanged. */
-@media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; } }
+@media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; }
+/* Hide the Cesium logo only; keep required text attribution visible. */
+.cesium-credit-logoContainer { display: none !important; } }
 @media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }
