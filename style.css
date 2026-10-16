@@ -512,133 +512,142 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 .deck-theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 
-/* v1.5.27 — elemental orb personalities; effects are interaction-triggered, not continuous. */
-.primary-dock { --dock-max-width: 402px; }
-.primary-dock .orb-indicator,
-.primary-dock .orb-beam { display: none !important; }
-.primary-dock > .orb-button { isolation: isolate; }
-.primary-dock > .orb-button::before,
-.primary-dock > .orb-button::after { pointer-events: none; }
 
-/* Atmospheric personality aura, unique to each orb. */
-.primary-dock > .orb-button::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  left: 50%;
-  top: 10%;
-  width: 112%;
-  height: 92%;
-  transform: translateX(-50%) scale(.78);
-  border-radius: 50%;
-  opacity: 0;
-  filter: blur(7px);
-  transition: opacity .22s ease, transform .35s ease;
-}
-.primary-dock > .orb-button.effect-cosmic::before {
-  opacity: .85;
-  transform: translateX(-50%) scale(1.16);
-  background: radial-gradient(ellipse, rgba(45,151,255,.56) 0%, rgba(54,80,255,.24) 42%, transparent 72%);
-}
-.primary-dock > .orb-button.effect-magma::before {
-  opacity: .9;
-  transform: translateX(-50%) scale(1.14);
-  background: radial-gradient(ellipse, rgba(255,100,20,.62) 0%, rgba(255,34,0,.28) 43%, transparent 72%);
-}
-.primary-dock > .orb-button.effect-frost::before {
-  opacity: .86;
-  transform: translateX(-50%) scale(1.12);
-  background: radial-gradient(ellipse, rgba(157,231,255,.62) 0%, rgba(76,169,255,.22) 45%, transparent 72%);
-}
-.primary-dock > .orb-button.effect-electric::before {
-  opacity: .95;
-  transform: translateX(-50%) scale(1.18);
-  background: radial-gradient(ellipse, rgba(38,255,232,.62) 0%, rgba(30,128,255,.25) 44%, transparent 73%);
-}
 
-/* Brief elemental texture overlays. */
-.primary-dock > .orb-button::after {
-  content: "";
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  top: 17%;
-  width: 104%;
-  height: 90%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  opacity: 0;
-  mix-blend-mode: screen;
+/* v1.5.28 — full-screen elemental expansion from the tapped orb. */
+.screen-effect {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  isolation: isolate;
+  contain: strict;
 }
-.primary-dock > .orb-button.effect-cosmic::after {
-  opacity: .68;
+.screen-effect.screen-effect-playing {
+  visibility: visible;
+  animation: screen-effect-fade 1.8s ease-out both;
+}
+.screen-effect::before,
+.screen-effect::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+.screen-effect::before {
+  background: radial-gradient(circle at var(--effect-x, 50%) var(--effect-y, 85%), var(--effect-color, rgba(55,155,255,.5)) 0%, transparent 70%);
+  transform: scale(.05);
+  transform-origin: var(--effect-x, 50%) var(--effect-y, 85%);
+}
+.screen-effect::after {
+  inset: -10%;
+  background: radial-gradient(ellipse at var(--effect-x, 50%) var(--effect-y, 85%), transparent 0 6%, var(--effect-color, rgba(55,155,255,.18)) 20%, transparent 68%);
+  transform: scale(.06);
+  transform-origin: var(--effect-x, 50%) var(--effect-y, 85%);
+}
+.screen-effect-playing::before {
+  animation: screen-wave-expand 1.35s cubic-bezier(.12,.68,.22,1) both;
+}
+.screen-effect-playing::after {
+  animation: screen-wave-ring 1.55s cubic-bezier(.12,.68,.22,1) both;
+}
+.screen-effect-cosmic { --effect-color: rgba(72,132,255,.40); }
+.screen-effect-cosmic.screen-effect-playing {
   background:
-    radial-gradient(circle at 22% 38%, rgba(103,210,255,.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 78% 28%, rgba(163,126,255,.95) 0 1px, transparent 2px),
-    radial-gradient(circle at 68% 72%, rgba(89,191,255,.85) 0 1px, transparent 2px),
-    radial-gradient(ellipse, transparent 46%, rgba(72,150,255,.45) 55%, transparent 70%);
-  animation: elemental-cosmic .9s ease-out both;
+    radial-gradient(ellipse at 25% 28%, rgba(96,74,255,.16), transparent 48%),
+    radial-gradient(ellipse at 75% 60%, rgba(34,173,255,.16), transparent 48%);
 }
-.primary-dock > .orb-button.effect-magma::after {
-  opacity: .78;
+.screen-effect-cosmic.screen-effect-playing::before {
   background:
-    radial-gradient(ellipse at 50% 94%, rgba(255,228,111,.95) 0 2%, rgba(255,75,10,.65) 14%, transparent 49%),
-    repeating-linear-gradient(105deg, transparent 0 12px, rgba(255,95,20,.2) 13px 15px, transparent 17px 24px);
-  animation: elemental-magma .8s ease-out both;
+    radial-gradient(circle at 22% 32%, rgba(200,233,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 25%, rgba(173,155,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 67% 72%, rgba(101,207,255,.95) 0 1px, transparent 2px),
+    radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(64,124,255,.4), rgba(72,65,198,.15) 38%, transparent 70%);
+  animation: screen-wave-expand 1.45s cubic-bezier(.12,.68,.22,1) both, cosmic-star-flash 1.8s ease-out both;
 }
-.primary-dock > .orb-button.effect-frost::after {
-  opacity: .8;
+.screen-effect-magma { --effect-color: rgba(255,91,15,.48); }
+.screen-effect-magma.screen-effect-playing {
+  background: radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(255,100,12,.26), transparent 74%);
+}
+.screen-effect-magma.screen-effect-playing::before {
   background:
-    radial-gradient(circle at 23% 30%, rgba(223,250,255,.95) 0 1px, transparent 2px),
-    radial-gradient(circle at 74% 24%, rgba(185,235,255,.95) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 72%, rgba(223,250,255,.9) 0 1px, transparent 2px),
-    radial-gradient(ellipse, transparent 45%, rgba(143,224,255,.5) 57%, transparent 72%);
-  animation: elemental-frost .95s ease-out both;
+    repeating-linear-gradient(112deg, transparent 0 28px, rgba(255,85,12,.24) 29px 31px, transparent 32px 48px),
+    radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(255,220,112,.78), rgba(255,70,8,.4) 23%, transparent 70%);
+  animation: screen-wave-expand 1.35s cubic-bezier(.12,.68,.22,1) both, magma-ember-rise 1.9s ease-out both;
 }
-.primary-dock > .orb-button.effect-electric::after {
-  opacity: .95;
+.screen-effect-frost { --effect-color: rgba(128,222,255,.48); }
+.screen-effect-frost.screen-effect-playing {
+  background: radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(120,211,255,.22), transparent 72%);
+}
+.screen-effect-frost.screen-effect-playing::before {
   background:
-    conic-gradient(from 12deg at 50% 50%, transparent 0 9%, rgba(117,255,246,.95) 10%, transparent 12% 26%, rgba(67,168,255,.9) 27%, transparent 29% 48%, rgba(117,255,246,.9) 49%, transparent 51% 100%);
-  filter: blur(.6px);
-  animation: elemental-electric .48s steps(2, end) both;
+    radial-gradient(circle at 12% 24%, rgba(230,251,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle at 83% 31%, rgba(196,240,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle at 75% 78%, rgba(230,251,255,.8) 0 2px, transparent 3px),
+    repeating-linear-gradient(135deg, transparent 0 46px, rgba(180,235,255,.16) 47px 49px, transparent 50px 72px),
+    radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(208,248,255,.42), rgba(81,178,255,.2) 40%, transparent 72%);
+  animation: screen-wave-expand 1.25s cubic-bezier(.12,.68,.22,1) both, frost-crystal-flash 1.6s ease-out both;
 }
-.primary-dock > .orb-button.effect-location::before {
-  opacity: .85;
-  transform: translateX(-50%) scale(1.1);
-  background: radial-gradient(ellipse, rgba(255,45,70,.48) 0%, rgba(255,45,70,.2) 42%, transparent 72%);
+.screen-effect-electric { --effect-color: rgba(25,244,229,.48); }
+.screen-effect-electric.screen-effect-playing {
+  background: radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(25,244,229,.22), transparent 72%);
 }
-.primary-dock > .orb-button.effect-location::after {
-  opacity: .78;
-  border: 1px solid rgba(255,80,90,.8);
-  box-shadow: 0 0 12px rgba(255,45,70,.55), inset 0 0 10px rgba(255,45,70,.18);
-  animation: elemental-scan .75s ease-out both;
+.screen-effect-electric.screen-effect-playing::before {
+  background:
+    conic-gradient(from 22deg at 50% 50%, transparent 0 7%, rgba(107,255,244,.8) 7.4%, transparent 8.2% 19%, rgba(71,169,255,.8) 19.5%, transparent 20.4% 36%, rgba(107,255,244,.8) 36.5%, transparent 37.2% 59%, rgba(107,255,244,.8) 59.5%, transparent 60.3% 100%),
+    radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(34,255,233,.25), transparent 70%);
+  animation: screen-wave-expand .85s steps(2,end) both, electric-flicker .9s steps(2,end) both;
 }
-.primary-dock > .orb-button.effect-sun::before {
-  opacity: .85;
-  transform: translateX(-50%) scale(1.12);
-  background: radial-gradient(ellipse, rgba(255,177,57,.55) 0%, rgba(255,90,10,.22) 43%, transparent 72%);
+.screen-effect-location { --effect-color: rgba(255,42,67,.38); }
+.screen-effect-location.screen-effect-playing {
+  background: radial-gradient(ellipse at var(--effect-x) var(--effect-y), rgba(255,42,67,.18), transparent 70%);
 }
-.primary-dock > .orb-button.effect-sun::after {
-  opacity: .72;
-  background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,192,78,.0) 0 9deg, rgba(255,173,48,.5) 10deg 11deg, transparent 12deg 22deg);
-  mask-image: radial-gradient(ellipse, transparent 0 43%, #000 53%, transparent 74%);
-  animation: elemental-sun .85s ease-out both;
+.screen-effect-location.screen-effect-playing::before {
+  background: radial-gradient(ellipse at var(--effect-x) var(--effect-y), transparent 0 20%, rgba(255,42,67,.28) 40%, transparent 72%);
+  animation: screen-wave-expand .95s ease-out both;
 }
-.primary-dock > .orb-button.effect-stacks::before {
-  opacity: .88;
-  transform: translateX(-50%) scale(1.12);
-  background: radial-gradient(ellipse, rgba(28,239,226,.48) 0%, rgba(30,130,255,.2) 43%, transparent 72%);
+@keyframes screen-effect-fade {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  70% { opacity: .86; }
+  100% { opacity: 0; }
 }
-
-@keyframes elemental-cosmic { 0% { transform: translateX(-50%) scale(.72) rotate(-12deg); opacity: 0; } 40% { opacity: .85; } 100% { transform: translateX(-50%) scale(1.08) rotate(10deg); opacity: 0; } }
-@keyframes elemental-magma { 0% { transform: translateX(-50%) translateY(5px) scaleY(.7); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) translateY(-4px) scaleY(1.08); opacity: 0; } }
-@keyframes elemental-frost { 0% { transform: translateX(-50%) scale(.85); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) scale(1.12); opacity: 0; } }
-@keyframes elemental-electric { 0%, 100% { opacity: 0; } 15%, 48%, 72% { opacity: .95; } 30%, 62% { opacity: .15; } }
-@keyframes elemental-scan { 0% { transform: translateX(-50%) scale(.55); opacity: 0; } 45% { opacity: .85; } 100% { transform: translateX(-50%) scale(1.22); opacity: 0; } }
-@keyframes elemental-sun { 0% { transform: translateX(-50%) rotate(0deg) scale(.85); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) rotate(28deg) scale(1.08); opacity: 0; } }
-
+@keyframes screen-wave-expand {
+  0% { opacity: 0; transform: scale(.025); }
+  18% { opacity: .95; }
+  68% { opacity: .68; }
+  100% { opacity: 0; transform: scale(3.4); }
+}
+@keyframes screen-wave-ring {
+  0% { opacity: 0; transform: scale(.02); }
+  20% { opacity: .8; }
+  100% { opacity: 0; transform: scale(2.7); }
+}
+@keyframes cosmic-star-flash {
+  0%, 100% { filter: saturate(1); }
+  35% { filter: saturate(1.8) brightness(1.2); }
+}
+@keyframes magma-ember-rise {
+  0% { background-position: 0 30px, center; }
+  100% { background-position: 0 -55px, center; }
+}
+@keyframes frost-crystal-flash {
+  0% { filter: brightness(1); }
+  35% { filter: brightness(1.35); }
+  100% { filter: brightness(1); }
+}
+@keyframes electric-flicker {
+  0%, 100% { opacity: 0; }
+  18%, 43%, 70% { opacity: 1; }
+  30%, 58% { opacity: .16; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .primary-dock > .orb-button::before,
-  .primary-dock > .orb-button::after { animation: none !important; transition: none !important; }
+  .screen-effect, .screen-effect::before, .screen-effect::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

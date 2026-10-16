@@ -229,9 +229,13 @@
   }
 
 
+  let activeScreenEffectTimer = null;
   function triggerOrbPersonality(button) {
     const orb = button?.dataset?.orb;
     if (!orb) return;
+    const overlay = document.getElementById("screen-effect");
+    if (!overlay) return;
+
     const effectByOrb = {
       basic: "cosmic",
       hd: "cosmic",
@@ -241,12 +245,27 @@
       stacks: "electric"
     };
     const effect = effectByOrb[orb] || "cosmic";
-    const className = `effect-${effect}`;
-    button.classList.remove(className);
-    // Restart the brief CSS effect without a timer loop.
-    void button.offsetWidth;
-    button.classList.add(className);
-    window.setTimeout(() => button.classList.remove(className), 1050);
+    const rect = button.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    if (activeScreenEffectTimer) window.clearTimeout(activeScreenEffectTimer);
+    overlay.className = "screen-effect";
+    overlay.style.setProperty("--effect-x", `${x}px`);
+    overlay.style.setProperty("--effect-y", `${y}px`);
+    overlay.classList.add(`screen-effect-${effect}`);
+
+    // Restart animation cleanly after a rapid second tap.
+    void overlay.offsetWidth;
+    overlay.classList.add("screen-effect-playing");
+
+    const durations = { cosmic: 1800, magma: 2000, frost: 1650, electric: 1000, location: 1200 };
+    activeScreenEffectTimer = window.setTimeout(() => {
+      overlay.className = "screen-effect";
+      overlay.style.removeProperty("--effect-x");
+      overlay.style.removeProperty("--effect-y");
+      activeScreenEffectTimer = null;
+    }, durations[effect] || 1800);
   }
 
   function setupOrbDeck() {

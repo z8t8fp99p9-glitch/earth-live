@@ -1,9 +1,8 @@
-EARTH // LIVE v1.5.27 — Elemental Orb Personalities
-- Removed the upside-down torch-beam markup and styles.
-- Keeps the existing glow rings, shadows, and orb artwork.
-- Adds brief click-triggered coded effects: cosmic energy on Basic/HD, red scanning beacon on Live Location, volcanic/magma flare on Sun, frost burst on Moon, and electric shimmer on Stacks.
-- Keeps only Clear Glass and Desert Sand in the deck material selector.
-- Preserves globe camera and gesture code; app.js adds a small click-effect helper.
-- Effects are CSS overlays and short transitions, not continuous globe animation.
-- ZIP integrity checked. Not yet visually tested on an iPhone.
-Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and other files untouched.
+EARTH // LIVE v1.5.28 — Cosmic Expansion
+- Replaces orb-local effect overlays with viewport-wide elemental transitions that expand from the tapped orb's screen position.
+- Basic/HD: cosmic energy; Sun: volcanic magma; Moon: frost; Stacks: electricity; Live Location: red scanning pulse.
+- Effects fade automatically in about 1.0–2.0 seconds depending on element.
+- Effects use CSS-only overlays and pointer-events:none; they do not intercept globe or UI input.
+- Preserves current orb artwork, deck selector (Clear Glass + Desert Sand), deck and globe code.
+- ZIP integrity checked; not yet visually tested on an iPhone.
+Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave all image assets and other files untouched.
