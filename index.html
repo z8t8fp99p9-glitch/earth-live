@@ -11,16 +11,23 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./style.css?v=adaptive-display-gesture-recovery-v1.4.8">
+  <link rel="stylesheet" href="./style.css?v=full-display-global-v1.5.4">
   <script>window.CESIUM_BASE_URL = "https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/";</script>
   <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-  <script defer src="./app-version.js?v=adaptive-display-gesture-recovery-v1.4.8"></script>
-  <script defer src="./app.js?v=adaptive-display-gesture-recovery-v1.4.8"></script>
+  <script defer src="./app-version.js?v=full-display-global-v1.5.4"></script>
+  <script defer src="./app.js?v=full-display-global-v1.5.4"></script>
 </head>
 <body>
   <main id="app" aria-label="EARTH LIVE globe">
     <div id="globe" role="application" aria-label="Interactive satellite Earth. Drag to rotate and pinch to zoom."></div>
     <nav id="primaryDock" class="primary-dock" aria-label="Adaptive control deck" aria-hidden="true"></nav>
+    <button id="moreOptionsButton" class="more-options-button" type="button" aria-haspopup="dialog" aria-expanded="false">More Options</button>
+    <section id="personalisationPanel" class="personalisation-panel" role="dialog" aria-modal="false" aria-labelledby="personalisationTitle" hidden>
+      <div class="panel-heading"><strong id="personalisationTitle">Personalisation</strong><button id="closePersonalisation" class="panel-close" type="button" aria-label="Close personalisation">×</button></div>
+      <p class="panel-description">Choose how EARTH // LIVE uses your display.</p>
+      <label class="display-choice"><input type="radio" name="displayMode" value="full" checked><span><strong>Full Display</strong><small>Use the full screen, including areas behind cutouts.</small></span></label>
+      <label class="display-choice"><input type="radio" name="displayMode" value="safe"><span><strong>With Cuts</strong><small>Keep the globe within browser-reported safe areas.</small></span></label>
+    </section>
     <div id="errorMessage" hidden role="status">The globe could not load. Check your internet connection and reload the page.</div>
   </main>
 </body>

@@ -1,10 +1,14 @@
-EARTH // LIVE — Adaptive Position Only v1.5.0
+EARTH // LIVE — Global Display Mode v1.5.4
 
-Based on the user-confirmed v1.4.8 gesture recovery build.
-- Restores approved targets: portrait 80% viewport width; landscape 75% usable viewport height.
-- Applies the 2.5% top inset in both orientations during initial adaptive framing.
-- Removes the obsolete competing landscape composition helper.
-- Leaves resize events from resetting/reframing the camera, preserving user gestures.
-- No changes to index.html, service-worker.js, dock CSS, imagery, earthquake data, or data-store.js.
+Consolidated candidate containing the full-display viewport work and persistent display-mode selection.
+- Default mode is Full Screen (full display viewport).
+- With Cuts mode uses browser-reported safe-area insets.
+- User choice is stored in localStorage under earthLiveDisplayMode and restored on subsequent launches.
+- Orientation/viewport changes do not change the saved mode; they only update responsive profile detection.
+- Portrait target: 80% of full viewport width, centered.
+- Landscape target: 70% of full viewport height, 3% top target.
+- The mode switch does not intentionally reset camera position or gesture state.
+- No data-store.js included or modified.
 
-Candidate only. Not tested on the user's iPhone.
+Validation: JavaScript syntax and ZIP integrity checked. Not visually tested on an iPhone.
+Note: this package retains the supplied v1.5.2 app structure; its primary dock remains an empty placeholder and More Options is a temporary top-right entry point, not the original five-button deck integration.

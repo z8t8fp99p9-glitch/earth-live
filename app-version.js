@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "adaptive-display-gesture-recovery-v1.5.0";
+window.EARTH_LIVE_VERSION = "1.5.4-global-display-mode";

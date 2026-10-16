@@ -1,7 +1,6 @@
-/* EARTH // LIVE v1.4.1 — adaptive empty deck foundation. */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body {
-  width: 100%; height: 100%; margin: 0; overflow: hidden;
+  width: 100%; height: 100%; min-height: 100%; margin: 0; overflow: hidden;
   background: #030509; color: #fff;
 }
 body {
@@ -9,73 +8,125 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 #app {
-  position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh;
-  width: 100vw; overflow: hidden; background: #030509; isolation: isolate;
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  height: 100dvh; overflow: hidden; background: #030509; isolation: isolate;
 }
 #globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer,
 .cesium-widget, .cesium-widget canvas {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  outline: none; touch-action: none;
+  min-width: 100vw; min-height: 100%; outline: none; touch-action: none;
 }
 .cesium-viewer { overflow: hidden; }
-/* Attribution remains readable above the decorative deck. */
 .cesium-viewer-bottom {
-  left: auto !important; right: max(4px, env(safe-area-inset-right)) !important;
-  bottom: max(3px, env(safe-area-inset-bottom)) !important;
-  max-width: 68vw !important; text-align: right !important;
-  opacity: .62 !important; pointer-events: none !important; z-index: 8 !important;
+  left: auto !important; right: max(8px, env(safe-area-inset-right)) !important;
+  bottom: max(5px, env(safe-area-inset-bottom)) !important;
+  max-width: 75vw; text-align: right; opacity: .8;
 }
-.cesium-widget-credits {
-  white-space: nowrap !important; font-size: 7px !important; line-height: 1.2 !important;
-  color: rgba(255,255,255,.72) !important; text-shadow: 0 1px 2px rgba(0,0,0,.95) !important;
-}
-.cesium-credit-logoContainer, .cesium-credit-expand-link,
-.cesium-credit-lightbox, .cesium-credit-lightbox-overlay { display: none !important; }
-/* Empty deck: decorative only, so every globe gesture passes through it. */
-#primaryDock {
-  --deck-edge: rgba(133, 198, 230, .56);
-  --deck-top: rgba(14, 26, 40, .52);
-  --deck-bottom: rgba(2, 7, 14, .82);
-  position: fixed; z-index: 5; left: 50%; bottom: max(10px, env(safe-area-inset-bottom));
-  width: min(84vw, 760px); height: clamp(54px, 7vh, 68px);
-  transform: translateX(-50%); border: 0; border-radius: 22px;
-  background: transparent; pointer-events: none; isolation: isolate;
-}
-#primaryDock::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(180deg, var(--deck-top), rgba(8,17,29,.60) 46%, var(--deck-bottom));
-  border: 1px solid var(--deck-edge);
-  box-shadow: 0 8px 22px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.24),
-              inset 0 -5px 9px rgba(0,0,0,.28), 0 0 12px rgba(56,170,224,.08);
-  -webkit-backdrop-filter: blur(12px) saturate(1.15); backdrop-filter: blur(12px) saturate(1.15);
-  pointer-events: none;
-}
-#primaryDock::after {
-  content: ""; position: absolute; left: 2%; right: 2%; bottom: -5px; height: 8px;
-  border-radius: 0 0 18px 18px; background: linear-gradient(180deg, rgba(74,119,150,.72), rgba(6,11,19,.96));
-  border: 1px solid rgba(128,181,212,.34); border-top: 0;
-  box-shadow: 0 5px 10px rgba(0,0,0,.3); pointer-events: none;
-}
-/* Theme-ready material hooks; no selector UI or orbs are included in this milestone. */
-#app[data-deck-family="clear"] #primaryDock { --deck-top: rgba(28,48,65,.27); --deck-bottom: rgba(5,12,20,.48); --deck-edge: rgba(174,224,248,.66); }
-#app[data-deck-family="frosted"] #primaryDock { --deck-top: rgba(102,125,145,.32); --deck-bottom: rgba(24,37,51,.72); --deck-edge: rgba(190,218,234,.48); }
-#app[data-deck-family="sand"] #primaryDock { --deck-top: rgba(139,101,64,.86); --deck-bottom: rgba(43,30,19,.96); --deck-edge: rgba(205,164,112,.78); }
-#app[data-deck-family="dark-stone"] #primaryDock { --deck-top: rgba(57,62,69,.88); --deck-bottom: rgba(12,14,18,.97); --deck-edge: rgba(145,156,169,.52); }
-#app[data-deck-family="ice-stone"] #primaryDock { --deck-top: rgba(135,169,189,.62); --deck-bottom: rgba(24,42,55,.94); --deck-edge: rgba(194,229,246,.78); }
+.cesium-widget-credits { font-size: 9px !important; }
+/* Hide the Cesium logo only; keep required text attribution visible. */
+.cesium-credit-logoContainer { display: none !important; }
 #errorMessage {
-  position: absolute; z-index: 10; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: min(86vw, 340px); padding: 16px 18px; border: 1px solid rgba(255,255,255,.16);
-  border-radius: 14px; background: rgba(8,12,20,.92); color: rgba(255,255,255,.88);
-  font-size: 14px; line-height: 1.5; text-align: center;
+  position: absolute; z-index: 10; left: 50%; top: 50%;
+  transform: translate(-50%, -50%); width: min(86vw, 340px);
+  padding: 16px 18px; border: 1px solid rgba(255,255,255,.16);
+  border-radius: 14px; background: rgba(8,12,20,.92);
+  color: rgba(255,255,255,.88); font-size: 14px; line-height: 1.5;
+  text-align: center;
 }
 #errorMessage[hidden] { display: none; }
-@media (orientation: landscape) {
-  /* Landscape uses its own compact composition; never stretch the empty plate across the display. */
-  #primaryDock { width: min(72vw, 880px); height: clamp(46px, 8vh, 58px); bottom: max(7px, env(safe-area-inset-bottom)); border-radius: 19px; }
+/* Keep the existing adaptive display styling unchanged. */
+@media (max-aspect-ratio: 82/100) { .cesium-widget-credits { font-size: 9px !important; }
+/* Hide the Cesium logo only; keep required text attribution visible. */
+.cesium-credit-logoContainer { display: none !important; } }
+@media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }
+
+
+/* Minimal required imagery credit: tucked into the extreme bottom-right corner. */
+.cesium-viewer-bottom {
+  left: auto !important;
+  right: max(4px, env(safe-area-inset-right)) !important;
+  bottom: max(3px, env(safe-area-inset-bottom)) !important;
+  max-width: 82vw !important;
+  text-align: right !important;
+  opacity: .58 !important;
+  pointer-events: none !important;
 }
-@media (max-height: 420px) and (orientation: landscape) {
-  #primaryDock { width: min(68vw, 760px); height: 42px; bottom: max(5px, env(safe-area-inset-bottom)); }
+.cesium-widget-credits {
+  font-size: 6px !important;
+  line-height: 1.2 !important;
+  color: rgba(255,255,255,.68) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
 }
-@media (prefers-reduced-transparency: reduce) {
-  #primaryDock::before { -webkit-backdrop-filter: none; backdrop-filter: none; }
+/* Keep the required text, but remove the logo and broken expandable panel. */
+.cesium-credit-logoContainer,
+.cesium-credit-expand-link,
+.cesium-credit-lightbox,
+.cesium-credit-lightbox-overlay {
+  display: none !important;
 }
+
+/* Compact, single-line imagery attribution in the extreme bottom-right corner. */
+.cesium-viewer-bottom {
+  right: max(4px, env(safe-area-inset-right)) !important;
+  bottom: max(3px, env(safe-area-inset-bottom)) !important;
+  max-width: 68vw !important;
+  text-align: right !important;
+  opacity: .58 !important;
+  pointer-events: none !important;
+}
+.cesium-widget-credits {
+  white-space: nowrap !important;
+  font-size: 7px !important;
+  line-height: 1.2 !important;
+  color: rgba(255,255,255,.68) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
+}
+
+
+/* v1.3.10: shorter attribution, positioned as low as possible. */
+.cesium-viewer-bottom {
+  left: auto !important;
+  right: max(3px, env(safe-area-inset-right)) !important;
+  bottom: 1px !important;
+  max-width: 80vw !important;
+  text-align: right !important;
+  opacity: .58 !important;
+  pointer-events: none !important;
+}
+.cesium-widget-credits {
+  white-space: nowrap !important;
+  font-size: 7px !important;
+  line-height: 1.1 !important;
+  color: rgba(255,255,255,.68) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
+}
+
+
+/* v1.5.3: display mode selector in More Options > Personalisation. */
+.more-options-button {
+  position: fixed; z-index: 30; top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right)); border: 1px solid rgba(190,220,255,.25);
+  border-radius: 999px; padding: 10px 14px; color: #eef7ff;
+  background: rgba(10,20,32,.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.personalisation-panel {
+  position: fixed; z-index: 31; top: max(56px, calc(env(safe-area-inset-top) + 48px));
+  right: max(12px, env(safe-area-inset-right)); width: min(330px, calc(100vw - 24px));
+  padding: 16px; border: 1px solid rgba(190,220,255,.2); border-radius: 18px;
+  color: #f3f7fc; background: rgba(7,13,23,.94); box-shadow: 0 16px 48px rgba(0,0,0,.4);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.personalisation-panel[hidden] { display: none; }
+.panel-heading { display:flex; align-items:center; justify-content:space-between; font-size:16px; }
+.panel-close { border:0; background:transparent; color:#d9e8f7; font-size:26px; padding:0 4px; }
+.panel-description { margin:8px 0 12px; color:#aebed0; font-size:12px; }
+.display-choice { display:flex; align-items:flex-start; gap:10px; padding:12px 8px; border-radius:12px; }
+.display-choice:has(input:checked) { background:rgba(65,151,219,.14); }
+.display-choice input { margin-top:3px; accent-color:#55b8ff; }
+.display-choice span { display:flex; flex-direction:column; gap:4px; }
+.display-choice strong { font-size:13px; }
+.display-choice small { color:#aebed0; font-size:11px; line-height:1.4; }
+/* Respect Cutouts uses browser-provided safe-area insets; Full Display remains edge-to-edge by default. */
+html[data-display-mode="safe"] #globe { inset: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); width:auto; height:auto; }
+html[data-display-mode="safe"] .cesium-viewer { inset:0; width:100%; height:100%; }

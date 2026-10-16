@@ -14,14 +14,14 @@
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Adaptive display targets: portrait 80% of viewport width; landscape 75% of usable height.
-  // Automatic legacy camera composition is disabled; one adaptive initial frame applies both size and top inset.
+  // Adaptive display targets use the full visible globe viewport: portrait 80% width, landscape 70% height.
+  // Portrait is centred. Landscape uses camera pitch to place the visible globe lower without translating the camera by Earth-scale distances.
   const EARTH_RADIUS_METERS = 6378137;
   const profiles = {
     portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
     compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.025, zoomFactor: 5, movementRatio: 0.1 }
+    landscape:{ sizeFraction: 0.70, sizeAxis: "height", topFraction: 0.03, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ sizeFraction: 0.70, sizeAxis: "height", topFraction: 0.03, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
@@ -68,20 +68,22 @@
     const mayReframe = initial || (!hasUserInteracted && (forceLayout || lastAppliedProfile !== nextProfile));
     if (mayReframe) {
       const cameraHeight = calculateCameraHeight(settings);
+      // Use the full visible viewport. Portrait is centred in both axes.
+      // Landscape is top-anchored by a small pitch change, not a large camera translation.
+      // The previous moveDown(cameraDistance * tan(angle)) translated the camera by an
+      // Earth-scale distance and could push the globe out of frame.
+      const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
+      let pitch = -Math.PI / 2;
+      if (settings.sizeAxis === "height") {
+        const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
+        const verticalShiftFraction = 0.5 - targetCenterY;
+        const pitchOffset = Math.atan(2 * verticalShiftFraction * Math.tan(fovy / 2));
+        pitch += pitchOffset;
+      }
       viewer.camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(12, 18, cameraHeight),
-        orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0 }
+        orientation: { heading: 0, pitch, roll: 0 }
       });
-
-      // Apply the approved top inset in BOTH portrait and landscape.
-      // The globe's projected center must sit at topInset + half its target diameter.
-      // This is a one-time adaptive placement only; resize/gesture handlers do not reframe the camera.
-      const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
-      const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
-      const verticalShiftFraction = 0.5 - targetCenterY;
-      const shiftAngle = Math.atan(verticalShiftFraction * 2 * Math.tan(fovy / 2));
-      const cameraDistance = EARTH_RADIUS_METERS + cameraHeight;
-      viewer.camera.moveDown(cameraDistance * Math.tan(shiftAngle));
       lastAppliedProfile = nextProfile;
       hasInitialFrame = true;
     }
@@ -121,6 +123,41 @@
       document.documentElement.dataset.displayProfile = nextProfile;
       viewer.scene.requestRender();
     });
+  }
+
+  function setupDisplayPersonalisation() {
+    const moreButton = document.getElementById("moreOptionsButton");
+    const panel = document.getElementById("personalisationPanel");
+    const closeButton = document.getElementById("closePersonalisation");
+    const choices = Array.from(document.querySelectorAll('input[name="displayMode"]'));
+    if (!moreButton || !panel || !closeButton || !choices.length) return;
+
+    const stored = (() => { try { return localStorage.getItem("earthLiveDisplayMode"); } catch (_) { return null; } })();
+    const mode = stored === "safe" ? "safe" : "full";
+    document.documentElement.dataset.displayMode = mode;
+    choices.forEach(choice => { choice.checked = choice.value === mode; });
+
+    moreButton.addEventListener("click", () => {
+      panel.hidden = !panel.hidden;
+      moreButton.setAttribute("aria-expanded", String(!panel.hidden));
+    });
+    closeButton.addEventListener("click", () => {
+      panel.hidden = true;
+      moreButton.setAttribute("aria-expanded", "false");
+    });
+    choices.forEach(choice => choice.addEventListener("change", () => {
+      if (!choice.checked) return;
+      document.documentElement.dataset.displayMode = choice.value;
+      try { localStorage.setItem("earthLiveDisplayMode", choice.value); } catch (_) {}
+      // Recalculate profile after CSS has applied; do not overwrite the user's camera view.
+      requestAnimationFrame(() => {
+        if (viewer && !viewer.isDestroyed()) {
+          viewer.resize();
+          document.documentElement.dataset.displayProfile = detectDisplayProfile();
+          viewer.scene.requestRender();
+        }
+      });
+    }));
   }
 
   function startGlobe() {
@@ -178,6 +215,7 @@
         globeElement.addEventListener(eventName, () => { hasUserInteracted = true; }, { passive: true });
       });
 
+      setupDisplayPersonalisation();
       applyDisplayProfile({ initial: true });
 
       window.EarthLiveViewer = viewer;
@@ -186,7 +224,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
-        targets: { portraitWidth: 0.80, landscapeHeight: 0.75, topInset: 0.025 }
+        targets: { portraitWidth: 0.80, landscapeHeight: 0.70, portraitCentered: true, landscapeTopInset: 0.03, viewport: "full-visible-globe-viewport" }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });
