@@ -678,3 +678,35 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 .screen-effect.screen-effect-long.screen-effect-frost.screen-effect-playing::before {
   animation-duration: 3.5s, 3.6s;
 }
+
+
+/* v1.5.31 — soften emitted light; preserve snow/lava particles and Stacks energy. */
+.screen-effect-cosmic.screen-effect-playing { opacity: .72; }
+.screen-effect-cosmic.screen-effect-playing::before { opacity: .66; }
+.screen-effect-cosmic.screen-effect-playing::after { opacity: .62; }
+
+.screen-effect-location.screen-effect-playing { opacity: .72; }
+.screen-effect-location.screen-effect-playing::before {
+  opacity: .62;
+  animation: location-three-pulses 1.2s ease-out both;
+}
+.screen-effect-location.screen-effect-playing::after { opacity: .58; }
+
+.screen-effect-magma.screen-effect-playing { opacity: .82; }
+.screen-effect-magma.screen-effect-playing::before { opacity: .70; }
+.screen-effect-magma.screen-effect-playing::after { opacity: .66; }
+
+.screen-effect-frost.screen-effect-playing { opacity: .78; }
+.screen-effect-frost.screen-effect-playing::before { opacity: .68; }
+.screen-effect-frost.screen-effect-playing::after { opacity: .62; }
+
+@keyframes location-three-pulses {
+  0% { opacity: 0; transform: scale(.025); }
+  8% { opacity: .66; }
+  20% { opacity: .12; transform: scale(1.02); }
+  30% { opacity: .64; transform: scale(1.5); }
+  43% { opacity: .10; transform: scale(2.0); }
+  54% { opacity: .60; transform: scale(2.55); }
+  69% { opacity: .08; transform: scale(3.0); }
+  100% { opacity: 0; transform: scale(3.4); }
+}

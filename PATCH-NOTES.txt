@@ -1,7 +1,8 @@
-EARTH // LIVE v1.5.30 — Elemental Refinement
-- Sun lava and Moon snow now last about 4.0s and 3.65s respectively (about two seconds longer).
-- Effects trigger only when the tapped orb ends up ON (aria-pressed=true); turning an orb OFF does not launch an effect.
-- Preserves other effect durations and current full-screen particle implementation.
-- Lightweight canvas remains limited to a small particle count and DPR cap; these effects make no network requests.
-- ZIP integrity checked; not yet visually tested on an iPhone.
-Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and other files untouched.
+EARTH // LIVE v1.5.31 — Soft Light & Location Pulses
+- Reduces screen-wide light intensity for Earth cosmic, Live Location, Sun and Moon overlays.
+- Leaves falling lava and snow particle rendering unchanged.
+- Leaves Stacks electric effect unchanged.
+- Live Location now performs three distinct expanding red scan pulses.
+- No network requests added; no continuous effect rendering outside the brief active animation.
+- ZIP integrity checked; not yet visually tested on iPhone.
+Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and all other files untouched.
