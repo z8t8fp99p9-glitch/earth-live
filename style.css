@@ -81,3 +81,22 @@ body {
   color: rgba(255,255,255,.68) !important;
   text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
 }
+
+
+/* v1.3.10: shorter attribution, positioned as low as possible. */
+.cesium-viewer-bottom {
+  left: auto !important;
+  right: max(3px, env(safe-area-inset-right)) !important;
+  bottom: 1px !important;
+  max-width: 80vw !important;
+  text-align: right !important;
+  opacity: .58 !important;
+  pointer-events: none !important;
+}
+.cesium-widget-credits {
+  white-space: nowrap !important;
+  font-size: 7px !important;
+  line-height: 1.1 !important;
+  color: rgba(255,255,255,.68) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9) !important;
+}

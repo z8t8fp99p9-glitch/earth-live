@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-esri-corner-credit-v1-3-8";
+const CACHE_NAME = "earth-live-esri-corner-credit-v1-3-10";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {
