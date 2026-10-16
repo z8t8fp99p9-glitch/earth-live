@@ -1,13 +1,19 @@
-EARTH // LIVE — Adaptive Dock v1.5.22 (code-only patch)
+EARTH // LIVE v1.5.24 — width-driven adaptive orb sizing
 
-Changes:
-- Locks the dock to a portrait-master maximum width of 390px in portrait and landscape.
-- Keeps six equal columns and the same orb sizing rules in both orientations.
-- Removes the wide landscape expansion and landscape-specific orb scaling.
-- Keeps a small-height safety fallback only for unusually short landscape screens.
-- Uses CSS only for dock layout; no continuous JavaScript resize calculations or polling.
+Upload these files to the repository root on main, replacing matching files:
+- index.html
+- style.css
 
-Install: Extract and upload the six files to the root of GitHub main, replacing matching app-code files.
-Keep all existing deck PNGs and orb artwork in place. Do not replace data-store.js or protected database files.
+Design rules:
+- Orb diameter is controlled by CSS width (clamp), not viewport height.
+- Height follows width with aspect-ratio: 1 / 1, preserving circular orbs.
+- The dock stays centered, bottom-anchored, and capped at 390 CSS px in both orientations.
+- Six equal grid columns keep the orbs evenly distributed.
+- Labels can wrap within each column.
+- A short-landscape fallback reduces orb diameter only for very short screens.
+- No JavaScript resize loop or camera logic was added or modified.
+- Existing image assets, app.js, app-version.js, data-store.js, and database files are untouched.
 
-Validation: ZIP integrity and JavaScript syntax checks only; not live/iPhone verified.
+Validation:
+- ZIP structure checked.
+- This patch has not been verified live on an iPhone; check portrait and landscape after deployment.

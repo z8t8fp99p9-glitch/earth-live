@@ -309,25 +309,98 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 .theme-swatch.fire { background:linear-gradient(145deg,#ffca63,#9d1b08 60%,#1a0906); border-color:#ff8b32; }
 @media (orientation:landscape) { .orb-deck-art { inset:-7px -1.5% -3px; width:103%; height:calc(100% + 10px); } }
 
-/* v1.5.22 — portrait-master dock: fixed maximum footprint in both orientations. */
+/* v1.5.24 — width-driven circular orbs, bounded dock, orientation-independent sizing. */
 .primary-dock {
-  left: 50%; right: auto; width: min(96vw, 390px); min-height: 0;
+  --dock-max-width: 390px;
+  --orb-size: clamp(44px, 12vw, 76px);
+  --orb-gap: clamp(2px, 0.8vw, 7px);
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  right: auto;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(96vw, var(--dock-max-width));
+  min-height: 0;
+  display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  column-gap: clamp(0px, 0.6vw, 6px); row-gap: 0;
-  padding: 8px clamp(4px, 1.2vw, 10px) 10px;
-  bottom: max(12px, env(safe-area-inset-bottom)); box-sizing: border-box;
+  align-items: end;
+  column-gap: var(--orb-gap);
+  row-gap: 0;
+  padding: 8px 5px 10px;
+  box-sizing: border-box;
+  isolation: isolate;
+  pointer-events: none;
 }
-.primary-dock > .orb-button { min-width: 0; width: 100%; }
-.primary-dock .orb-button img { width: clamp(42px, 12vw, 62px); height: clamp(42px, 12vw, 62px); max-width: 100%; aspect-ratio: 1; }
-.primary-dock .orb-label { max-width: 100%; font-size: clamp(8px, 2.55vw, 12px); line-height: 1.05; letter-spacing: 0; }
-.primary-dock .orb-indicator { flex: 0 0 3px; }
-.primary-dock .orb-deck-plate { inset: 22px 0 0; width: 100%; height: auto; }
-.primary-dock .orb-deck-art { inset: -5px -1% -3px; width: 102%; height: calc(100% + 8px); object-fit: fill; object-position: center; }
-/* Landscape uses the same portrait-master dimensions; no wide-screen expansion. */
-@media (orientation: landscape) { .primary-dock { width: min(96vw, 390px); } }
-/* Safety fallback for unusually short landscape viewports only. */
+.primary-dock > .orb-button {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.primary-dock .orb-button img {
+  display: block;
+  width: min(var(--orb-size), 100%);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.primary-dock .orb-label {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 2.1em;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.05;
+  font-size: clamp(8px, 2.6vw, 11px);
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+.primary-dock .orb-indicator {
+  display: block;
+  flex: 0 0 3px;
+  margin-top: 1px;
+}
+.primary-dock .orb-deck-plate {
+  inset: 22px 0 0;
+  width: 100%;
+  height: auto;
+}
+.primary-dock .orb-deck-art {
+  inset: -5px -1% -3px;
+  width: 102%;
+  height: calc(100% + 8px);
+  object-fit: fill;
+  object-position: center;
+}
+/* Orientation changes do not change orb diameter or dock maximum width. */
+@media (orientation: landscape) {
+  .primary-dock {
+    width: min(96vw, var(--dock-max-width));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+/* Only very short landscape screens receive a bounded safety reduction. */
 @media (max-height: 390px) and (orientation: landscape) {
-  .primary-dock { padding-top: 3px; padding-bottom: 4px; }
-  .primary-dock .orb-button img { width: 42px; height: 42px; }
-  .primary-dock .orb-label { font-size: 9px; }
+  .primary-dock {
+    padding-top: 3px;
+    padding-bottom: 4px;
+  }
+  .primary-dock .orb-button img {
+    width: min(44px, 100%);
+  }
+  .primary-dock .orb-label {
+    font-size: 9px;
+    min-height: 2.1em;
+  }
 }
