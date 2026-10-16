@@ -8,8 +8,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 #app {
-  position: fixed; inset: 0; width: 100vw; height: 100vh;
-  height: 100dvh; overflow: hidden; background: #030509; isolation: isolate;
+  /* One selected display rectangle is the coordinate root for globe and UI. */
+  position: fixed; inset: 0; width: auto; height: auto;
+  overflow: hidden; background: #030509; isolation: isolate;
 }
 #globe, .cesium-viewer, .cesium-viewer-cesiumWidgetContainer,
 .cesium-widget, .cesium-widget canvas {
@@ -104,15 +105,15 @@ body {
 
 /* v1.5.3: display mode selector in More Options > Personalisation. */
 .more-options-button {
-  position: fixed; z-index: 30; top: max(12px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right)); border: 1px solid rgba(190,220,255,.25);
+  position: absolute; z-index: 30; top: 12px;
+  right: 12px; border: 1px solid rgba(190,220,255,.25);
   border-radius: 999px; padding: 10px 14px; color: #eef7ff;
   background: rgba(10,20,32,.78); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   font: 600 12px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .personalisation-panel {
-  position: fixed; z-index: 31; top: max(56px, calc(env(safe-area-inset-top) + 48px));
-  right: max(12px, env(safe-area-inset-right)); width: min(330px, calc(100vw - 24px));
+  position: absolute; z-index: 31; top: 56px;
+  right: 12px; width: min(330px, calc(100% - 24px));
   padding: 16px; border: 1px solid rgba(190,220,255,.2); border-radius: 18px;
   color: #f3f7fc; background: rgba(7,13,23,.94); box-shadow: 0 16px 48px rgba(0,0,0,.4);
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -127,12 +128,18 @@ body {
 .display-choice span { display:flex; flex-direction:column; gap:4px; }
 .display-choice strong { font-size:13px; }
 .display-choice small { color:#aebed0; font-size:11px; line-height:1.4; }
-/* Global display mode: one persistent choice controls the globe's coordinate area. */
-html[data-display-mode="full"] #globe { inset: 0; width: 100%; height: 100%; }
-html[data-display-mode="top"] #globe { inset: env(safe-area-inset-top, 0px) 0 0 0; width: auto; height: auto; }
-html[data-display-mode="bottom"] #globe { inset: 0 0 env(safe-area-inset-bottom, 0px) 0; width: auto; height: auto; }
-html[data-display-mode="both"] #globe { inset: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) 0; width: auto; height: auto; }
+/* Global display coordinate system: the selected mode bounds the whole app,
+   not only the globe. Every overlay is positioned inside this same root. */
+html[data-display-mode="full"] #app { inset: 0; }
+html[data-display-mode="top"] #app { inset: env(safe-area-inset-top, 0px) 0 0 0; }
+html[data-display-mode="bottom"] #app { inset: 0 0 env(safe-area-inset-bottom, 0px) 0; }
+html[data-display-mode="both"] #app { inset: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) 0; }
+#globe { inset: 0; width: 100%; height: 100%; }
 #globe > .cesium-viewer { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-/* v1.5.6: the selected global display box is authoritative in every orientation. */
-#globe, #globe > .cesium-viewer, #globe .cesium-viewer-cesiumWidgetContainer, #globe .cesium-widget, #globe canvas { min-width: 0 !important; min-height: 0 !important; max-width: 100% !important; }
+#globe, #globe > .cesium-viewer, #globe .cesium-viewer-cesiumWidgetContainer,
+#globe .cesium-widget, #globe canvas {
+  min-width: 0 !important; min-height: 0 !important;
+  max-width: 100% !important; max-height: 100% !important;
+}
+/* Credits are inside the app coordinate area, so do not subtract safe insets twice. */
+.cesium-viewer-bottom { right: 3px !important; bottom: 1px !important; }

@@ -5,7 +5,6 @@
   const errorMessage = document.getElementById("errorMessage");
   let viewer = null;
   let resizeFrame = 0;
-  let hasInitialFrame = false;
   let activeProfile = "portrait";
   let lastOrientation = null;
   // Single source of truth for the selected display rectangle and its live dimensions.
@@ -47,7 +46,9 @@
   }
 
   function detectDisplayProfile() {
-    return measureDisplayArea().orientation;
+    // Only two layout profiles exist. Wide/ultrawide landscape devices still use
+    // the landscape rules; never return a profile with no sizing configuration.
+    return measureDisplayArea().orientation === "portrait" ? "portrait" : "landscape";
   }
 
   function showError(error) {
@@ -55,15 +56,6 @@
     errorMessage.hidden = false;
   }
 
-  function detectDisplayProfile() {
-    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
-    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
-    const ratio = width / height;
-    if (ratio < 0.82) return "portrait";
-    if (ratio < 1.12) return "compact";
-    if (ratio > 2.15) return "ultrawide";
-    return "landscape";
-  }
 
   function calculateCameraHeight(settings) {
     const area = measureDisplayArea().area;
@@ -81,8 +73,8 @@
 
   function applyDisplayProfile({ initial = false, forceLayout = false } = {}) {
     if (!viewer || viewer.isDestroyed()) return;
-    const display = measureDisplayArea();
-    const nextProfile = display.orientation;
+    const nextProfile = detectDisplayProfile();
+    const display = window.EarthLiveDisplay;
     activeProfile = nextProfile;
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
@@ -92,30 +84,39 @@
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
 
-    // Reframe only before the user takes control, or on the first render. Never reset a manually moved globe.
-    const mayReframe = initial || forceLayout || (!hasUserInteracted && lastAppliedProfile !== nextProfile);
+    // Initial framing establishes the designed composition. Later explicit layout
+    // changes resize the camera range but preserve the user's current location and
+    // orientation instead of snapping the globe back to the startup view.
+    const profileChanged = lastAppliedProfile !== nextProfile;
+    const mayReframe = initial || forceLayout || (!hasUserInteracted && profileChanged);
     if (mayReframe) {
       const cameraHeight = calculateCameraHeight(settings);
-      // Use the full visible viewport. Portrait is centred in both axes.
-      // Landscape is top-anchored by a small pitch change, not a large camera translation.
-      // The previous moveDown(cameraDistance * tan(angle)) translated the camera by an
-      // Earth-scale distance and could push the globe out of frame.
       const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
+      let destination;
+      let heading = 0;
       let pitch = -Math.PI / 2;
-      if (settings.sizeAxis === "height") {
-        // Place the globe's visible top edge at 2% of the currently selected
-        // landscape display area's height. This is recalculated after rotation.
+      let roll = 0;
+
+      if (initial) {
+        destination = Cesium.Cartesian3.fromDegrees(12, 18, cameraHeight);
+      } else {
+        const current = viewer.camera.positionCartographic;
+        const orientation = viewer.camera;
+        destination = Cesium.Cartesian3.fromRadians(current.longitude, current.latitude, cameraHeight);
+        heading = orientation.heading;
+        pitch = orientation.pitch;
+        roll = orientation.roll;
+      }
+
+      // Only the initial composition applies the design top inset. On rotation or
+      // mode changes after interaction, preserve the user's camera orientation.
+      if (initial && settings.sizeAxis === "height") {
         const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
         const verticalShiftFraction = 0.5 - targetCenterY;
-        const pitchOffset = Math.atan(2 * verticalShiftFraction * Math.tan(fovy / 2));
-        pitch += pitchOffset;
+        pitch += Math.atan(2 * verticalShiftFraction * Math.tan(fovy / 2));
       }
-      viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(12, 18, cameraHeight),
-        orientation: { heading: 0, pitch, roll: 0 }
-      });
+      viewer.camera.setView({ destination, orientation: { heading, pitch, roll } });
       lastAppliedProfile = nextProfile;
-      hasInitialFrame = true;
     }
     lastOrientation = display.orientation;
     document.documentElement.dataset.displayProfile = nextProfile;
@@ -144,8 +145,8 @@
       resizeFrame = 0;
       if (!viewer || viewer.isDestroyed()) return;
       const before = activeProfile;
-      const display = measureDisplayArea();
-      const nextProfile = display.orientation;
+      const nextProfile = detectDisplayProfile();
+      const display = window.EarthLiveDisplay;
       viewer.resize();
       activeProfile = nextProfile;
       const settings = profiles[nextProfile];
@@ -271,6 +272,7 @@
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });
+      if (window.visualViewport) window.visualViewport.addEventListener("resize", resizeGlobe, { passive: true });
       window.addEventListener("orientationchange", () => setTimeout(resizeGlobe, 180), { passive: true });
       window.addEventListener("pageshow", resizeGlobe, { passive: true });
       document.addEventListener("visibilitychange", () => {

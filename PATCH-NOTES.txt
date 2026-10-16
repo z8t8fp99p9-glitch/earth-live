@@ -1,18 +1,14 @@
-EARTH // LIVE — v1.5.7 Adaptive Display Area
+EARTH // LIVE v1.5.9 — Global Display Coordinate System
 
-Purpose
-- Correct orientation-dependent globe sizing using one shared global display-area object.
-- Keep the user's selected display mode persistent: Full Screen, Cutouts at Top, Cutouts at Bottom, Cutouts at Top & Bottom.
-- Re-measure the selected display rectangle after mode changes, orientation changes, viewport resizes, and pageshow.
-- Portrait globe target: 80% of the selected area's width.
-- Landscape globe target: 60% of the selected area's height, with a 2% top-edge target.
-- Orientation changes trigger the matching layout composition even if the globe was previously interacted with. Same-orientation resizes do not reframe.
+Whole-layout correction based on the current v1.5.8 source.
 
-Protected
-- No changes to data-store.js.
-- No changes to the globe touch-gesture handler implementation.
-- Existing imagery and other layers are preserved.
+- The selected display mode now bounds #app, the shared coordinate root for the globe and interface overlays.
+- Globe, Personalisation button/panel, and attribution use the same selected display rectangle; safe-area insets are not applied independently to the globe only.
+- One orientation detector returns only the supported profiles: portrait or landscape.
+- Current dimensions are remeasured after rotation, resize, page restoration, and mode selection.
+- Portrait globe target remains 80% of selected area width. Landscape target remains 60% of selected area height, with a 2% top target on initial framing.
+- Camera range recalculates on layout transitions; after initial launch, the current camera location/orientation is preserved rather than snapping back to the startup coordinates.
+- Cache-busting URLs, service-worker cache, and app version are aligned to v1.5.9.
+- Existing gesture handlers are unchanged. data-store.js is not included or modified.
 
-Validation
-- JavaScript syntax and ZIP integrity checked.
-- Not tested on a physical iPhone; device verification is still required.
+Validation: JavaScript syntax and ZIP integrity are checked. Physical iPhone/browser rendering still requires user verification.
