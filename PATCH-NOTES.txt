@@ -1,14 +1,17 @@
-EARTH // LIVE — Global Display Mode v1.5.4
+EARTH // LIVE — Global Display Modes v1.5.5
 
-Consolidated candidate containing the full-display viewport work and persistent display-mode selection.
-- Default mode is Full Screen (full display viewport).
-- With Cuts mode uses browser-reported safe-area insets.
-- User choice is stored in localStorage under earthLiveDisplayMode and restored on subsequent launches.
-- Orientation/viewport changes do not change the saved mode; they only update responsive profile detection.
-- Portrait target: 80% of full viewport width, centered.
-- Landscape target: 70% of full viewport height, 3% top target.
-- The mode switch does not intentionally reset camera position or gesture state.
-- No data-store.js included or modified.
+Display Personalisation options:
+- Full Screen (default on first launch)
+- Cutouts at Top
+- Cutouts at Bottom
+- Cutouts at Top & Bottom
 
-Validation: JavaScript syntax and ZIP integrity checked. Not visually tested on an iPhone.
-Note: this package retains the supplied v1.5.2 app structure; its primary dock remains an empty placeholder and More Options is a temporary top-right entry point, not the original five-button deck integration.
+The selected mode is stored in localStorage as earthLiveDisplayMode and restored on later launches. Viewport/orientation changes adapt layout but do not overwrite the saved selection.
+
+Adaptive globe targets:
+- Portrait/compact: 80% of the selected display area's width, centered.
+- Landscape/ultrawide: 60% of the selected display area's height, with a 2% top-position target.
+
+The four modes apply browser-reported safe-area insets at the selected edges. Full Screen uses the complete viewport. Existing gesture implementation and imagery setup are retained. data-store.js is not included or modified.
+
+Validation: JavaScript syntax and ZIP integrity checks performed. Not visually verified on a physical iPhone. More Options remains the temporary top-right entry point; integration into the original five-button deck is separate work.

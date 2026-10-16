@@ -20,8 +20,8 @@
   const profiles = {
     portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
     compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ sizeFraction: 0.70, sizeAxis: "height", topFraction: 0.03, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ sizeFraction: 0.70, sizeAxis: "height", topFraction: 0.03, zoomFactor: 5, movementRatio: 0.1 }
+    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
@@ -133,7 +133,8 @@
     if (!moreButton || !panel || !closeButton || !choices.length) return;
 
     const stored = (() => { try { return localStorage.getItem("earthLiveDisplayMode"); } catch (_) { return null; } })();
-    const mode = stored === "safe" ? "safe" : "full";
+    const validModes = new Set(["full", "top", "bottom", "both"]);
+    const mode = validModes.has(stored) ? stored : "full";
     document.documentElement.dataset.displayMode = mode;
     choices.forEach(choice => { choice.checked = choice.value === mode; });
 
@@ -224,7 +225,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
-        targets: { portraitWidth: 0.80, landscapeHeight: 0.70, portraitCentered: true, landscapeTopInset: 0.03, viewport: "full-visible-globe-viewport" }
+        targets: { portraitWidth: 0.80, landscapeHeight: 0.60, portraitCentered: true, landscapeTopInset: 0.02, viewport: "selected-global-display-mode" }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });
