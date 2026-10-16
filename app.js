@@ -254,7 +254,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const isSnow = kind === "snow";
-    const count = Math.min(isSnow ? 54 : 36, Math.max(22, Math.round(w / 12)));
+    const count = Math.min(isSnow ? 42 : 28, Math.max(16, Math.round(w / 18)));
     const particles = Array.from({ length: count }, () => ({
       x: Math.random() * w,
       y: -Math.random() * h * .8,
@@ -265,11 +265,17 @@
       drift: Math.random() * Math.PI * 2
     }));
     const started = performance.now();
+    let lastDraw = 0;
     function frame(now) {
       if (now - started >= duration) {
         stopEffectParticles();
         return;
       }
+      if (now - lastDraw < 33) {
+        particleFrame = requestAnimationFrame(frame);
+        return;
+      }
+      lastDraw = now;
       ctx.clearRect(0, 0, w, h);
       const fade = Math.min(1, (duration - (now - started)) / 360);
       for (const p of particles) {
@@ -335,7 +341,7 @@
     if (effect === "magma" || effect === "frost") overlay.classList.add("screen-effect-long");
     void overlay.offsetWidth;
     overlay.classList.add("screen-effect-playing");
-    const durations = { cosmic: 1800, magma: 4000, frost: 3650, electric: 1000, location: 1900 };
+    const durations = { cosmic: 1800, magma: 64000, frost: 63650, electric: 1000, location: 1900 };
     const duration = durations[effect] || 1800;
     if (effect === "magma") runFallingParticles("lava", duration);
     if (effect === "frost") runFallingParticles("snow", duration);

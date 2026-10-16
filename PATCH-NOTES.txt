@@ -1,7 +1,7 @@
-EARTH // LIVE v1.5.32 — Subtle Light & Slow Search
-- Further reduces full-screen light washes for Earth, Location, Sun and Moon.
-- Keeps Stacks effect unchanged.
-- Location now performs one slower, smooth expanding search pulse lasting about 1.9 seconds.
-- Snow and lava particle visuals/durations remain unchanged.
-- No network requests added; ZIP integrity checked. Not yet visually tested on iPhone.
-Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and all other files untouched.
+EARTH // LIVE v1.5.33 — Lava & Snow Long Scene
+- Location search ring made brighter; its pulse duration/speed remains about 1.9 seconds.
+- Removed Sun/Moon screen-wide glow and wave overlays; only falling lava/snow particles remain.
+- Sun lava duration increased to 64 seconds; Moon snow to about 63.65 seconds (one minute longer than previous build).
+- Particle counts reduced and drawing capped near 30 FPS to reduce processing, but prolonged animation may still use battery and create heat.
+- No network requests added. ZIP integrity checked; not yet visually tested on iPhone.
+Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave images and other files untouched.
