@@ -12,3 +12,9 @@ Changes:
 Protected: data-store.js is not included; gesture-handler code is unchanged.
 
 Validation: JavaScript syntax and ZIP integrity are checked. Real-device iPhone validation is still required.
+
+
+v1.5.11 — Orientation-safe-area fix
+- In landscape, selected portrait top/bottom safe edges rotate to left/right.
+- Prevents bottom/both display modes from incorrectly shrinking the landscape viewport vertically.
+- Keeps the existing map synchronization and gesture handlers unchanged.

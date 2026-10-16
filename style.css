@@ -143,3 +143,19 @@ html[data-display-mode="both"] #app { inset: env(safe-area-inset-top, 0px) 0 env
 }
 /* Credits are inside the app coordinate area, so do not subtract safe insets twice. */
 .cesium-viewer-bottom { right: 3px !important; bottom: 1px !important; }
+
+
+/* v1.5.11: rotate the selected safe-area edges with the display coordinate system.
+   In landscape, portrait top/bottom edges become left/right edges. This prevents
+   iOS landscape bottom-inset values from shrinking the globe viewport vertically. */
+@media (orientation: landscape) {
+  html[data-display-mode="top"] #app {
+    inset: 0 0 0 env(safe-area-inset-left, 0px);
+  }
+  html[data-display-mode="bottom"] #app {
+    inset: 0 env(safe-area-inset-right, 0px) 0 0;
+  }
+  html[data-display-mode="both"] #app {
+    inset: 0 env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+  }
+}

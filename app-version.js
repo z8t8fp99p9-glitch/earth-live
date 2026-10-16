@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "1.5.10-map-sync";
+window.EARTH_LIVE_VERSION = "1.5.11-orientation-safe-area-fix";
