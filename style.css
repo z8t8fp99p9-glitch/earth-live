@@ -161,7 +161,7 @@ html[data-display-mode="both"] #app { inset: env(safe-area-inset-top, 0px) 0 env
 }
 
 
-/* v1.5.14: six supplied orb artworks on one responsive, non-blocking glass deck. */
+/* v1.5.17: responsive, selectable glass deck materials; orb artwork stays separate. */
 .primary-dock {
   position: absolute; z-index: 20; left: 50%; bottom: max(12px, env(safe-area-inset-bottom));
   transform: translateX(-50%); width: min(96vw, 900px); min-height: 112px;
@@ -169,11 +169,17 @@ html[data-display-mode="both"] #app { inset: env(safe-area-inset-top, 0px) 0 env
   gap: clamp(2px, 1.1vw, 12px); padding: 10px 10px 12px; isolation: isolate;
   pointer-events: none;
 }
-.orb-deck-plate { position:absolute; z-index:-1; inset: 22px 0 0; border:1px solid rgba(160,210,255,.62);
-  border-radius: 20px; background: linear-gradient(180deg,rgba(160,205,240,.18),rgba(8,18,32,.78) 45%,rgba(4,9,18,.9));
-  box-shadow: inset 0 1px 5px rgba(255,255,255,.2), 0 8px 24px rgba(0,0,0,.45), 0 0 18px rgba(35,140,255,.15);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transform: perspective(800px) rotateX(5deg); pointer-events:none;
+.orb-deck-plate { position:absolute; z-index:-1; inset:22px 0 0; border:1px solid rgba(145,194,231,.62);
+  border-radius:20px; background:linear-gradient(180deg,rgba(95,132,162,.25),rgba(13,25,40,.86) 46%,rgba(3,8,15,.96));
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.34),inset 0 -2px 4px rgba(0,0,0,.72),0 8px 24px rgba(0,0,0,.48),0 0 17px rgba(35,140,255,.16);
+  backdrop-filter:blur(18px) saturate(1.25);-webkit-backdrop-filter:blur(18px) saturate(1.25);
+  transform:perspective(800px) rotateX(5deg);pointer-events:none;
 }
+.orb-deck-plate::before { content:"";position:absolute;inset:1px;border-radius:inherit;pointer-events:none;
+  border-top:1px solid rgba(244,251,255,.72);border-left:1px solid rgba(205,232,255,.24);
+  background:linear-gradient(180deg,rgba(255,255,255,.10),transparent 35%,rgba(0,0,0,.13)); }
+.orb-deck-plate::after { content:"";position:absolute;left:2%;right:2%;bottom:5px;height:1px;border-radius:50%;
+  background:linear-gradient(90deg,transparent,rgba(83,165,255,.65),rgba(235,248,255,.9),rgba(83,165,255,.65),transparent);opacity:.65; }
 .orb-button { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; padding:0 1px 1px;
   border:0; color:#f4f8ff; background:transparent; font:600 clamp(9px,2.5vw,12px)/1.1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   text-shadow:0 1px 5px #000; cursor:pointer; pointer-events:auto; touch-action:manipulation; }
@@ -244,6 +250,9 @@ html[data-display-mode="both"] #app { inset: env(safe-area-inset-top, 0px) 0 env
 /* Appearance themes affect only the deck plate, never the globe or orb functions. */
 html[data-deck-theme="clear-glass"] .orb-deck-plate { background:linear-gradient(180deg,rgba(225,246,255,.27),rgba(56,104,131,.25) 45%,rgba(7,18,29,.6));border-color:rgba(196,238,255,.75); }
 html[data-deck-theme="frosted-glass"] .orb-deck-plate { background:linear-gradient(180deg,rgba(188,220,232,.34),rgba(85,120,139,.55) 45%,rgba(24,39,50,.78));backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px); }
+html[data-deck-theme="smoked-glass"] .orb-deck-plate { background:linear-gradient(180deg,rgba(105,139,168,.25),rgba(13,25,40,.88) 46%,rgba(3,8,15,.97));border-color:rgba(128,183,231,.72);box-shadow:inset 0 1px 3px rgba(255,255,255,.28),inset 0 -2px 4px rgba(0,0,0,.75),0 8px 24px rgba(0,0,0,.5),0 0 20px rgba(31,128,255,.2); }
+html[data-deck-theme="neon-edge-glass"] .orb-deck-plate { background:linear-gradient(180deg,rgba(24,64,91,.5),rgba(4,13,25,.92) 48%,rgba(2,6,13,.98));border-color:rgba(30,171,255,.98);box-shadow:inset 0 1px 4px rgba(255,255,255,.35),inset 0 -2px 5px rgba(0,0,0,.82),0 0 5px rgba(32,164,255,.95),0 0 18px rgba(0,122,255,.55),0 8px 24px rgba(0,0,0,.52); }
+html[data-deck-theme="neon-edge-glass"] .orb-deck-plate::after { height:2px;opacity:1;box-shadow:0 0 8px rgba(0,155,255,.9); }
 html[data-deck-theme="desert-sand"] .orb-deck-plate { background:linear-gradient(180deg,rgba(209,170,115,.4),rgba(100,68,40,.76) 50%,rgba(43,29,20,.88));border-color:rgba(224,184,126,.75);box-shadow:inset 0 1px 5px rgba(255,236,195,.24),0 8px 24px rgba(0,0,0,.45),0 0 14px rgba(208,150,83,.13); }
 html[data-deck-theme="dark-stone"] .orb-deck-plate { background:linear-gradient(180deg,rgba(117,128,139,.3),rgba(37,43,51,.85) 50%,rgba(10,13,17,.95));border-color:rgba(153,168,181,.66); }
 html[data-deck-theme="ice-stone"] .orb-deck-plate { background:linear-gradient(180deg,rgba(220,244,255,.42),rgba(92,141,166,.64) 50%,rgba(18,38,54,.9));border-color:rgba(203,241,255,.8); }
@@ -287,3 +296,15 @@ html[data-deck-theme="ice-stone"] .orb-deck-plate { background:linear-gradient(1
 .orb-button[data-orb="stacks"][aria-pressed="false"] img { filter:brightness(.72) saturate(.96) hue-rotate(0deg); }
 .orb-button[data-orb="stacks"][aria-pressed="true"] img { filter:brightness(1.10) saturate(1.13) hue-rotate(0deg); }
 @media (prefers-reduced-motion: reduce) { .orb-button img,.orb-indicator { transition:none; } }
+
+.theme-swatch.neon { background:linear-gradient(145deg,rgba(12,43,70,.96),rgba(1,7,16,.98));border-color:rgba(32,169,255,.98);box-shadow:inset 0 0 5px rgba(255,255,255,.24),0 0 7px rgba(0,143,255,.7); }
+
+
+/* v1.5.19: real rendered deck materials, kept flat as authored. */
+.orb-deck-plate { transform:none !important; background:transparent !important; border-color:transparent !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; overflow:visible; }
+.orb-deck-plate::before, .orb-deck-plate::after { display:none !important; }
+.orb-deck-art { position:absolute; inset:-8px -1.5% -3px; width:103%; height:calc(100% + 11px); object-fit:fill; object-position:center; display:block; pointer-events:none; user-select:none; -webkit-user-drag:none; filter:drop-shadow(0 5px 7px rgba(0,0,0,.35)); }
+html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-glass"] .orb-deck-art, html[data-deck-theme="frosted-glass"] .orb-deck-art, html[data-deck-theme="neon-edge-glass"] .orb-deck-art, html[data-deck-theme="desert-sand"] .orb-deck-art, html[data-deck-theme="dark-sand"] .orb-deck-art, html[data-deck-theme="mixed-stone"] .orb-deck-art, html[data-deck-theme="volcanic-stone"] .orb-deck-art, html[data-deck-theme="ice"] .orb-deck-art, html[data-deck-theme="fire"] .orb-deck-art, html[data-deck-theme="glass-crystal"] .orb-deck-art { opacity:1; }
+.deck-theme-grid { padding-bottom:6px; }
+.theme-swatch.fire { background:linear-gradient(145deg,#ffca63,#9d1b08 60%,#1a0906); border-color:#ff8b32; }
+@media (orientation:landscape) { .orb-deck-art { inset:-7px -1.5% -3px; width:103%; height:calc(100% + 10px); } }

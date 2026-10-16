@@ -11,17 +11,17 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./style.css?v=earth-live-orb-states-v1.5.16">
+  <link rel="stylesheet" href="./style.css?v=earth-live-deck-code-v1.5.20">
   <script>window.CESIUM_BASE_URL = "https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/";</script>
   <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-  <script defer src="./app-version.js?v=earth-live-orb-states-v1.5.16"></script>
-  <script defer src="./app.js?v=earth-live-orb-states-v1.5.16"></script>
+  <script defer src="./app-version.js?v=earth-live-deck-code-v1.5.20"></script>
+  <script defer src="./app.js?v=earth-live-deck-code-v1.5.20"></script>
 </head>
 <body>
   <main id="app" aria-label="EARTH LIVE globe">
     <div id="globe" role="application" aria-label="Interactive satellite Earth. Drag to rotate and pinch to zoom."></div>
     <nav id="primaryDock" class="primary-dock" aria-label="Main controls">
-      <div class="orb-deck-plate" aria-hidden="true"></div>
+      <div class="orb-deck-plate" aria-hidden="true"><img class="orb-deck-art" src="./deck-smoked-glass.png" alt="" draggable="false"></div>
       <button class="orb-button" type="button" data-orb="basic" aria-pressed="true"><img src="./earth-basic.webp" alt=""><span class="orb-label">Basic</span><i class="orb-indicator" aria-hidden="true"></i></button>
       <button class="orb-button" type="button" data-orb="hd" aria-pressed="false"><img src="./earth-hd.webp" alt=""><span class="orb-label">HD</span><i class="orb-indicator" aria-hidden="true"></i></button>
       <button class="orb-button" type="button" data-orb="location" aria-pressed="false"><img src="./location.webp" alt=""><span class="orb-label">Live Location</span><i class="orb-indicator" aria-hidden="true"></i></button>
@@ -41,13 +41,17 @@
       <section id="customiseView" class="stack-subview" hidden>
         <button class="stack-back" id="backToStacks" type="button">‹ Back to Stacks</button>
         <h3>Appearance</h3><p class="panel-description">Choose the deck material independently from orb artwork.</p>
-        <div class="theme-grid" role="group" aria-label="Deck theme">
+        <div class="theme-grid deck-theme-grid" role="group" aria-label="Deck theme">
           <button class="theme-choice selected" data-deck-theme="smoked-glass" type="button"><i class="theme-swatch smoked"></i><span>Smoked Glass</span></button>
           <button class="theme-choice" data-deck-theme="clear-glass" type="button"><i class="theme-swatch clear"></i><span>Clear Glass</span></button>
           <button class="theme-choice" data-deck-theme="frosted-glass" type="button"><i class="theme-swatch frosted"></i><span>Frosted Glass</span></button>
+          <button class="theme-choice" data-deck-theme="neon-edge-glass" type="button"><i class="theme-swatch neon"></i><span>Neon Edge Glass</span></button>
           <button class="theme-choice" data-deck-theme="desert-sand" type="button"><i class="theme-swatch sand"></i><span>Desert Sand</span></button>
-          <button class="theme-choice" data-deck-theme="dark-stone" type="button"><i class="theme-swatch stone"></i><span>Dark Stone</span></button>
-          <button class="theme-choice" data-deck-theme="ice-stone" type="button"><i class="theme-swatch ice"></i><span>Ice Stone</span></button>
+          <button class="theme-choice" data-deck-theme="dark-sand" type="button"><i class="theme-swatch stone"></i><span>Dark Sand</span></button>
+          <button class="theme-choice" data-deck-theme="mixed-stone" type="button"><i class="theme-swatch stone"></i><span>Mixed Stone</span></button>
+          <button class="theme-choice" data-deck-theme="volcanic-stone" type="button"><i class="theme-swatch stone"></i><span>Volcanic Stone</span></button>
+          <button class="theme-choice" data-deck-theme="ice" type="button"><i class="theme-swatch ice"></i><span>Ice</span></button>
+          <button class="theme-choice" data-deck-theme="fire" type="button"><i class="theme-swatch fire"></i><span>Fire</span></button>
         </div>
         <h3>Orb Collection</h3>
         <div class="collection-row"><span class="collection-dot current"></span><span><strong>Futuristic Glass</strong><small>Current collection</small></span><span class="collection-check">✓</span></div>

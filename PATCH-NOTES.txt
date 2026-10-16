@@ -1,20 +1,9 @@
-EARTH // LIVE v1.5.16 — Orb ON/OFF Visual States
+EARTH // LIVE v1.5.20 — Deck Code Only Patch
 
-Based on v1.5.15 Stacks Teal Folder candidate.
+Upload these five root-level files to GitHub main, replacing matching app code files. The 10 deck images are already uploaded separately and are intentionally not included.
 
-Changes:
-- Refines OFF states: original artwork remains recognisable with restrained brightness, subdued rim, and muted indicator.
-- Refines ON states: brighter artwork, colour-matched halo, clearer rim, and illuminated indicator.
-- Colour identity: Basic/HD blue, Live Location red, Sun amber, Moon blue, Stacks teal.
-- Preserves the six-button bottom deck, existing orb assets, Stacks folder, Appearance choices, and existing application logic.
-- Cache/version identifiers updated to v1.5.16.
+Adds the selectable rendered deck images to the existing deck UI: smoked glass, clear glass, frosted glass, neon edge glass, desert sand, dark sand, mixed stone, volcanic stone, ice, and fire. Keeps the existing orb images out of this patch. Removes the Crystal Glass option because that image is not in the 10-image decks-only upload.
 
-Protected:
-- No data-store.js changes.
-- No new external dependencies.
-- Existing globe/camera code and Stacks panel carried forward unchanged apart from asset/cache version strings.
+Protected: no data-store.js, database, or orb artwork included.
 
-Validation performed: ZIP integrity; JavaScript syntax; required six orb files; service-worker cache version. Not deployed or tested on an iPhone. Candidate ZIP only.
-
-
-GitHub upload layout: every file in this ZIP is at repository root. Upload these files directly to main; no enclosing folder or assets directory is required. Orb images are at root and references have been updated.
+Candidate only: syntax and ZIP checks performed; not tested on iPhone or live GitHub Pages. Keep the known-good recovery ZIP.

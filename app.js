@@ -287,18 +287,32 @@
       stackNotice.hidden = false;
     }));
 
+    const deckAssets = {
+      "smoked-glass":"deck-smoked-glass.png", "clear-glass":"deck-clear-glass.png",
+      "frosted-glass":"deck-frosted-glass.png", "neon-edge-glass":"deck-neon-edge-glass.png",
+      "desert-sand":"deck-desert-sand.png", "dark-sand":"deck-dark-sand.png",
+      "mixed-stone":"deck-mixed-stone.png", "volcanic-stone":"deck-volcanic-stone.png",
+      "ice":"deck-ice.png", "fire":"deck-fire.png"
+    };
+    const deckArt = document.querySelector(".orb-deck-art");
+    const applyDeckTheme = theme => {
+      const safeTheme = Object.prototype.hasOwnProperty.call(deckAssets, theme) ? theme : "smoked-glass";
+      document.documentElement.dataset.deckTheme = safeTheme;
+      if (deckArt) deckArt.src = "./" + deckAssets[safeTheme];
+      themeChoices.forEach(item => {
+        const selected = item.dataset.deckTheme === safeTheme;
+        item.classList.toggle("selected", selected);
+        item.setAttribute("aria-pressed", String(selected));
+      });
+      return safeTheme;
+    };
     let savedTheme = "smoked-glass";
     try { savedTheme = localStorage.getItem("earthLiveDeckTheme") || savedTheme; } catch (_) {}
-    document.documentElement.dataset.deckTheme = savedTheme;
-    themeChoices.forEach(choice => {
-      choice.classList.toggle("selected", choice.dataset.deckTheme === savedTheme);
-      choice.addEventListener("click", () => {
-        const theme = choice.dataset.deckTheme;
-        document.documentElement.dataset.deckTheme = theme;
-        themeChoices.forEach(item => item.classList.toggle("selected", item === choice));
-        try { localStorage.setItem("earthLiveDeckTheme", theme); } catch (_) {}
-      });
-    });
+    savedTheme = applyDeckTheme(savedTheme);
+    themeChoices.forEach(choice => choice.addEventListener("click", () => {
+      const theme = applyDeckTheme(choice.dataset.deckTheme);
+      try { localStorage.setItem("earthLiveDeckTheme", theme); } catch (_) {}
+    }));
 
     let savedMode = "full";
     try { savedMode = localStorage.getItem("earthLiveDisplayMode") || savedMode; } catch (_) {}
