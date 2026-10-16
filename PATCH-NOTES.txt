@@ -1,8 +1,7 @@
-EARTH // LIVE v1.5.29 — Falling Snow & Lava
-- Removes the obvious diagonal stripe patterns from Sun/Moon overlays.
-- Moon now uses falling snow particles rendered on a temporary canvas.
-- Sun now uses falling glowing lava/ember particles with short trails.
-- Canvas is capped at device pixel ratio 1.5, particles are limited, and animation stops automatically after the effect duration.
-- Existing cosmic, location and electricity effects are preserved.
-- ZIP integrity checked. Not yet visually tested on iPhone.
+EARTH // LIVE v1.5.30 — Elemental Refinement
+- Sun lava and Moon snow now last about 4.0s and 3.65s respectively (about two seconds longer).
+- Effects trigger only when the tapped orb ends up ON (aria-pressed=true); turning an orb OFF does not launch an effect.
+- Preserves other effect durations and current full-screen particle implementation.
+- Lightweight canvas remains limited to a small particle count and DPR cap; these effects make no network requests.
+- ZIP integrity checked; not yet visually tested on an iPhone.
 Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and other files untouched.

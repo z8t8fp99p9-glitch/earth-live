@@ -332,9 +332,10 @@
     overlay.style.setProperty("--effect-x", `${x}px`);
     overlay.style.setProperty("--effect-y", `${y}px`);
     overlay.classList.add(`screen-effect-${effect}`);
+    if (effect === "magma" || effect === "frost") overlay.classList.add("screen-effect-long");
     void overlay.offsetWidth;
     overlay.classList.add("screen-effect-playing");
-    const durations = { cosmic: 1800, magma: 2000, frost: 1650, electric: 1000, location: 1200 };
+    const durations = { cosmic: 1800, magma: 4000, frost: 3650, electric: 1000, location: 1200 };
     const duration = durations[effect] || 1800;
     if (effect === "magma") runFallingParticles("lava", duration);
     if (effect === "frost") runFallingParticles("snow", duration);
@@ -351,7 +352,11 @@
     const dock = document.getElementById("primaryDock");
     if (!dock) return;
     const buttons = Array.from(dock.querySelectorAll(".orb-button"));
-    buttons.forEach(button => button.addEventListener("click", () => triggerOrbPersonality(button), { passive: true }));
+    buttons.forEach(button => button.addEventListener("click", () => {
+      window.setTimeout(() => {
+        if (button.getAttribute("aria-pressed") === "true") triggerOrbPersonality(button);
+      }, 0);
+    }, { passive: true }));
     const stacksPanel = document.getElementById("stacksPanel");
     const stacksHome = document.getElementById("stacksHome");
     const customiseView = document.getElementById("customiseView");

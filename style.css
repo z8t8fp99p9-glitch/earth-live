@@ -660,3 +660,21 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   height: 100%;
   pointer-events: none;
 }
+
+
+/* v1.5.30 — longer snow/lava scenes, only while orb is active. */
+.screen-effect.screen-effect-long.screen-effect-playing {
+  animation-duration: 3.65s;
+}
+.screen-effect.screen-effect-long.screen-effect-playing::before {
+  animation-duration: 3.35s;
+}
+.screen-effect.screen-effect-long.screen-effect-playing::after {
+  animation-duration: 3.5s;
+}
+.screen-effect.screen-effect-long.screen-effect-magma.screen-effect-playing::before {
+  animation-duration: 3.8s, 3.8s;
+}
+.screen-effect.screen-effect-long.screen-effect-frost.screen-effect-playing::before {
+  animation-duration: 3.5s, 3.6s;
+}
