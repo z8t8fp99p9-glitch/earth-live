@@ -1,14 +1,17 @@
-EARTH // LIVE — Adaptive Display / Compact Empty Deck v1.4.2
+EARTH // LIVE — Adaptive Globe Composition v1.4.3
 
-Built from the latest provided source archive: earth-live-main 5.zip, with the previously approved empty-deck patch as the UI baseline.
+Purpose
+- Add a modest landscape camera-space lift so the globe sits higher in landscape without scaling the Earth or shrinking the full-screen Cesium interaction surface.
+- Reverse the offset when returning to portrait only while the user has not begun interacting with the globe.
+- Once the user starts dragging, pinching, or scrolling the globe, orientation changes no longer override their camera position.
+- Keep the deck unchanged and independent. No orb art, button controls, Stacks menu, database, or earthquake/Sun/Moon systems are added or modified.
 
-Changes in this milestone:
-- Keep the empty deck bottom-anchored and horizontally centred.
-- Make portrait deck more compact (84vw, max 760px) and slightly slimmer.
-- Give landscape a distinct compact width (72vw, max 880px) and height; very short landscape screens get a further compact rule.
-- Keep deck pointer-events disabled so globe gestures pass through it.
-- Bump asset query strings and service-worker cache name.
-- No orb artwork or button markup added.
-- data-store.js, app.js globe interactions, earthquake logic, and Sun/Moon modules are not modified by this patch.
+Files in this flat patch
+- index.html
+- app.js
+- app-version.js
+- service-worker.js
 
-Manual upload: replace matching files in repository root. Do not upload this ZIP as a nested folder.
+Upload all four files to the repository root, replacing files with the same names.
+
+Validation performed: JavaScript syntax checks and ZIP integrity. No browser or iPhone runtime test has been performed. The lift amount is an initial candidate and should be reviewed in portrait and landscape screenshots.

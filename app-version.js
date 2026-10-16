@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "adaptive-display-v1.4.2";
+window.EARTH_LIVE_VERSION = "adaptive-globe-v1.4.3";

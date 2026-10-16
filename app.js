@@ -8,17 +8,23 @@
   let hasInitialFrame = false;
   let activeProfile = "portrait";
   let esriLayer = null;
+  let hasUserInteracted = false;
+  let landscapeOffsetApplied = false;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Keep Cesium default gesture behaviour. Only the portrait zoom factor and minimum zoom distance are tuned; no custom gesture handlers or inertia overrides.
+  // Keep Cesium's native gestures. Display profiles adapt zoom response without replacing gesture handling.
   const profiles = {
     portrait: { initialHeight: 27500000, zoomFactor: 8.63, movementRatio: 0.075 },
     compact:  { initialHeight: 27500000, zoomFactor: 6.5, movementRatio: 0.085 },
     landscape:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 },
     ultrawide:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 }
   };
+
+  // A modest camera-space offset lifts the globe in landscape without resizing the globe or canvas.
+  // Reverse the offset when returning to portrait only until the user begins interacting with the globe.
+  const LANDSCAPE_LIFT_RATIO = 0.105;
 
   function showError(error) {
     console.error("EARTH // LIVE globe failed to start:", error);
@@ -35,6 +41,21 @@
     return "landscape";
   }
 
+  function applyLandscapeComposition(nextProfile) {
+    const wantsLandscape = nextProfile === "landscape" || nextProfile === "ultrawide";
+    if (!viewer || viewer.isDestroyed() || hasUserInteracted) return;
+
+    if (wantsLandscape && !landscapeOffsetApplied) {
+      const height = profiles[nextProfile].initialHeight;
+      viewer.camera.moveUp(-height * LANDSCAPE_LIFT_RATIO);
+      landscapeOffsetApplied = true;
+    } else if (!wantsLandscape && landscapeOffsetApplied) {
+      const height = profiles.portrait.initialHeight;
+      viewer.camera.moveUp(height * LANDSCAPE_LIFT_RATIO);
+      landscapeOffsetApplied = false;
+    }
+  }
+
   function applyDisplayProfile({ initial = false } = {}) {
     if (!viewer || viewer.isDestroyed()) return;
     const nextProfile = detectDisplayProfile();
@@ -42,7 +63,6 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    // Zoom adjustment: allow closer approach (1 metre minimum) while retaining the standard Cesium gesture handling.
     controller.minimumZoomDistance = 1;
     controller.maximumZoomDistance = 40000000;
     controller.zoomFactor = settings.zoomFactor;
@@ -59,6 +79,8 @@
       });
       hasInitialFrame = true;
     }
+
+    applyLandscapeComposition(nextProfile);
     document.documentElement.dataset.displayProfile = nextProfile;
   }
 
@@ -138,6 +160,11 @@
       controller.enableZoom = true;
       controller.enableLook = true;
 
+      // If the user has started moving/zooming the globe, never override their camera position on rotation.
+      ["pointerdown", "touchstart", "wheel"].forEach(eventName => {
+        globeElement.addEventListener(eventName, () => { hasUserInteracted = true; }, { passive: true });
+      });
+
       applyDisplayProfile({ initial: true });
 
       window.EarthLiveViewer = viewer;
@@ -145,7 +172,8 @@
         get profile() { return activeProfile; },
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
-        zoomMinimumMeters: 1000
+        zoomMinimumMeters: 1000,
+        landscapeLiftRatio: LANDSCAPE_LIFT_RATIO
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });

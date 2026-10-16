@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-adaptive-display-v1-4-2";
+const CACHE_NAME = "earth-live-adaptive-globe-v1-4-3";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {
