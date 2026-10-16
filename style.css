@@ -710,3 +710,58 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   69% { opacity: .08; transform: scale(3.0); }
   100% { opacity: 0; transform: scale(3.4); }
 }
+
+
+/* v1.5.32 — lower full-screen wash and one slower Location search pulse. */
+.screen-effect.screen-effect-playing {
+  animation-name: screen-effect-fade-subtle;
+}
+.screen-effect.screen-effect-playing::before {
+  opacity: .42;
+}
+.screen-effect.screen-effect-playing::after {
+  opacity: .34;
+}
+.screen-effect-cosmic.screen-effect-playing { opacity: .54; }
+.screen-effect-cosmic.screen-effect-playing::before { opacity: .46; }
+.screen-effect-cosmic.screen-effect-playing::after { opacity: .40; }
+
+.screen-effect-location.screen-effect-playing {
+  opacity: .52;
+}
+.screen-effect-location.screen-effect-playing::before {
+  opacity: .58;
+  animation: location-single-search-pulse 1.9s cubic-bezier(.18,.64,.26,1) both !important;
+}
+.screen-effect-location.screen-effect-playing::after {
+  opacity: .38;
+  animation: location-search-ring 1.9s cubic-bezier(.18,.64,.26,1) both !important;
+}
+
+.screen-effect-magma.screen-effect-playing { opacity: .64; }
+.screen-effect-magma.screen-effect-playing::before { opacity: .54; }
+.screen-effect-magma.screen-effect-playing::after { opacity: .48; }
+.screen-effect-frost.screen-effect-playing { opacity: .60; }
+.screen-effect-frost.screen-effect-playing::before { opacity: .52; }
+.screen-effect-frost.screen-effect-playing::after { opacity: .44; }
+
+/* One calm outward scan instead of three flashes. */
+@keyframes location-single-search-pulse {
+  0% { opacity: 0; transform: scale(.025); }
+  16% { opacity: .56; }
+  42% { opacity: .48; transform: scale(1.35); }
+  72% { opacity: .20; transform: scale(2.55); }
+  100% { opacity: 0; transform: scale(3.4); }
+}
+@keyframes location-search-ring {
+  0% { opacity: 0; transform: scale(.02); }
+  24% { opacity: .42; }
+  78% { opacity: .14; transform: scale(2.65); }
+  100% { opacity: 0; transform: scale(3.2); }
+}
+@keyframes screen-effect-fade-subtle {
+  0% { opacity: 0; }
+  18% { opacity: .64; }
+  68% { opacity: .46; }
+  100% { opacity: 0; }
+}

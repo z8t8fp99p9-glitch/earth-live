@@ -1,8 +1,7 @@
-EARTH // LIVE v1.5.31 — Soft Light & Location Pulses
-- Reduces screen-wide light intensity for Earth cosmic, Live Location, Sun and Moon overlays.
-- Leaves falling lava and snow particle rendering unchanged.
-- Leaves Stacks electric effect unchanged.
-- Live Location now performs three distinct expanding red scan pulses.
-- No network requests added; no continuous effect rendering outside the brief active animation.
-- ZIP integrity checked; not yet visually tested on iPhone.
+EARTH // LIVE v1.5.32 — Subtle Light & Slow Search
+- Further reduces full-screen light washes for Earth, Location, Sun and Moon.
+- Keeps Stacks effect unchanged.
+- Location now performs one slower, smooth expanding search pulse lasting about 1.9 seconds.
+- Snow and lava particle visuals/durations remain unchanged.
+- No network requests added; ZIP integrity checked. Not yet visually tested on iPhone.
 Upload index.html, style.css, and app.js to the root of GitHub main, replacing those three files. Leave image assets and all other files untouched.
