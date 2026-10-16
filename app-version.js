@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "1.5.12-preserve-camera-on-rotation";
+window.EARTH_LIVE_VERSION = "1.5.13-earth-75-percent";

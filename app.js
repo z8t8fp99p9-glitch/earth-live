@@ -19,9 +19,12 @@
   // Adaptive sizing is calculated from the current selected display rectangle, never
   // from dimensions cached while the device was in the other orientation.
   const EARTH_RADIUS_METERS = 6378137;
+  // One shared Earth sizing standard: 75% of the relevant display dimension.
+  // Portrait measures against width; landscape measures against height so the
+  // globe remains comfortably inside the display. Rotation itself never reframes.
   const profiles = {
-    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.00, zoomFactor: 8.63, movementRatio: 0.075 },
-    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { sizeFraction: 0.75, sizeAxis: "width", topFraction: 0.00, zoomFactor: 8.63, movementRatio: 0.075 },
+    landscape:{ sizeFraction: 0.75, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function measureDisplayArea() {

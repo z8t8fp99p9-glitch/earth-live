@@ -1,29 +1,15 @@
-EARTH // LIVE v1.5.10 — Map Orientation Synchronization
+EARTH // LIVE v1.5.13 — Earth 75% sizing standard
 
-Purpose: fix globe camera framing when iOS rotates between portrait and landscape.
+Change:
+- Earth startup framing target is now 75% in portrait (measured against display width) and 75% in landscape (measured against display height).
+- This is one shared sizing standard with orientation-aware measurement, not two unrelated camera zoom values.
+- Landscape keeps its existing 2% top placement target.
 
-Changes:
-- Wait two animation frames before applying orientation-dependent camera framing.
-- Synchronize the current selected display rectangle, Cesium canvas size, and perspective-frustum aspect ratio.
-- Calculate horizontal/vertical field of view from the current aspect ratio instead of relying on a potentially stale fovy value from the previous orientation.
-- Recompute globe camera range on genuine orientation transitions while preserving the current geographic camera position and orientation.
-- Update asset query strings, service-worker cache, and app version together.
+Preserved:
+- v1.5.12 camera continuity: rotating the device synchronizes the viewport only and does not reframe the camera or alter zoom.
+- Existing display modes, responsive safe-area behavior, gestures, imagery, earthquake features, and all other app behavior.
+- data-store.js is not included or modified.
 
-Protected: data-store.js is not included; gesture-handler code is unchanged.
-
-Validation: JavaScript syntax and ZIP integrity are checked. Real-device iPhone validation is still required.
-
-
-v1.5.11 — Orientation-safe-area fix
-- In landscape, selected portrait top/bottom safe edges rotate to left/right.
-- Prevents bottom/both display modes from incorrectly shrinking the landscape viewport vertically.
-- Keeps the existing map synchronization and gesture handlers unchanged.
-
-
-v1.5.12 — Preserve camera on rotation and display-mode changes
-- Orientation changes only resize/synchronize the Cesium viewport; they do not call camera.setView or recalculate camera distance.
-- Switching Full Screen / cutout modes preserves the current geographic view and zoom.
-- Initial startup framing remains unchanged.
-- Gesture handlers and data-store.js remain untouched.
-
-Validation: app.js syntax and ZIP integrity checked; real-device verification remains necessary.
+Validation:
+- JavaScript syntax and ZIP integrity checked.
+- This is a candidate ZIP; upload its contents to the repository root and verify on the iPhone before treating it as deployed/approved.
