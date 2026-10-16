@@ -1,16 +1,14 @@
-EARTH // LIVE — Landscape Celestial Path Boundary Patch
-Prepared from the uploaded earth-live-main ZIP. This is a local patch only; nothing was changed on GitHub.
+EARTH // LIVE — Adaptive Display / Compact Empty Deck v1.4.2
 
-Files to replace at repository root:
-- sun-moon-tracker.js
-- sun-sky-view.js
-- celestial-path-refinement.js
+Built from the latest provided source archive: earth-live-main 5.zip, with the previously approved empty-deck patch as the UI baseline.
 
-What it changes:
-- In landscape layouts where the vertical time panel is open, the live Sun/Moon and the trajectory renderer share a narrower horizontal projection that reserves the panel and a safety gap.
-- Portrait projection is unchanged.
-- Astronomical calculations, rise/set windows, altitude mapping, wallpaper SVGs, mountains, dock, gestures, and other controls are unchanged.
+Changes in this milestone:
+- Keep the empty deck bottom-anchored and horizontally centred.
+- Make portrait deck more compact (84vw, max 760px) and slightly slimmer.
+- Give landscape a distinct compact width (72vw, max 880px) and height; very short landscape screens get a further compact rule.
+- Keep deck pointer-events disabled so globe gestures pass through it.
+- Bump asset query strings and service-worker cache name.
+- No orb artwork or button markup added.
+- data-store.js, app.js globe interactions, earthquake logic, and Sun/Moon modules are not modified by this patch.
 
-Validation performed:
-- JavaScript syntax checks passed for all three files.
-- This is a source-level fix, not yet device-verified. Please test landscape at both ends of the Sun timeline and Moon timeline, then switch portrait/landscape to confirm the object and arc stay inside the sky column.
+Manual upload: replace matching files in repository root. Do not upload this ZIP as a nested folder.

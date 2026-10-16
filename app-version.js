@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "adaptive-empty-deck-v1.4.1";
+window.EARTH_LIVE_VERSION = "adaptive-display-v1.4.2";

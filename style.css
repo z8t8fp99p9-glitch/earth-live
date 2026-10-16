@@ -37,7 +37,7 @@ body {
   --deck-top: rgba(14, 26, 40, .52);
   --deck-bottom: rgba(2, 7, 14, .82);
   position: fixed; z-index: 5; left: 50%; bottom: max(10px, env(safe-area-inset-bottom));
-  width: min(94vw, 900px); height: clamp(54px, 9.5vh, 78px);
+  width: min(84vw, 760px); height: clamp(54px, 7vh, 68px);
   transform: translateX(-50%); border: 0; border-radius: 22px;
   background: transparent; pointer-events: none; isolation: isolate;
 }
@@ -70,10 +70,11 @@ body {
 }
 #errorMessage[hidden] { display: none; }
 @media (orientation: landscape) {
-  #primaryDock { width: min(88vw, 1120px); height: clamp(48px, 12vh, 66px); bottom: max(7px, env(safe-area-inset-bottom)); border-radius: 19px; }
+  /* Landscape uses its own compact composition; never stretch the empty plate across the display. */
+  #primaryDock { width: min(72vw, 880px); height: clamp(46px, 8vh, 58px); bottom: max(7px, env(safe-area-inset-bottom)); border-radius: 19px; }
 }
 @media (max-height: 420px) and (orientation: landscape) {
-  #primaryDock { height: 44px; bottom: max(5px, env(safe-area-inset-bottom)); }
+  #primaryDock { width: min(68vw, 760px); height: 42px; bottom: max(5px, env(safe-area-inset-bottom)); }
 }
 @media (prefers-reduced-transparency: reduce) {
   #primaryDock::before { -webkit-backdrop-filter: none; backdrop-filter: none; }
