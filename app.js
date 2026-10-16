@@ -67,7 +67,7 @@
       url: esriImageryUrl,
       minimumLevel: 0,
       maximumLevel: 19,
-      credit: new Cesium.Credit("Imagery © Esri and contributors")
+      credit: new Cesium.Credit("Imagery © Esri and contributors", true)
     });
     esriLayer = viewer.imageryLayers.addImageryProvider(provider);
     if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {

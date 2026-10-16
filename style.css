@@ -39,3 +39,13 @@ body {
 /* Hide the Cesium logo only; keep required text attribution visible. */
 .cesium-credit-logoContainer { display: none !important; } }
 @media (min-aspect-ratio: 215/100) { .cesium-widget-credits { font-size: 11px !important; } }
+
+
+/* Clean map presentation: keep Esri text credit visible; remove the broken expandable attribution control/panel. */
+.cesium-credit-logoContainer,
+.cesium-credit-expand-link,
+.cesium-credit-lightbox,
+.cesium-credit-lightbox-overlay {
+  display: none !important;
+}
+.cesium-widget-credits { font-size: 8px !important; opacity: 0.62; }
