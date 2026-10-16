@@ -57,14 +57,36 @@
   }
 
 
-  function calculateCameraHeight(settings) {
+  function synchronizeCesiumViewport() {
+    // iOS can dispatch orientation/viewport events before the CSS layout and
+    // Cesium canvas have both settled. Measure the actual globe box, resize
+    // Cesium, and explicitly synchronize the perspective-frustum aspect ratio.
+    const display = measureDisplayArea();
+    if (viewer && !viewer.isDestroyed()) viewer.resize();
     const area = measureDisplayArea().area;
-    const width = area.width;
-    const height = area.height;
-    const frustum = viewer.camera.frustum;
-    const verticalFov = Number.isFinite(frustum.fovy) ? frustum.fovy : Cesium.Math.toRadians(60);
+    const width = Math.max(1, area.width || globeElement.clientWidth || 1);
+    const height = Math.max(1, area.height || globeElement.clientHeight || 1);
+    const frustum = viewer && !viewer.isDestroyed() ? viewer.camera.frustum : null;
+    if (frustum && "aspectRatio" in frustum) frustum.aspectRatio = width / height;
+    return { ...display, area: { ...area, width, height } };
+  }
+
+  function calculateCameraHeight(settings, area = measureDisplayArea().area) {
+    const width = Math.max(1, area.width);
+    const height = Math.max(1, area.height);
     const aspect = width / height;
-    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
+    const frustum = viewer.camera.frustum;
+    // Cesium's PerspectiveFrustum.fov is horizontal on landscape (aspect > 1)
+    // and vertical on portrait (aspect <= 1). Do not reuse a stale fovy value
+    // from the previous orientation while iOS is rotating the viewport.
+    const fallbackFov = Cesium.Math.toRadians(60);
+    const fov = Number.isFinite(frustum.fov) ? frustum.fov : fallbackFov;
+    const verticalFov = aspect > 1
+      ? 2 * Math.atan(Math.tan(fov / 2) / aspect)
+      : fov;
+    const horizontalFov = aspect > 1
+      ? fov
+      : 2 * Math.atan(Math.tan(verticalFov / 2) * aspect);
     const targetFov = settings.sizeAxis === "width" ? horizontalFov : verticalFov;
     const halfAngle = Math.atan(settings.sizeFraction * Math.tan(targetFov / 2));
     const cameraDistance = EARTH_RADIUS_METERS / Math.sin(halfAngle);
@@ -73,8 +95,8 @@
 
   function applyDisplayProfile({ initial = false, forceLayout = false } = {}) {
     if (!viewer || viewer.isDestroyed()) return;
-    const nextProfile = detectDisplayProfile();
-    const display = window.EarthLiveDisplay;
+    const display = synchronizeCesiumViewport();
+    const nextProfile = display.orientation;
     activeProfile = nextProfile;
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
@@ -90,7 +112,7 @@
     const profileChanged = lastAppliedProfile !== nextProfile;
     const mayReframe = initial || forceLayout || (!hasUserInteracted && profileChanged);
     if (mayReframe) {
-      const cameraHeight = calculateCameraHeight(settings);
+      const cameraHeight = calculateCameraHeight(settings, display.area);
       const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
       let destination;
       let heading = 0;
@@ -138,30 +160,30 @@
   }
 
   function resizeGlobe() {
-    // Rotation and selected-mode changes update the global display rectangle first,
-    // then resize Cesium and apply the matching portrait/landscape composition.
+    // Wait two animation frames: on iOS the first resize/orientation event can
+    // arrive before the final viewport dimensions have reached CSS and canvas.
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
-      resizeFrame = 0;
-      if (!viewer || viewer.isDestroyed()) return;
-      const before = activeProfile;
-      const nextProfile = detectDisplayProfile();
-      const display = window.EarthLiveDisplay;
-      viewer.resize();
-      activeProfile = nextProfile;
-      const settings = profiles[nextProfile];
-      const controller = viewer.scene.screenSpaceCameraController;
-      controller.zoomFactor = settings.zoomFactor;
-      controller.maximumMovementRatio = settings.movementRatio;
-      // A genuine orientation transition must use the new axis and dimensions,
-      // even if the user previously moved the globe. Ordinary same-orientation
-      // resizes do not reframe and do not interfere with touch/zoom gestures.
-      if (before !== nextProfile || lastOrientation !== nextProfile) {
-        applyDisplayProfile({ forceLayout: true });
-      } else {
-        document.documentElement.dataset.displayProfile = nextProfile;
-      }
-      viewer.scene.requestRender();
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        if (!viewer || viewer.isDestroyed()) return;
+        const before = activeProfile;
+        const display = synchronizeCesiumViewport();
+        const nextProfile = display.orientation;
+        activeProfile = nextProfile;
+        const settings = profiles[nextProfile];
+        const controller = viewer.scene.screenSpaceCameraController;
+        controller.zoomFactor = settings.zoomFactor;
+        controller.maximumMovementRatio = settings.movementRatio;
+        // On orientation transitions, recalculate range using the new frustum
+        // dimensions while preserving the current geographic view and orientation.
+        if (before !== nextProfile || lastOrientation !== nextProfile) {
+          applyDisplayProfile({ forceLayout: true });
+        } else {
+          document.documentElement.dataset.displayProfile = nextProfile;
+        }
+        viewer.scene.requestRender();
+      });
     });
   }
 
@@ -196,8 +218,7 @@
       // All orientation-specific sizing reads from window.EarthLiveDisplay.area.
       requestAnimationFrame(() => requestAnimationFrame(() => {
         if (!viewer || viewer.isDestroyed()) return;
-        measureDisplayArea();
-        viewer.resize();
+        synchronizeCesiumViewport();
         applyDisplayProfile({ forceLayout: true });
         viewer.scene.requestRender();
       }));

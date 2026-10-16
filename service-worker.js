@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-global-display-coordinate-system-v1-5-9";
+const CACHE_NAME = "earth-live-map-sync-v1-5-10";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {

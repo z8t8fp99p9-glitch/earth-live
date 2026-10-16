@@ -1,14 +1,14 @@
-EARTH // LIVE v1.5.9 — Global Display Coordinate System
+EARTH // LIVE v1.5.10 — Map Orientation Synchronization
 
-Whole-layout correction based on the current v1.5.8 source.
+Purpose: fix globe camera framing when iOS rotates between portrait and landscape.
 
-- The selected display mode now bounds #app, the shared coordinate root for the globe and interface overlays.
-- Globe, Personalisation button/panel, and attribution use the same selected display rectangle; safe-area insets are not applied independently to the globe only.
-- One orientation detector returns only the supported profiles: portrait or landscape.
-- Current dimensions are remeasured after rotation, resize, page restoration, and mode selection.
-- Portrait globe target remains 80% of selected area width. Landscape target remains 60% of selected area height, with a 2% top target on initial framing.
-- Camera range recalculates on layout transitions; after initial launch, the current camera location/orientation is preserved rather than snapping back to the startup coordinates.
-- Cache-busting URLs, service-worker cache, and app version are aligned to v1.5.9.
-- Existing gesture handlers are unchanged. data-store.js is not included or modified.
+Changes:
+- Wait two animation frames before applying orientation-dependent camera framing.
+- Synchronize the current selected display rectangle, Cesium canvas size, and perspective-frustum aspect ratio.
+- Calculate horizontal/vertical field of view from the current aspect ratio instead of relying on a potentially stale fovy value from the previous orientation.
+- Recompute globe camera range on genuine orientation transitions while preserving the current geographic camera position and orientation.
+- Update asset query strings, service-worker cache, and app version together.
 
-Validation: JavaScript syntax and ZIP integrity are checked. Physical iPhone/browser rendering still requires user verification.
+Protected: data-store.js is not included; gesture-handler code is unchanged.
+
+Validation: JavaScript syntax and ZIP integrity are checked. Real-device iPhone validation is still required.
