@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "esri-corner-credit-v1.3.12";
+window.EARTH_LIVE_VERSION = "adaptive-centered-globe-v1.3.13";

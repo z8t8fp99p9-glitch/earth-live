@@ -14,10 +14,10 @@
 
   // Keep Cesium default gesture behaviour. Only the portrait zoom factor and minimum zoom distance are tuned; no custom gesture handlers or inertia overrides.
   const profiles = {
-    portrait: { initialHeight: 18500000, zoomFactor: 8.63, movementRatio: 0.075 },
-    compact:  { initialHeight: 21000000, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ initialHeight: 24500000, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ initialHeight: 28000000, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { initialHeight: 27500000, zoomFactor: 8.63, movementRatio: 0.075 },
+    compact:  { initialHeight: 27500000, zoomFactor: 6.5, movementRatio: 0.085 },
+    landscape:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 },
+    ultrawide:{ initialHeight: 27500000, zoomFactor: 5, movementRatio: 0.1 }
   };
 
   function showError(error) {
