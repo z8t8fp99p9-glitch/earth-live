@@ -1,19 +1,16 @@
-EARTH // LIVE — Adaptive Display Zoom Controls v1.4.7
+EARTH // LIVE — Adaptive Display + Gesture Recovery v1.4.8
 
-Changes
-- Restores the minimum camera distance to 10 metres.
-- Reduces Cesium zoomFactor to 2.5 across display profiles for a gentler zoom response.
-- Disables tilt, translate/pan, and look controls so the camera interaction is focused on globe rotation or zoom.
-- Keeps v1.4.6 resize/camera decoupling: resize events resize the drawing surface and do not reset camera framing.
-- Preserves adaptive portrait/landscape composition targets, imagery, deck, and database files.
+Purpose
+- Preserve the adaptive display composition from v1.4.7.
+- Restore the earlier 10-metre minimum camera distance requested by the user.
+- Keep the earlier per-orientation zoom tuning: portrait 8.63, compact 6.5, landscape/ultrawide 5.
+- Keep Cesium native camera gesture controls enabled; this patch does not introduce custom gesture recognizers.
+- Resize handler remains limited to resizing the renderer and updating profile sensitivity; it does not reframe/reset the camera.
+- Deck CSS is unchanged. Database and unrelated features are untouched.
 
-Files included
-- app.js
-- index.html
-- app-version.js
-- service-worker.js
-- PATCH-NOTES.txt
+Checks
+- JavaScript syntax check and ZIP integrity check performed.
+- Not tested in a live browser or on the user's iPhone.
+- One-gesture-at-a-time exclusion of pinch-vs-rotation is not yet custom-enforced; native Cesium gestures are preserved in this pass to avoid damaging the previously tuned interaction feel. Test this build before adding a dedicated gesture lock.
 
-Validation
-- JavaScript syntax and ZIP integrity checked locally.
-- Not tested in a live browser or on iPhone. Please test pinch zoom, one-finger globe rotation, and orientation changes.
+Upload the extracted files at repository root, replacing matching files: app.js, index.html, app-version.js, service-worker.js. PATCH-NOTES.txt is informational only and should not be uploaded to the site unless desired.

@@ -84,7 +84,7 @@
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
 
-    controller.minimumZoomDistance = 1000;
+    controller.minimumZoomDistance = 10;
     controller.maximumZoomDistance = 40000000;
     controller.zoomFactor = settings.zoomFactor;
     controller.maximumMovementRatio = settings.movementRatio;
@@ -213,7 +213,7 @@
         get profile() { return activeProfile; },
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
-        zoomMinimumMeters: 1000,
+        zoomMinimumMeters: 10,
         targets: { portraitWidth: 0.80, landscapeHeight: 0.75, landscapeTopInset: 0.025 }
       };
 
