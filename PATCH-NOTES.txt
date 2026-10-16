@@ -1,11 +1,18 @@
-EARTH // LIVE v1.5.6 — Global Display Variable
+EARTH // LIVE — v1.5.7 Adaptive Display Area
 
-Fixes found in v1.5.5:
-- All display modes now use the selected #globe box as the authoritative viewport; removed the 100vw minimum-width constraint that overrode cutout layouts.
-- Explicitly changing a display mode waits for CSS layout, resizes Cesium, and recalculates adaptive camera framing for the selected viewport.
-- Orientation profile changes recalculate framing before user interaction; explicit mode changes recalculate even after interaction.
-- Four persistent choices retained: Full Screen (default), Cutouts at Top, Cutouts at Bottom, Cutouts at Top & Bottom.
-- Portrait target 80% width centred; landscape target 60% height with 2% top target.
-- No changes to imagery provider, gesture handlers, dock CSS, or data-store.js.
+Purpose
+- Correct orientation-dependent globe sizing using one shared global display-area object.
+- Keep the user's selected display mode persistent: Full Screen, Cutouts at Top, Cutouts at Bottom, Cutouts at Top & Bottom.
+- Re-measure the selected display rectangle after mode changes, orientation changes, viewport resizes, and pageshow.
+- Portrait globe target: 80% of the selected area's width.
+- Landscape globe target: 60% of the selected area's height, with a 2% top-edge target.
+- Orientation changes trigger the matching layout composition even if the globe was previously interacted with. Same-orientation resizes do not reframe.
 
-Candidate only: syntax and archive integrity checked; physical-device visual behavior still requires user testing.
+Protected
+- No changes to data-store.js.
+- No changes to the globe touch-gesture handler implementation.
+- Existing imagery and other layers are preserved.
+
+Validation
+- JavaScript syntax and ZIP integrity checked.
+- Not tested on a physical iPhone; device verification is still required.

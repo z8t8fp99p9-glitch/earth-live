@@ -7,6 +7,9 @@
   let resizeFrame = 0;
   let hasInitialFrame = false;
   let activeProfile = "portrait";
+  let lastOrientation = null;
+  // Single source of truth for the selected display rectangle and its live dimensions.
+  window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
   let esriLayer = null;
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
@@ -14,15 +17,38 @@
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 
-  // Adaptive display targets use the full visible globe viewport: portrait 80% width, landscape 70% height.
-  // Portrait is centred. Landscape uses camera pitch to place the visible globe lower without translating the camera by Earth-scale distances.
+  // Adaptive sizing is calculated from the current selected display rectangle, never
+  // from dimensions cached while the device was in the other orientation.
   const EARTH_RADIUS_METERS = 6378137;
   const profiles = {
-    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 8.63, movementRatio: 0.075 },
-    compact:  { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.025, zoomFactor: 6.5, movementRatio: 0.085 },
-    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 },
-    ultrawide:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 }
+    portrait: { sizeFraction: 0.80, sizeAxis: "width", topFraction: 0.00, zoomFactor: 8.63, movementRatio: 0.075 },
+    landscape:{ sizeFraction: 0.60, sizeAxis: "height", topFraction: 0.02, zoomFactor: 5, movementRatio: 0.1 }
   };
+
+  function measureDisplayArea() {
+    const root = document.documentElement;
+    const mode = root.dataset.displayMode || "full";
+    const rect = globeElement.getBoundingClientRect();
+    // The globe container already reflects the selected mode's CSS safe-area bounds.
+    // Read its current rectangle after every rotation or mode change.
+    const width = Math.max(1, Math.round(rect.width || window.innerWidth || 1));
+    const height = Math.max(1, Math.round(rect.height || window.innerHeight || 1));
+    const x = Number.isFinite(rect.left) ? rect.left : 0;
+    const y = Number.isFinite(rect.top) ? rect.top : 0;
+    const orientation = height > width ? "portrait" : "landscape";
+    window.EarthLiveDisplay.mode = mode;
+    window.EarthLiveDisplay.orientation = orientation;
+    window.EarthLiveDisplay.viewport = {
+      width: Math.max(1, Math.round(window.visualViewport?.width || window.innerWidth || width)),
+      height: Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || height))
+    };
+    window.EarthLiveDisplay.area = { x, y, width, height };
+    return window.EarthLiveDisplay;
+  }
+
+  function detectDisplayProfile() {
+    return measureDisplayArea().orientation;
+  }
 
   function showError(error) {
     console.error("EARTH // LIVE globe failed to start:", error);
@@ -40,8 +66,9 @@
   }
 
   function calculateCameraHeight(settings) {
-    const width = Math.max(1, globeElement.clientWidth || window.innerWidth || 1);
-    const height = Math.max(1, globeElement.clientHeight || window.innerHeight || 1);
+    const area = measureDisplayArea().area;
+    const width = area.width;
+    const height = area.height;
     const frustum = viewer.camera.frustum;
     const verticalFov = Number.isFinite(frustum.fovy) ? frustum.fovy : Cesium.Math.toRadians(60);
     const aspect = width / height;
@@ -54,7 +81,8 @@
 
   function applyDisplayProfile({ initial = false, forceLayout = false } = {}) {
     if (!viewer || viewer.isDestroyed()) return;
-    const nextProfile = detectDisplayProfile();
+    const display = measureDisplayArea();
+    const nextProfile = display.orientation;
     activeProfile = nextProfile;
     const settings = profiles[nextProfile];
     const controller = viewer.scene.screenSpaceCameraController;
@@ -75,6 +103,8 @@
       const fovy = viewer.camera.frustum.fovy || Cesium.Math.toRadians(60);
       let pitch = -Math.PI / 2;
       if (settings.sizeAxis === "height") {
+        // Place the globe's visible top edge at 2% of the currently selected
+        // landscape display area's height. This is recalculated after rotation.
         const targetCenterY = settings.topFraction + settings.sizeFraction / 2;
         const verticalShiftFraction = 0.5 - targetCenterY;
         const pitchOffset = Math.atan(2 * verticalShiftFraction * Math.tan(fovy / 2));
@@ -87,6 +117,7 @@
       lastAppliedProfile = nextProfile;
       hasInitialFrame = true;
     }
+    lastOrientation = display.orientation;
     document.documentElement.dataset.displayProfile = nextProfile;
   }
 
@@ -106,25 +137,29 @@
   }
 
   function resizeGlobe() {
-    // A viewport resize must resize Cesium's drawing surface only. It must never
-    // recalculate the camera composition during a pinch or ordinary zoom gesture.
+    // Rotation and selected-mode changes update the global display rectangle first,
+    // then resize Cesium and apply the matching portrait/landscape composition.
     if (resizeFrame) cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
       resizeFrame = 0;
       if (!viewer || viewer.isDestroyed()) return;
-
+      const before = activeProfile;
+      const display = measureDisplayArea();
+      const nextProfile = display.orientation;
       viewer.resize();
-      const previousProfile = activeProfile;
-      const nextProfile = detectDisplayProfile();
       activeProfile = nextProfile;
-      if (!hasUserInteracted && nextProfile !== previousProfile) {
-        applyDisplayProfile({ forceLayout: true });
-      }
       const settings = profiles[nextProfile];
       const controller = viewer.scene.screenSpaceCameraController;
       controller.zoomFactor = settings.zoomFactor;
       controller.maximumMovementRatio = settings.movementRatio;
-      document.documentElement.dataset.displayProfile = nextProfile;
+      // A genuine orientation transition must use the new axis and dimensions,
+      // even if the user previously moved the globe. Ordinary same-orientation
+      // resizes do not reframe and do not interfere with touch/zoom gestures.
+      if (before !== nextProfile || lastOrientation !== nextProfile) {
+        applyDisplayProfile({ forceLayout: true });
+      } else {
+        document.documentElement.dataset.displayProfile = nextProfile;
+      }
       viewer.scene.requestRender();
     });
   }
@@ -140,6 +175,7 @@
     const validModes = new Set(["full", "top", "bottom", "both"]);
     const mode = validModes.has(stored) ? stored : "full";
     document.documentElement.dataset.displayMode = mode;
+    window.EarthLiveDisplay.mode = mode;
     choices.forEach(choice => { choice.checked = choice.value === mode; });
 
     moreButton.addEventListener("click", () => {
@@ -153,15 +189,16 @@
     choices.forEach(choice => choice.addEventListener("change", () => {
       if (!choice.checked) return;
       document.documentElement.dataset.displayMode = choice.value;
+      window.EarthLiveDisplay.mode = choice.value;
       try { localStorage.setItem("earthLiveDisplayMode", choice.value); } catch (_) {}
-      // The selected display mode is the single global viewport source. Let CSS settle,
-      // resize Cesium to that exact box, then reframe once for this explicit user choice.
+      // Re-measure the selected rectangle after its CSS bounds have updated.
+      // All orientation-specific sizing reads from window.EarthLiveDisplay.area.
       requestAnimationFrame(() => requestAnimationFrame(() => {
-        if (viewer && !viewer.isDestroyed()) {
-          viewer.resize();
-          applyDisplayProfile({ forceLayout: true });
-          viewer.scene.requestRender();
-        }
+        if (!viewer || viewer.isDestroyed()) return;
+        measureDisplayArea();
+        viewer.resize();
+        applyDisplayProfile({ forceLayout: true });
+        viewer.scene.requestRender();
       }));
     }));
   }
@@ -230,7 +267,7 @@
         get settings() { return { ...profiles[activeProfile] }; },
         get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
-        targets: { portraitWidth: 0.80, landscapeHeight: 0.60, portraitCentered: true, landscapeTopInset: 0.02, viewport: "selected-global-display-mode" }
+        targets: { portraitWidth: 0.80, landscapeHeight: 0.60, portraitCentered: true, landscapeTopInset: 0.02, viewport: "window.EarthLiveDisplay.area; remeasured on orientation/mode changes" }
       };
 
       window.addEventListener("resize", resizeGlobe, { passive: true });
