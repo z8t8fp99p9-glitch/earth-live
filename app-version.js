@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "esri-default-gestures-zoom-tuned-v1.3.7";
+window.EARTH_LIVE_VERSION = "esri-corner-credit-v1.3.8";
