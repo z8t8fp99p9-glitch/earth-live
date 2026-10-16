@@ -6,3 +6,17 @@ Full-screen durations: Basic Earth 1.5s; HD Earth 1.5s; Live Location 2s; Sun la
 Sun and Moon atmospheric light fades after 2.5s while lava/snow continues until 5s. Effect intensity and atmospheric-light on/off/intensity are separately adjustable for all six full-screen orb effects. Settings persist on the device.
 
 Added “Restore Our Defaults” to return all six full-screen effects to EARTH // LIVE defaults: effects on, effect intensity 100%, atmospheric light on, light intensity 50%. Small-orb artwork, glow rings, shadows, and signature small-orb effects are not controlled or changed by these settings.
+
+
+v1.5.39 — Fix independent light intensity
+- Removed root-level atmospheric gradients that bypassed the light-intensity slider.
+- Light intensity now controls the full-screen atmospheric light layers independently.
+- Lava/snow particle intensity remains controlled by the separate effect-intensity slider.
+- Small-orb visuals and behavior are unchanged.
+
+
+v1.5.40 — Simplified effect personalisation
+- Each orb now labels its first control with the actual full-screen effect (Cosmic expansion, Scanning pulse, Lava, Snow, or Electric energy) and its intensity.
+- The second control remains Atmospheric light with its own toggle and intensity.
+- Kept small-orb visuals outside these settings.
+- Added explicit zero-intensity suppression for the atmospheric light and particle canvas.

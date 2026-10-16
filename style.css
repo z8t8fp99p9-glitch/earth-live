@@ -860,3 +860,52 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 /* Lava/snow continue for five seconds; their atmospheric light fades after 2.5 seconds. */
 .screen-effect.screen-effect-lights-faded::before,
 .screen-effect.screen-effect-lights-faded::after { opacity:0 !important; filter:none !important; transition:opacity .35s ease-out !important; animation:none !important; }
+
+
+/* v1.5.39 — keep full-screen light layers independently controlled.
+   Root-level gradients previously remained visible when light intensity was 0.
+   The pseudo-elements are the atmospheric light layers and already use --light-intensity. */
+.screen-effect.screen-effect-playing.screen-effect-cosmic,
+.screen-effect.screen-effect-playing.screen-effect-location,
+.screen-effect.screen-effect-playing.screen-effect-magma,
+.screen-effect.screen-effect-playing.screen-effect-frost,
+.screen-effect.screen-effect-playing.screen-effect-electric {
+  background: transparent !important;
+}
+
+/* Keep non-particle effects visible independently of the light slider.
+   Their light layers are controlled by the separate pseudo-element opacity rules. */
+.screen-effect-cosmic.screen-effect-playing,
+.screen-effect-location.screen-effect-playing,
+.screen-effect-electric.screen-effect-playing {
+  opacity: 1 !important;
+}
+
+
+/* v1.5.40 — two clear controls per orb: named full-screen effect + atmospheric light.
+   Intensity controls are independent; zero effect hides its visual layer/particles,
+   zero light hides only the atmospheric pseudo-element layers. */
+.screen-effect.screen-effect-playing {
+  background: transparent !important;
+}
+.screen-effect.screen-effect-playing::before,
+.screen-effect.screen-effect-playing::after {
+  filter: none;
+}
+.screen-effect.screen-effect-lights-off::before,
+.screen-effect.screen-effect-lights-off::after,
+.screen-effect.screen-effect-lights-faded::before,
+.screen-effect.screen-effect-lights-faded::after {
+  opacity: 0 !important;
+  filter: none !important;
+  animation: none !important;
+}
+.screen-effect.screen-effect-playing[style*="--light-intensity: 0"]::before,
+.screen-effect.screen-effect-playing[style*="--light-intensity: 0"]::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+/* Scale canvas particles using the effect slider; 0% suppresses the canvas entirely. */
+.screen-effect.screen-effect-playing[style*="--effect-intensity: 0"] #effect-particles {
+  visibility: hidden !important;
+}
