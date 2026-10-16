@@ -67,7 +67,7 @@
       url: esriImageryUrl,
       minimumLevel: 0,
       maximumLevel: 19,
-      credit: new Cesium.Credit("Sources: Esri, DigitalGlobe, GeoEye, i-cubed, USDA FSA, USGS, AEX, Getmapping, AeroGRID, IGN, IGP, swisstopo, and the GIS User Community", true)
+      credit: new Cesium.Credit("Imagery © Esri and contributors", true)
     });
     esriLayer = viewer.imageryLayers.addImageryProvider(provider);
     if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
