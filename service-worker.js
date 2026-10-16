@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-adaptive-display-gesture-lock-v1-4-9";
+const CACHE_NAME = "earth-live-adaptive-display-gesture-recovery-v1-4-8";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {
