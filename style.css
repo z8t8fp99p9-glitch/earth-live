@@ -885,7 +885,8 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 /* v1.5.40 — two clear controls per orb: named full-screen effect + atmospheric light.
    Intensity controls are independent; zero effect hides its visual layer/particles,
    zero light hides only the atmospheric pseudo-element layers. */
-.screen-effect.screen-effect-playing {
+.screen-effect.screen-effect-playing.screen-effect-magma,
+.screen-effect.screen-effect-playing.screen-effect-frost {
   background: transparent !important;
 }
 .screen-effect.screen-effect-playing::before,
@@ -916,4 +917,14 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 .screen-effect.screen-effect-playing::before,
 .screen-effect.screen-effect-playing::after {
   transition: opacity .12s linear !important;
+}
+
+
+/* v1.5.42 — preserve the cosmic expansion's own radial background.
+   Transparency is required only for particle-led lava/snow effects; applying it
+   to every full-screen effect erased the cosmic expansion layer. */
+.screen-effect-cosmic.screen-effect-playing {
+  background:
+    radial-gradient(ellipse at 25% 28%, rgba(96,74,255,.16), transparent 48%),
+    radial-gradient(ellipse at 75% 60%, rgba(34,173,255,.16), transparent 48%) !important;
 }

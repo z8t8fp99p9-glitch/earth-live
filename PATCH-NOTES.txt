@@ -27,3 +27,9 @@ v1.5.41 — Smooth atmospheric-light intensity
 - Removed brittle CSS text matching that could behave like an intensity threshold.
 - At 0%, atmospheric light is explicitly hidden; intermediate values scale progressively.
 - Effect intensity remains independent. Small-orb visuals are unchanged.
+
+
+v1.5.42 — Restore visible Earth cosmic expansion
+- Found that the v1.5.40 transparency rule was also clearing the cosmic effect background.
+- Restricted transparent backgrounds to the particle-led Sun/Moon effects and restored the cosmic radial expansion background.
+- Preserved the separate effect and light intensity controls.
