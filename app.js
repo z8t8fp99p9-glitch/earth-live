@@ -230,12 +230,90 @@
 
 
   let activeScreenEffectTimer = null;
+  let particleFrame = null;
+  function stopEffectParticles() {
+    if (particleFrame !== null) cancelAnimationFrame(particleFrame);
+    particleFrame = null;
+    const canvas = document.getElementById("effect-particles");
+    const ctx = canvas?.getContext("2d");
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function runFallingParticles(kind, duration) {
+    const canvas = document.getElementById("effect-particles");
+    if (!canvas) return;
+    stopEffectParticles();
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const isSnow = kind === "snow";
+    const count = Math.min(isSnow ? 54 : 36, Math.max(22, Math.round(w / 12)));
+    const particles = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: -Math.random() * h * .8,
+      vx: (Math.random() - .5) * (isSnow ? 0.7 : 0.35),
+      vy: isSnow ? 1.2 + Math.random() * 2.0 : 1.8 + Math.random() * 2.8,
+      size: isSnow ? 1.2 + Math.random() * 2.6 : 1.2 + Math.random() * 3.1,
+      alpha: .35 + Math.random() * .6,
+      drift: Math.random() * Math.PI * 2
+    }));
+    const started = performance.now();
+    function frame(now) {
+      if (now - started >= duration) {
+        stopEffectParticles();
+        return;
+      }
+      ctx.clearRect(0, 0, w, h);
+      const fade = Math.min(1, (duration - (now - started)) / 360);
+      for (const p of particles) {
+        p.drift += .025;
+        p.x += p.vx + (isSnow ? Math.sin(p.drift) * .42 : Math.sin(p.drift) * .12);
+        p.y += p.vy;
+        if (p.y > h + 8) { p.y = -8; p.x = Math.random() * w; }
+        if (p.x < -8) p.x = w + 8;
+        if (p.x > w + 8) p.x = -8;
+        ctx.globalAlpha = p.alpha * fade;
+        if (isSnow) {
+          ctx.fillStyle = "#e7f8ff";
+          ctx.shadowColor = "#8bdfff";
+          ctx.shadowBlur = 5;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle = p.size > 3 ? "#ffd76a" : "#ff7b26";
+          ctx.fillStyle = p.size > 3 ? "#ffe7a0" : "#ff4b16";
+          ctx.shadowColor = "#ff5b13";
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.ellipse(p.x, p.y, p.size * .55, p.size * 1.9, .15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = p.alpha * fade * .7;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y - p.size * 2);
+          ctx.lineTo(p.x - p.vx * 2, p.y - p.size * 5);
+          ctx.stroke();
+        }
+      }
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+      particleFrame = requestAnimationFrame(frame);
+    }
+    particleFrame = requestAnimationFrame(frame);
+  }
+
   function triggerOrbPersonality(button) {
     const orb = button?.dataset?.orb;
     if (!orb) return;
     const overlay = document.getElementById("screen-effect");
     if (!overlay) return;
-
     const effectByOrb = {
       basic: "cosmic",
       hd: "cosmic",
@@ -248,24 +326,25 @@
     const rect = button.getBoundingClientRect();
     const x = rect.left + rect.width / 2;
     const y = rect.top + rect.height / 2;
-
     if (activeScreenEffectTimer) window.clearTimeout(activeScreenEffectTimer);
+    stopEffectParticles();
     overlay.className = "screen-effect";
     overlay.style.setProperty("--effect-x", `${x}px`);
     overlay.style.setProperty("--effect-y", `${y}px`);
     overlay.classList.add(`screen-effect-${effect}`);
-
-    // Restart animation cleanly after a rapid second tap.
     void overlay.offsetWidth;
     overlay.classList.add("screen-effect-playing");
-
     const durations = { cosmic: 1800, magma: 2000, frost: 1650, electric: 1000, location: 1200 };
+    const duration = durations[effect] || 1800;
+    if (effect === "magma") runFallingParticles("lava", duration);
+    if (effect === "frost") runFallingParticles("snow", duration);
     activeScreenEffectTimer = window.setTimeout(() => {
       overlay.className = "screen-effect";
       overlay.style.removeProperty("--effect-x");
       overlay.style.removeProperty("--effect-y");
+      stopEffectParticles();
       activeScreenEffectTimer = null;
-    }, durations[effect] || 1800);
+    }, duration);
   }
 
   function setupOrbDeck() {
