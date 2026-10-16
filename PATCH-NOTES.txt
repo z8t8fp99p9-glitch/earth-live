@@ -1,11 +1,8 @@
-EARTH // LIVE v1.5.35 — Refined Effect Timing
+EARTH // LIVE v1.5.38 — Cumulative Full-Screen Effect Personalisation
 
-Changes:
-- Basic Earth and HD Earth cosmic effect: 1.5 seconds.
-- Sun falling lava: 5 seconds. Sun screen-wide light fades out after 2.5 seconds while particles continue.
-- Moon falling snow: 5 seconds. Moon screen-wide light fades out after 2.5 seconds while particles continue.
-- Live Location scan: 2 seconds with moderate light intensity.
-- Stacks electric effect remains 1 second.
-- Existing particle count and 30 FPS cap retained.
+This single ZIP includes the recent full-screen effect timing, light, and personalisation changes. Upload index.html, style.css, and app.js to the repository root; leave all image assets and other files untouched.
 
-Install: upload index.html, style.css, and app.js to the repository root, replacing those files only. Leave all images and other files untouched.
+Full-screen durations: Basic Earth 1.5s; HD Earth 1.5s; Live Location 2s; Sun lava 5s; Moon snow 5s; Stacks electric 1s.
+Sun and Moon atmospheric light fades after 2.5s while lava/snow continues until 5s. Effect intensity and atmospheric-light on/off/intensity are separately adjustable for all six full-screen orb effects. Settings persist on the device.
+
+Added “Restore Our Defaults” to return all six full-screen effects to EARTH // LIVE defaults: effects on, effect intensity 100%, atmospheric light on, light intensity 50%. Small-orb artwork, glow rings, shadows, and signature small-orb effects are not controlled or changed by these settings.

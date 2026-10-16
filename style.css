@@ -818,3 +818,45 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
   animation-duration: 2s !important;
   filter: drop-shadow(0 0 5px rgba(255,42,67,.3)) !important;
 }
+
+/* v1.5.36 — user-controlled per-orb effect, light toggle and intensity. */
+.orb-effect-settings { display:grid; gap:9px; margin:8px 0 14px; }
+.orb-effect-card { padding:11px 12px; border:1px solid rgba(105,218,224,.22); border-radius:13px; background:rgba(9,25,38,.62); }
+.orb-effect-heading { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+.orb-effect-heading > strong { flex:1 1 100%; color:#e8fbff; font-size:12px; letter-spacing:.02em; }
+.effect-switch { display:inline-flex; align-items:center; gap:5px; color:#b8d2dd; font-size:11px; }
+.effect-switch input { accent-color:#4fe0d6; width:15px; height:15px; margin:0; }
+.intensity-control { display:block; margin-top:10px; color:#a9c8d5; font-size:11px; }
+.intensity-control > span { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.intensity-control output { color:#7df5eb; font-variant-numeric:tabular-nums; }
+.intensity-control input[type="range"] { display:block; width:100%; accent-color:#55e5dc; margin:0; }
+.screen-effect-cosmic.screen-effect-playing::before { opacity:calc(.46 * var(--light-intensity, 1)) !important; }
+.screen-effect-cosmic.screen-effect-playing::after { opacity:calc(.40 * var(--light-intensity, 1)) !important; }
+.screen-effect-location.screen-effect-playing::before { opacity:calc(.42 * var(--light-intensity, 1)) !important; }
+.screen-effect-location.screen-effect-playing::after { opacity:calc(.48 * var(--light-intensity, 1)) !important; }
+.screen-effect-magma.screen-effect-playing::before { opacity:calc(.27 * var(--light-intensity, 1)) !important; }
+.screen-effect-magma.screen-effect-playing::after { opacity:calc(.24 * var(--light-intensity, 1)) !important; }
+.screen-effect-frost.screen-effect-playing::before { opacity:calc(.26 * var(--light-intensity, 1)) !important; }
+.screen-effect-frost.screen-effect-playing::after { opacity:calc(.22 * var(--light-intensity, 1)) !important; }
+.screen-effect-electric.screen-effect-playing::before { opacity:calc(.42 * var(--light-intensity, 1)) !important; }
+.screen-effect-electric.screen-effect-playing::after { opacity:calc(.34 * var(--light-intensity, 1)) !important; }
+.screen-effect.screen-effect-lights-off::before,
+.screen-effect.screen-effect-lights-off::after { opacity:0 !important; filter:none !important; }
+
+
+/* v1.5.37 — independent full-screen effect and atmospheric-light personalisation. */
+.light-control-row { display:flex; align-items:center; margin-top:10px; padding-top:8px; border-top:1px solid rgba(105,218,224,.12); }
+.orb-effect-card .orb-effect-heading > strong { flex:1 1 auto; }
+.screen-effect-cosmic.screen-effect-playing { opacity:calc(.54 * var(--effect-intensity, 1)) !important; }
+.screen-effect-location.screen-effect-playing { opacity:calc(.46 * var(--effect-intensity, 1)) !important; }
+.screen-effect-electric.screen-effect-playing { opacity:var(--effect-intensity, 1) !important; }
+
+
+/* Full-screen effect preferences: restore the studio defaults without touching orb styling. */
+.effect-settings-actions { display:flex; flex-direction:column; gap:7px; margin:10px 0 14px; }
+.effect-default-button { align-self:flex-start; border:1px solid rgba(95,226,219,.42); border-radius:999px; padding:9px 14px; color:var(--text-color, #eefaff); background:rgba(58,191,185,.12); font:inherit; font-size:13px; font-weight:650; cursor:pointer; }
+.effect-default-button:active { transform:scale(.98); }
+.effect-settings-actions p { margin:0; opacity:.68; font-size:11px; line-height:1.4; }
+/* Lava/snow continue for five seconds; their atmospheric light fades after 2.5 seconds. */
+.screen-effect.screen-effect-lights-faded::before,
+.screen-effect.screen-effect-lights-faded::after { opacity:0 !important; filter:none !important; transition:opacity .35s ease-out !important; animation:none !important; }

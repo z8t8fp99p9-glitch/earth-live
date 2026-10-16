@@ -230,7 +230,102 @@
 
 
   let activeScreenEffectTimer = null;
+  let activeLightFadeTimer = null;
   let particleFrame = null;
+  const orbEffectDefaults = {
+    basic: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 },
+    hd: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 },
+    location: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 },
+    sun: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 },
+    moon: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 },
+    stacks: { enabled: true, effectIntensity: 100, light: true, lightIntensity: 50 }
+  };
+  let orbEffectSettings = (() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("earthLiveOrbEffectSettings") || "null");
+      const merged = {};
+      for (const [key, defaults] of Object.entries(orbEffectDefaults)) {
+        const item = saved && saved[key] ? saved[key] : {};
+        merged[key] = {
+          enabled: typeof item.enabled === "boolean" ? item.enabled : defaults.enabled,
+          light: typeof item.light === "boolean" ? item.light : defaults.light,
+          effectIntensity: Number.isFinite(item.effectIntensity) ? Math.max(0, Math.min(100, item.effectIntensity)) : (Number.isFinite(item.intensity) ? 100 : defaults.effectIntensity),
+          lightIntensity: Number.isFinite(item.lightIntensity) ? Math.max(0, Math.min(100, item.lightIntensity)) : (Number.isFinite(item.intensity) ? Math.max(0, Math.min(100, item.intensity)) : defaults.lightIntensity)
+        };
+      }
+      return merged;
+    } catch (_) { return JSON.parse(JSON.stringify(orbEffectDefaults)); }
+  })();
+  function saveOrbEffectSettings() {
+    try { localStorage.setItem("earthLiveOrbEffectSettings", JSON.stringify(orbEffectSettings)); } catch (_) {}
+  }
+  function setupOrbEffectPersonalisation() {
+    document.querySelectorAll("[data-effect-enabled]").forEach(input => {
+      const key = input.dataset.effectEnabled;
+      if (!orbEffectSettings[key]) return;
+      input.checked = orbEffectSettings[key].enabled;
+      input.addEventListener("change", () => { orbEffectSettings[key].enabled = input.checked; saveOrbEffectSettings(); });
+    });
+    document.querySelectorAll("[data-light-enabled]").forEach(input => {
+      const key = input.dataset.lightEnabled;
+      if (!orbEffectSettings[key]) return;
+      input.checked = orbEffectSettings[key].light;
+      input.addEventListener("change", () => { orbEffectSettings[key].light = input.checked; saveOrbEffectSettings(); });
+    });
+    document.querySelectorAll("[data-effect-intensity]").forEach(input => {
+      const key = input.dataset.effectIntensity;
+      if (!orbEffectSettings[key]) return;
+      const output = document.querySelector(`[data-effect-intensity-value="${key}"]`);
+      input.value = String(orbEffectSettings[key].effectIntensity);
+      if (output) output.value = `${input.value}%`;
+      input.addEventListener("input", () => {
+        orbEffectSettings[key].effectIntensity = Number(input.value);
+        if (output) output.value = `${input.value}%`;
+        saveOrbEffectSettings();
+      });
+    });
+    document.querySelectorAll("[data-light-intensity]").forEach(input => {
+      const key = input.dataset.lightIntensity;
+      if (!orbEffectSettings[key]) return;
+      const output = document.querySelector(`[data-light-intensity-value="${key}"]`);
+      input.value = String(orbEffectSettings[key].lightIntensity);
+      if (output) output.value = `${input.value}%`;
+      input.addEventListener("input", () => {
+        orbEffectSettings[key].lightIntensity = Number(input.value);
+        if (output) output.value = `${input.value}%`;
+        saveOrbEffectSettings();
+      });
+    });
+    const resetButton = document.getElementById("resetOrbEffects");
+    if (resetButton) resetButton.addEventListener("click", () => {
+      orbEffectSettings = JSON.parse(JSON.stringify(orbEffectDefaults));
+      saveOrbEffectSettings();
+      document.querySelectorAll("[data-effect-enabled]").forEach(input => {
+        const key = input.dataset.effectEnabled;
+        if (orbEffectSettings[key]) input.checked = orbEffectSettings[key].enabled;
+      });
+      document.querySelectorAll("[data-light-enabled]").forEach(input => {
+        const key = input.dataset.lightEnabled;
+        if (orbEffectSettings[key]) input.checked = orbEffectSettings[key].light;
+      });
+      document.querySelectorAll("[data-effect-intensity]").forEach(input => {
+        const key = input.dataset.effectIntensity;
+        if (!orbEffectSettings[key]) return;
+        input.value = String(orbEffectSettings[key].effectIntensity);
+        const output = document.querySelector(`[data-effect-intensity-value="${key}"]`);
+        if (output) output.value = `${input.value}%`;
+      });
+      document.querySelectorAll("[data-light-intensity]").forEach(input => {
+        const key = input.dataset.lightIntensity;
+        if (!orbEffectSettings[key]) return;
+        input.value = String(orbEffectSettings[key].lightIntensity);
+        const output = document.querySelector(`[data-light-intensity-value="${key}"]`);
+        if (output) output.value = `${input.value}%`;
+      });
+      resetButton.textContent = "Defaults Restored ✓";
+      window.setTimeout(() => { resetButton.textContent = "Restore Our Defaults"; }, 1800);
+    });
+  }
   function stopEffectParticles() {
     if (particleFrame !== null) cancelAnimationFrame(particleFrame);
     particleFrame = null;
@@ -238,7 +333,7 @@
     const ctx = canvas?.getContext("2d");
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
-  function runFallingParticles(kind, duration) {
+  function runFallingParticles(kind, duration, intensity = 100) {
     const canvas = document.getElementById("effect-particles");
     if (!canvas) return;
     stopEffectParticles();
@@ -285,7 +380,7 @@
         if (p.y > h + 8) { p.y = -8; p.x = Math.random() * w; }
         if (p.x < -8) p.x = w + 8;
         if (p.x > w + 8) p.x = -8;
-        ctx.globalAlpha = p.alpha * fade;
+        ctx.globalAlpha = p.alpha * fade * (intensity / 100);
         if (isSnow) {
           ctx.fillStyle = "#e7f8ff";
           ctx.shadowColor = "#8bdfff";
@@ -301,7 +396,7 @@
           ctx.beginPath();
           ctx.ellipse(p.x, p.y, p.size * .55, p.size * 1.9, .15, 0, Math.PI * 2);
           ctx.fill();
-          ctx.globalAlpha = p.alpha * fade * .7;
+          ctx.globalAlpha = p.alpha * fade * .7 * (intensity / 100);
           ctx.beginPath();
           ctx.moveTo(p.x, p.y - p.size * 2);
           ctx.lineTo(p.x - p.vx * 2, p.y - p.size * 5);
@@ -317,7 +412,7 @@
 
   function triggerOrbPersonality(button) {
     const orb = button?.dataset?.orb;
-    if (!orb) return;
+    if (!orb || !orbEffectSettings[orb] || !orbEffectSettings[orb].enabled) return;
     const overlay = document.getElementById("screen-effect");
     if (!overlay) return;
     const effectByOrb = {
@@ -333,8 +428,14 @@
     const x = rect.left + rect.width / 2;
     const y = rect.top + rect.height / 2;
     if (activeScreenEffectTimer) window.clearTimeout(activeScreenEffectTimer);
+    if (activeLightFadeTimer) window.clearTimeout(activeLightFadeTimer);
+    activeLightFadeTimer = null;
     stopEffectParticles();
     overlay.className = "screen-effect";
+    const preferences = orbEffectSettings[orb];
+    overlay.style.setProperty("--light-intensity", String(preferences.lightIntensity / 50));
+    overlay.style.setProperty("--effect-intensity", String(preferences.effectIntensity / 100));
+    if (!preferences.light) overlay.classList.add("screen-effect-lights-off");
     overlay.style.setProperty("--effect-x", `${x}px`);
     overlay.style.setProperty("--effect-y", `${y}px`);
     overlay.classList.add(`screen-effect-${effect}`);
@@ -343,18 +444,29 @@
     overlay.classList.add("screen-effect-playing");
     const durations = { cosmic: 1500, magma: 5000, frost: 5000, electric: 1000, location: 2000 };
     const duration = durations[effect] || 1800;
-    if (effect === "magma") runFallingParticles("lava", duration);
-    if (effect === "frost") runFallingParticles("snow", duration);
+    if (effect === "magma") runFallingParticles("lava", duration, preferences.effectIntensity);
+    if (effect === "frost") runFallingParticles("snow", duration, preferences.effectIntensity);
+    if (effect === "magma" || effect === "frost") {
+      activeLightFadeTimer = window.setTimeout(() => {
+        overlay.classList.add("screen-effect-lights-faded");
+        activeLightFadeTimer = null;
+      }, 2500);
+    }
     activeScreenEffectTimer = window.setTimeout(() => {
+      if (activeLightFadeTimer) window.clearTimeout(activeLightFadeTimer);
+      activeLightFadeTimer = null;
       overlay.className = "screen-effect";
       overlay.style.removeProperty("--effect-x");
       overlay.style.removeProperty("--effect-y");
+      overlay.style.removeProperty("--light-intensity");
+      overlay.style.removeProperty("--effect-intensity");
       stopEffectParticles();
       activeScreenEffectTimer = null;
     }, duration);
   }
 
   function setupOrbDeck() {
+    setupOrbEffectPersonalisation();
     const dock = document.getElementById("primaryDock");
     if (!dock) return;
     const buttons = Array.from(dock.querySelectorAll(".orb-button"));
