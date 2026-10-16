@@ -1,4 +1,4 @@
-const CACHE_NAME = "earth-live-adaptive-dock-v1-5-22";
+const CACHE_NAME = "earth-live-earth-view-switch-v1-5-45";
 const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest", "./earth-basic.webp", "./earth-hd.webp", "./location.webp", "./sun.webp", "./moon.webp", "./stacks.webp", "./deck-clear-glass.png", "./deck-smoked-glass.png", "./deck-frosted-glass.png", "./deck-neon-edge-glass.png", "./deck-desert-sand.png", "./deck-dark-sand.png", "./deck-mixed-stone.png", "./deck-volcanic-stone.png", "./deck-ice.png", "./deck-fire.png"];
 self.addEventListener("install", event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).catch(error => console.warn("EARTH LIVE shell cache skipped:", error)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", event => { event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith("earth-live-") && key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim())); });

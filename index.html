@@ -11,16 +11,30 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./style.css?v=earth-live-fullscreen-effect-personalisation-v1.5.37">
+  <link rel="stylesheet" href="./style.css?v=adaptive-location-sun-v1.5.44">
   <script>window.CESIUM_BASE_URL = "https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/";</script>
   <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-  <script defer src="./app-version.js?v=earth-live-fullscreen-effect-personalisation-v1.5.37"></script>
-  <script defer src="./app.js?v=earth-live-fullscreen-effect-personalisation-v1.5.37"></script>
+  <script defer src="./app-version.js?v=adaptive-location-sun-v1.5.44"></script>
+  <script defer src="./app.js?v=earth-view-switch-v1.5.45"></script>
+  <script defer src="./location-sun-adaptive.js?v=adaptive-location-sun-v1"></script>
 </head>
 <body>
   <div id="screen-effect" class="screen-effect" aria-hidden="true"><canvas id="effect-particles" class="effect-particles"></canvas></div>
   <main id="app" aria-label="EARTH LIVE globe">
     <div id="globe" role="application" aria-label="Interactive satellite Earth. Drag to rotate and pinch to zoom."></div>
+    <section id="sunAdaptiveView" class="sun-adaptive-view" aria-label="Sun Sky View" hidden>
+      <div class="sun-adaptive-sky">
+        <div class="sun-sky-heading"><span>LOCAL SUN · LIVE LOCATION</span><button id="closeSunAdaptive" type="button" aria-label="Close Sun Sky View">×</button></div>
+        <div class="sun-sky-horizon" aria-hidden="true"></div>
+        <div id="sunAdaptiveOrb" class="sun-adaptive-orb" aria-hidden="true"></div>
+        <div id="sunAdaptiveStatus" class="sun-adaptive-status" role="status">Getting your location…</div>
+      </div>
+      <div class="sun-adaptive-timeline">
+        <div class="sun-time-labels"><span id="sunAdaptiveRise">Sunrise</span><strong id="sunAdaptiveReadout">--:--</strong><span id="sunAdaptiveSet">Sunset</span></div>
+        <input id="sunAdaptiveRange" type="range" min="0" max="720" value="360" step="1" aria-label="Selected local Sun time">
+        <div class="sun-adaptive-caption">Drag to explore the Sun’s calculated position for your location.</div>
+      </div>
+    </section>
     <nav id="primaryDock" class="primary-dock" aria-label="Main controls">
       <div class="orb-deck-plate" aria-hidden="true"><img class="orb-deck-art" src="./deck-clear-glass.png" alt="" draggable="false"></div>
       <button class="orb-button" type="button" data-orb="basic" aria-pressed="true"><img src="./earth-basic.webp" alt=""><span class="orb-label">Basic</span></button>

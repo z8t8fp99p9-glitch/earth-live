@@ -10,6 +10,8 @@
   // Single source of truth for the selected display rectangle and its live dimensions.
   window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
   let esriLayer = null;
+  let hdHillshadeLayer = null;
+  let activeEarthView = "basic";
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
 
@@ -160,6 +162,35 @@
         console.warn("Esri World Imagery tile request failed:", error);
       });
     }
+  }
+
+  function ensureHdHillshadeLayer() {
+    if (hdHillshadeLayer || !viewer || viewer.isDestroyed()) return;
+    const provider = new Cesium.UrlTemplateImageryProvider({
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
+      minimumLevel: 0,
+      maximumLevel: 13,
+      credit: new Cesium.Credit("Hillshade © Esri", true)
+    });
+    hdHillshadeLayer = viewer.imageryLayers.addImageryProvider(provider);
+    hdHillshadeLayer.alpha = 0.26;
+    hdHillshadeLayer.show = false;
+    if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
+      provider.errorEvent.addEventListener(error => {
+        console.warn("Esri World Hillshade tile request failed:", error);
+      });
+    }
+  }
+
+  function setEarthView(mode) {
+    if (mode !== "basic" && mode !== "hd") return;
+    activeEarthView = mode;
+    ensureHdHillshadeLayer();
+    if (hdHillshadeLayer) hdHillshadeLayer.show = mode === "hd";
+    document.querySelectorAll('.orb-button[data-orb="basic"], .orb-button[data-orb="hd"]').forEach(button => {
+      button.setAttribute("aria-pressed", String(button.dataset.orb === mode));
+    });
+    if (viewer && !viewer.isDestroyed()) viewer.scene.requestRender();
   }
 
   function resizeGlobe() {
@@ -508,8 +539,7 @@
         return;
       }
       if (key === "basic" || key === "hd") {
-        buttons.filter(item => item.dataset.orb === "basic" || item.dataset.orb === "hd")
-          .forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+        setEarthView(key);
       } else {
         button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
       }
@@ -611,6 +641,8 @@
 
       viewer.imageryLayers.removeAll(false);
       addEsriImagery();
+      ensureHdHillshadeLayer();
+      setEarthView("basic");
 
       viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#030509");
       viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString("#101820");
