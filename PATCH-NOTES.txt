@@ -1,17 +1,11 @@
-EARTH // LIVE — Global Display Modes v1.5.5
+EARTH // LIVE v1.5.6 — Global Display Variable
 
-Display Personalisation options:
-- Full Screen (default on first launch)
-- Cutouts at Top
-- Cutouts at Bottom
-- Cutouts at Top & Bottom
+Fixes found in v1.5.5:
+- All display modes now use the selected #globe box as the authoritative viewport; removed the 100vw minimum-width constraint that overrode cutout layouts.
+- Explicitly changing a display mode waits for CSS layout, resizes Cesium, and recalculates adaptive camera framing for the selected viewport.
+- Orientation profile changes recalculate framing before user interaction; explicit mode changes recalculate even after interaction.
+- Four persistent choices retained: Full Screen (default), Cutouts at Top, Cutouts at Bottom, Cutouts at Top & Bottom.
+- Portrait target 80% width centred; landscape target 60% height with 2% top target.
+- No changes to imagery provider, gesture handlers, dock CSS, or data-store.js.
 
-The selected mode is stored in localStorage as earthLiveDisplayMode and restored on later launches. Viewport/orientation changes adapt layout but do not overwrite the saved selection.
-
-Adaptive globe targets:
-- Portrait/compact: 80% of the selected display area's width, centered.
-- Landscape/ultrawide: 60% of the selected display area's height, with a 2% top-position target.
-
-The four modes apply browser-reported safe-area insets at the selected edges. Full Screen uses the complete viewport. Existing gesture implementation and imagery setup are retained. data-store.js is not included or modified.
-
-Validation: JavaScript syntax and ZIP integrity checks performed. Not visually verified on a physical iPhone. More Options remains the temporary top-right entry point; integration into the original five-button deck is separate work.
+Candidate only: syntax and archive integrity checked; physical-device visual behavior still requires user testing.

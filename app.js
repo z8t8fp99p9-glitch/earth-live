@@ -65,7 +65,7 @@
     controller.maximumMovementRatio = settings.movementRatio;
 
     // Reframe only before the user takes control, or on the first render. Never reset a manually moved globe.
-    const mayReframe = initial || (!hasUserInteracted && (forceLayout || lastAppliedProfile !== nextProfile));
+    const mayReframe = initial || forceLayout || (!hasUserInteracted && lastAppliedProfile !== nextProfile);
     if (mayReframe) {
       const cameraHeight = calculateCameraHeight(settings);
       // Use the full visible viewport. Portrait is centred in both axes.
@@ -114,8 +114,12 @@
       if (!viewer || viewer.isDestroyed()) return;
 
       viewer.resize();
+      const previousProfile = activeProfile;
       const nextProfile = detectDisplayProfile();
       activeProfile = nextProfile;
+      if (!hasUserInteracted && nextProfile !== previousProfile) {
+        applyDisplayProfile({ forceLayout: true });
+      }
       const settings = profiles[nextProfile];
       const controller = viewer.scene.screenSpaceCameraController;
       controller.zoomFactor = settings.zoomFactor;
@@ -150,14 +154,15 @@
       if (!choice.checked) return;
       document.documentElement.dataset.displayMode = choice.value;
       try { localStorage.setItem("earthLiveDisplayMode", choice.value); } catch (_) {}
-      // Recalculate profile after CSS has applied; do not overwrite the user's camera view.
-      requestAnimationFrame(() => {
+      // The selected display mode is the single global viewport source. Let CSS settle,
+      // resize Cesium to that exact box, then reframe once for this explicit user choice.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
         if (viewer && !viewer.isDestroyed()) {
           viewer.resize();
-          document.documentElement.dataset.displayProfile = detectDisplayProfile();
+          applyDisplayProfile({ forceLayout: true });
           viewer.scene.requestRender();
         }
-      });
+      }));
     }));
   }
 
