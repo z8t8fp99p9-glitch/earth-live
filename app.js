@@ -229,10 +229,31 @@
   }
 
 
+  function triggerOrbPersonality(button) {
+    const orb = button?.dataset?.orb;
+    if (!orb) return;
+    const effectByOrb = {
+      basic: "cosmic",
+      hd: "cosmic",
+      location: "location",
+      sun: "magma",
+      moon: "frost",
+      stacks: "electric"
+    };
+    const effect = effectByOrb[orb] || "cosmic";
+    const className = `effect-${effect}`;
+    button.classList.remove(className);
+    // Restart the brief CSS effect without a timer loop.
+    void button.offsetWidth;
+    button.classList.add(className);
+    window.setTimeout(() => button.classList.remove(className), 1050);
+  }
+
   function setupOrbDeck() {
     const dock = document.getElementById("primaryDock");
     if (!dock) return;
     const buttons = Array.from(dock.querySelectorAll(".orb-button"));
+    buttons.forEach(button => button.addEventListener("click", () => triggerOrbPersonality(button), { passive: true }));
     const stacksPanel = document.getElementById("stacksPanel");
     const stacksHome = document.getElementById("stacksHome");
     const customiseView = document.getElementById("customiseView");

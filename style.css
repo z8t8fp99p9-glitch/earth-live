@@ -508,38 +508,137 @@ html[data-deck-theme="smoked-glass"] .orb-deck-art, html[data-deck-theme="clear-
 }
 
 
-/* v1.5.26 — subtle coded torch beams; status bars removed. */
+/* Two available deck materials only. */
+.deck-theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+
+/* v1.5.27 — elemental orb personalities; effects are interaction-triggered, not continuous. */
 .primary-dock { --dock-max-width: 402px; }
-.primary-dock .orb-indicator { display: none !important; }
-.primary-dock > .orb-button { position: relative; overflow: visible; }
-.primary-dock .orb-button .orb-beam {
+.primary-dock .orb-indicator,
+.primary-dock .orb-beam { display: none !important; }
+.primary-dock > .orb-button { isolation: isolate; }
+.primary-dock > .orb-button::before,
+.primary-dock > .orb-button::after { pointer-events: none; }
+
+/* Atmospheric personality aura, unique to each orb. */
+.primary-dock > .orb-button::before {
+  content: "";
   position: absolute;
   z-index: 0;
   left: 50%;
-  top: clamp(39px, calc(var(--orb-size) * .72), 57px);
-  width: clamp(34px, calc(var(--orb-size) * .82), 62px);
-  height: clamp(24px, calc(var(--orb-size) * .52), 40px);
-  transform: translateX(-50%);
-  pointer-events: none;
-  opacity: .58;
-  clip-path: polygon(43% 0, 57% 0, 100% 100%, 0 100%);
-  filter: blur(2px);
-  background: linear-gradient(to bottom, var(--orb-glow) 0%, var(--orb-core) 36%, transparent 100%);
-  transition: opacity .2s ease, filter .2s ease;
+  top: 10%;
+  width: 112%;
+  height: 92%;
+  transform: translateX(-50%) scale(.78);
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(7px);
+  transition: opacity .22s ease, transform .35s ease;
 }
-.primary-dock .orb-button[data-orb="basic"] .orb-beam,
-.primary-dock .orb-button[data-orb="hd"] .orb-beam { background: linear-gradient(to bottom, rgba(55,164,255,.8), rgba(55,164,255,.2), transparent); }
-.primary-dock .orb-button[data-orb="location"] .orb-beam { background: linear-gradient(to bottom, rgba(255,45,61,.8), rgba(255,45,61,.2), transparent); }
-.primary-dock .orb-button[data-orb="sun"] .orb-beam { background: linear-gradient(to bottom, rgba(255,177,57,.8), rgba(255,177,57,.2), transparent); }
-.primary-dock .orb-button[data-orb="moon"] .orb-beam { background: linear-gradient(to bottom, rgba(83,167,255,.8), rgba(83,167,255,.2), transparent); }
-.primary-dock .orb-button[data-orb="stacks"] .orb-beam { background: linear-gradient(to bottom, rgba(28,239,226,.8), rgba(28,239,226,.2), transparent); }
-.primary-dock .orb-button[aria-pressed="true"] .orb-beam { opacity: .76; filter: blur(2.5px); }
-.primary-dock .orb-button img,
-.primary-dock .orb-button .orb-label { position: relative; z-index: 2; }
-.primary-dock .orb-button .orb-label { text-shadow: 0 1px 5px #000, 0 0 4px rgba(0,0,0,.8); }
-@media (prefers-reduced-motion: reduce) {
-  .primary-dock .orb-button .orb-beam { transition: none; }
+.primary-dock > .orb-button.effect-cosmic::before {
+  opacity: .85;
+  transform: translateX(-50%) scale(1.16);
+  background: radial-gradient(ellipse, rgba(45,151,255,.56) 0%, rgba(54,80,255,.24) 42%, transparent 72%);
+}
+.primary-dock > .orb-button.effect-magma::before {
+  opacity: .9;
+  transform: translateX(-50%) scale(1.14);
+  background: radial-gradient(ellipse, rgba(255,100,20,.62) 0%, rgba(255,34,0,.28) 43%, transparent 72%);
+}
+.primary-dock > .orb-button.effect-frost::before {
+  opacity: .86;
+  transform: translateX(-50%) scale(1.12);
+  background: radial-gradient(ellipse, rgba(157,231,255,.62) 0%, rgba(76,169,255,.22) 45%, transparent 72%);
+}
+.primary-dock > .orb-button.effect-electric::before {
+  opacity: .95;
+  transform: translateX(-50%) scale(1.18);
+  background: radial-gradient(ellipse, rgba(38,255,232,.62) 0%, rgba(30,128,255,.25) 44%, transparent 73%);
 }
 
-/* Two available deck materials only. */
-.deck-theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Brief elemental texture overlays. */
+.primary-dock > .orb-button::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 17%;
+  width: 104%;
+  height: 90%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.primary-dock > .orb-button.effect-cosmic::after {
+  opacity: .68;
+  background:
+    radial-gradient(circle at 22% 38%, rgba(103,210,255,.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 28%, rgba(163,126,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 68% 72%, rgba(89,191,255,.85) 0 1px, transparent 2px),
+    radial-gradient(ellipse, transparent 46%, rgba(72,150,255,.45) 55%, transparent 70%);
+  animation: elemental-cosmic .9s ease-out both;
+}
+.primary-dock > .orb-button.effect-magma::after {
+  opacity: .78;
+  background:
+    radial-gradient(ellipse at 50% 94%, rgba(255,228,111,.95) 0 2%, rgba(255,75,10,.65) 14%, transparent 49%),
+    repeating-linear-gradient(105deg, transparent 0 12px, rgba(255,95,20,.2) 13px 15px, transparent 17px 24px);
+  animation: elemental-magma .8s ease-out both;
+}
+.primary-dock > .orb-button.effect-frost::after {
+  opacity: .8;
+  background:
+    radial-gradient(circle at 23% 30%, rgba(223,250,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 74% 24%, rgba(185,235,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 72%, rgba(223,250,255,.9) 0 1px, transparent 2px),
+    radial-gradient(ellipse, transparent 45%, rgba(143,224,255,.5) 57%, transparent 72%);
+  animation: elemental-frost .95s ease-out both;
+}
+.primary-dock > .orb-button.effect-electric::after {
+  opacity: .95;
+  background:
+    conic-gradient(from 12deg at 50% 50%, transparent 0 9%, rgba(117,255,246,.95) 10%, transparent 12% 26%, rgba(67,168,255,.9) 27%, transparent 29% 48%, rgba(117,255,246,.9) 49%, transparent 51% 100%);
+  filter: blur(.6px);
+  animation: elemental-electric .48s steps(2, end) both;
+}
+.primary-dock > .orb-button.effect-location::before {
+  opacity: .85;
+  transform: translateX(-50%) scale(1.1);
+  background: radial-gradient(ellipse, rgba(255,45,70,.48) 0%, rgba(255,45,70,.2) 42%, transparent 72%);
+}
+.primary-dock > .orb-button.effect-location::after {
+  opacity: .78;
+  border: 1px solid rgba(255,80,90,.8);
+  box-shadow: 0 0 12px rgba(255,45,70,.55), inset 0 0 10px rgba(255,45,70,.18);
+  animation: elemental-scan .75s ease-out both;
+}
+.primary-dock > .orb-button.effect-sun::before {
+  opacity: .85;
+  transform: translateX(-50%) scale(1.12);
+  background: radial-gradient(ellipse, rgba(255,177,57,.55) 0%, rgba(255,90,10,.22) 43%, transparent 72%);
+}
+.primary-dock > .orb-button.effect-sun::after {
+  opacity: .72;
+  background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,192,78,.0) 0 9deg, rgba(255,173,48,.5) 10deg 11deg, transparent 12deg 22deg);
+  mask-image: radial-gradient(ellipse, transparent 0 43%, #000 53%, transparent 74%);
+  animation: elemental-sun .85s ease-out both;
+}
+.primary-dock > .orb-button.effect-stacks::before {
+  opacity: .88;
+  transform: translateX(-50%) scale(1.12);
+  background: radial-gradient(ellipse, rgba(28,239,226,.48) 0%, rgba(30,130,255,.2) 43%, transparent 72%);
+}
+
+@keyframes elemental-cosmic { 0% { transform: translateX(-50%) scale(.72) rotate(-12deg); opacity: 0; } 40% { opacity: .85; } 100% { transform: translateX(-50%) scale(1.08) rotate(10deg); opacity: 0; } }
+@keyframes elemental-magma { 0% { transform: translateX(-50%) translateY(5px) scaleY(.7); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) translateY(-4px) scaleY(1.08); opacity: 0; } }
+@keyframes elemental-frost { 0% { transform: translateX(-50%) scale(.85); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) scale(1.12); opacity: 0; } }
+@keyframes elemental-electric { 0%, 100% { opacity: 0; } 15%, 48%, 72% { opacity: .95; } 30%, 62% { opacity: .15; } }
+@keyframes elemental-scan { 0% { transform: translateX(-50%) scale(.55); opacity: 0; } 45% { opacity: .85; } 100% { transform: translateX(-50%) scale(1.22); opacity: 0; } }
+@keyframes elemental-sun { 0% { transform: translateX(-50%) rotate(0deg) scale(.85); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateX(-50%) rotate(28deg) scale(1.08); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .primary-dock > .orb-button::before,
+  .primary-dock > .orb-button::after { animation: none !important; transition: none !important; }
+}

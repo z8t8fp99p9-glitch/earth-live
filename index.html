@@ -11,23 +11,23 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./style.css?v=earth-live-torch-dock-v1.5.26">
+  <link rel="stylesheet" href="./style.css?v=earth-live-elemental-orbs-v1.5.27">
   <script>window.CESIUM_BASE_URL = "https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/";</script>
   <script defer src="https://cesium.com/downloads/cesiumjs/releases/1.132/Build/Cesium/Cesium.js"></script>
-  <script defer src="./app-version.js?v=earth-live-torch-dock-v1.5.26"></script>
-  <script defer src="./app.js?v=earth-live-torch-dock-v1.5.26"></script>
+  <script defer src="./app-version.js?v=earth-live-elemental-orbs-v1.5.27"></script>
+  <script defer src="./app.js?v=earth-live-elemental-orbs-v1.5.27"></script>
 </head>
 <body>
   <main id="app" aria-label="EARTH LIVE globe">
     <div id="globe" role="application" aria-label="Interactive satellite Earth. Drag to rotate and pinch to zoom."></div>
     <nav id="primaryDock" class="primary-dock" aria-label="Main controls">
       <div class="orb-deck-plate" aria-hidden="true"><img class="orb-deck-art" src="./deck-clear-glass.png" alt="" draggable="false"></div>
-      <button class="orb-button" type="button" data-orb="basic" aria-pressed="true"><span class="orb-beam" aria-hidden="true"></span><img src="./earth-basic.webp" alt=""><span class="orb-label">Basic</span></button>
-      <button class="orb-button" type="button" data-orb="hd" aria-pressed="false"><span class="orb-beam" aria-hidden="true"></span><img src="./earth-hd.webp" alt=""><span class="orb-label">HD</span></button>
-      <button class="orb-button" type="button" data-orb="location" aria-pressed="false"><span class="orb-beam" aria-hidden="true"></span><img src="./location.webp" alt=""><span class="orb-label">Live Location</span></button>
-      <button class="orb-button" type="button" data-orb="sun" aria-pressed="false"><span class="orb-beam" aria-hidden="true"></span><img src="./sun.webp" alt=""><span class="orb-label">Sun</span></button>
-      <button class="orb-button" type="button" data-orb="moon" aria-pressed="false"><span class="orb-beam" aria-hidden="true"></span><img src="./moon.webp" alt=""><span class="orb-label">Moon</span></button>
-      <button class="orb-button" type="button" data-orb="stacks" aria-pressed="false"><span class="orb-beam" aria-hidden="true"></span><img src="./stacks.webp" alt=""><span class="orb-label">Stacks</span></button>
+      <button class="orb-button" type="button" data-orb="basic" aria-pressed="true"><img src="./earth-basic.webp" alt=""><span class="orb-label">Basic</span></button>
+      <button class="orb-button" type="button" data-orb="hd" aria-pressed="false"><img src="./earth-hd.webp" alt=""><span class="orb-label">HD</span></button>
+      <button class="orb-button" type="button" data-orb="location" aria-pressed="false"><img src="./location.webp" alt=""><span class="orb-label">Live Location</span></button>
+      <button class="orb-button" type="button" data-orb="sun" aria-pressed="false"><img src="./sun.webp" alt=""><span class="orb-label">Sun</span></button>
+      <button class="orb-button" type="button" data-orb="moon" aria-pressed="false"><img src="./moon.webp" alt=""><span class="orb-label">Moon</span></button>
+      <button class="orb-button" type="button" data-orb="stacks" aria-pressed="false"><img src="./stacks.webp" alt=""><span class="orb-label">Stacks</span></button>
     </nav>
     <section id="stacksPanel" class="stacks-panel" role="dialog" aria-modal="false" aria-labelledby="stacksTitle" hidden>
       <header class="stacks-header"><div><h2 id="stacksTitle">STACKS</h2><p>LAYERS · DATA · SETTINGS</p></div><button id="closeStacks" class="panel-close" type="button" aria-label="Close Stacks">×</button></header>
