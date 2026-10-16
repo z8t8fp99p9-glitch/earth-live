@@ -1,15 +1,20 @@
-EARTH // LIVE v1.5.13 — Earth 75% sizing standard
+EARTH // LIVE v1.5.16 — Orb ON/OFF Visual States
 
-Change:
-- Earth startup framing target is now 75% in portrait (measured against display width) and 75% in landscape (measured against display height).
-- This is one shared sizing standard with orientation-aware measurement, not two unrelated camera zoom values.
-- Landscape keeps its existing 2% top placement target.
+Based on v1.5.15 Stacks Teal Folder candidate.
 
-Preserved:
-- v1.5.12 camera continuity: rotating the device synchronizes the viewport only and does not reframe the camera or alter zoom.
-- Existing display modes, responsive safe-area behavior, gestures, imagery, earthquake features, and all other app behavior.
-- data-store.js is not included or modified.
+Changes:
+- Refines OFF states: original artwork remains recognisable with restrained brightness, subdued rim, and muted indicator.
+- Refines ON states: brighter artwork, colour-matched halo, clearer rim, and illuminated indicator.
+- Colour identity: Basic/HD blue, Live Location red, Sun amber, Moon blue, Stacks teal.
+- Preserves the six-button bottom deck, existing orb assets, Stacks folder, Appearance choices, and existing application logic.
+- Cache/version identifiers updated to v1.5.16.
 
-Validation:
-- JavaScript syntax and ZIP integrity checked.
-- This is a candidate ZIP; upload its contents to the repository root and verify on the iPhone before treating it as deployed/approved.
+Protected:
+- No data-store.js changes.
+- No new external dependencies.
+- Existing globe/camera code and Stacks panel carried forward unchanged apart from asset/cache version strings.
+
+Validation performed: ZIP integrity; JavaScript syntax; required six orb files; service-worker cache version. Not deployed or tested on an iPhone. Candidate ZIP only.
+
+
+GitHub upload layout: every file in this ZIP is at repository root. Upload these files directly to main; no enclosing folder or assets directory is required. Orb images are at root and references have been updated.

@@ -1,5 +1,5 @@
-const CACHE_NAME = "earth-live-earth-75-percent-v1-5-13";
-const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest"];
+const CACHE_NAME = "earth-live-orb-states-v1-5-16";
+const SHELL = ["./", "./index.html", "./style.css", "./app.js", "./app-version.js", "./manifest.webmanifest", "./earth-basic.webp", "./earth-hd.webp", "./location.webp", "./sun.webp", "./moon.webp", "./stacks.webp"];
 
 self.addEventListener("install", event => {
   event.waitUntil(

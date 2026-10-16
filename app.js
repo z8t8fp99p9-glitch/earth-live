@@ -228,6 +228,102 @@
     }));
   }
 
+
+  function setupOrbDeck() {
+    const dock = document.getElementById("primaryDock");
+    if (!dock) return;
+    const buttons = Array.from(dock.querySelectorAll(".orb-button"));
+    const stacksPanel = document.getElementById("stacksPanel");
+    const stacksHome = document.getElementById("stacksHome");
+    const customiseView = document.getElementById("customiseView");
+    const stackNotice = document.getElementById("stackNotice");
+    const closeStacks = document.getElementById("closeStacks");
+    const backToStacks = document.getElementById("backToStacks");
+    const displayChoices = Array.from(document.querySelectorAll('input[name="displayMode"]'));
+    const themeChoices = Array.from(document.querySelectorAll("[data-deck-theme]"));
+
+    const openStacks = () => {
+      stacksPanel.hidden = false;
+      stacksHome.hidden = false;
+      customiseView.hidden = true;
+      stackNotice.hidden = true;
+      const stackButton = buttons.find(item => item.dataset.orb === "stacks");
+      if (stackButton) stackButton.setAttribute("aria-pressed", "true");
+    };
+    const closeStacksPanel = () => {
+      stacksPanel.hidden = true;
+      const stackButton = buttons.find(item => item.dataset.orb === "stacks");
+      if (stackButton) stackButton.setAttribute("aria-pressed", "false");
+    };
+
+    buttons.forEach(button => button.addEventListener("click", () => {
+      const key = button.dataset.orb;
+      if (key === "stacks") {
+        if (stacksPanel.hidden) openStacks(); else closeStacksPanel();
+        return;
+      }
+      if (key === "basic" || key === "hd") {
+        buttons.filter(item => item.dataset.orb === "basic" || item.dataset.orb === "hd")
+          .forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+      } else {
+        button.setAttribute("aria-pressed", String(button.getAttribute("aria-pressed") !== "true"));
+      }
+    }));
+
+    closeStacks?.addEventListener("click", closeStacksPanel);
+    backToStacks?.addEventListener("click", () => {
+      customiseView.hidden = true;
+      stacksHome.hidden = false;
+      stackNotice.hidden = true;
+    });
+    document.querySelectorAll('[data-stack-view="customise"]').forEach(button => button.addEventListener("click", () => {
+      stacksHome.hidden = true;
+      customiseView.hidden = false;
+      stackNotice.hidden = true;
+    }));
+    document.querySelectorAll("[data-stack-feature]").forEach(button => button.addEventListener("click", () => {
+      const labels = { weather: "Weather & Clouds", "air-traffic": "Air Traffic", "road-traffic": "Road Traffic", imagery: "Imagery" };
+      stackNotice.textContent = labels[button.dataset.stackFeature] + " is reserved in Stacks. Its live dataset connection will be added in a later milestone.";
+      stackNotice.hidden = false;
+    }));
+
+    let savedTheme = "smoked-glass";
+    try { savedTheme = localStorage.getItem("earthLiveDeckTheme") || savedTheme; } catch (_) {}
+    document.documentElement.dataset.deckTheme = savedTheme;
+    themeChoices.forEach(choice => {
+      choice.classList.toggle("selected", choice.dataset.deckTheme === savedTheme);
+      choice.addEventListener("click", () => {
+        const theme = choice.dataset.deckTheme;
+        document.documentElement.dataset.deckTheme = theme;
+        themeChoices.forEach(item => item.classList.toggle("selected", item === choice));
+        try { localStorage.setItem("earthLiveDeckTheme", theme); } catch (_) {}
+      });
+    });
+
+    let savedMode = "full";
+    try { savedMode = localStorage.getItem("earthLiveDisplayMode") || savedMode; } catch (_) {}
+    document.documentElement.dataset.displayMode = savedMode;
+    displayChoices.forEach(choice => {
+      choice.checked = choice.value === savedMode;
+      choice.addEventListener("change", () => {
+        if (!choice.checked) return;
+        document.documentElement.dataset.displayMode = choice.value;
+        window.EarthLiveDisplay.mode = choice.value;
+        try { localStorage.setItem("earthLiveDisplayMode", choice.value); } catch (_) {}
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (!viewer || viewer.isDestroyed()) return;
+          synchronizeCesiumViewport();
+          const display = measureDisplayArea();
+          activeProfile = display.orientation;
+          lastOrientation = display.orientation;
+          document.documentElement.dataset.displayProfile = display.orientation;
+          viewer.scene.requestRender();
+        }));
+      });
+    });
+    document.addEventListener("keydown", event => { if (event.key === "Escape" && !stacksPanel.hidden) closeStacksPanel(); });
+  }
+
   function startGlobe() {
     if (!window.Cesium) {
       showError(new Error("Cesium did not load."));
@@ -284,6 +380,7 @@
       });
 
       setupDisplayPersonalisation();
+      setupOrbDeck();
       applyDisplayProfile({ initial: true });
 
       window.EarthLiveViewer = viewer;
