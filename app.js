@@ -18,6 +18,9 @@
   let liveLocationEnabled = false;
   let liveLocationRequestId = 0;
   let lastKnownLocation = null;
+  let liveLocationVisualEntities = [];
+  let liveLocationVisualTimer = null;
+  let liveLocationAnimationFrame = 0;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -521,6 +524,57 @@
         if (button.isConnected) button.setAttribute("aria-label", "Live Location");
       }, 4000);
     };
+    const removeLocationVisuals = () => {
+      if (liveLocationVisualTimer) window.clearTimeout(liveLocationVisualTimer);
+      liveLocationVisualTimer = null;
+      if (liveLocationAnimationFrame) window.cancelAnimationFrame(liveLocationAnimationFrame);
+      liveLocationAnimationFrame = 0;
+      if (viewer && !viewer.isDestroyed()) {
+        liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+        viewer.scene.requestRender();
+      }
+      liveLocationVisualEntities = [];
+      const flight = document.getElementById("location-fireball-flight");
+      if (flight) flight.remove();
+    };
+    const svgData = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    const craterImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><defs><radialGradient id="g"><stop stop-color="#ffb36b" stop-opacity=".9"/><stop offset=".42" stop-color="#ff4828" stop-opacity=".72"/><stop offset="1" stop-color="#ff2518" stop-opacity="0"/></radialGradient></defs><circle cx="80" cy="80" r="78" fill="url(#g)"/><ellipse cx="80" cy="83" rx="40" ry="27" fill="#17110f" stroke="#ff5836" stroke-width="5"/><ellipse cx="80" cy="76" rx="30" ry="17" fill="#4a211b" stroke="#ffb078" stroke-width="3"/><path d="M48 87 Q80 111 112 87" fill="none" stroke="#ff7a42" stroke-width="4" stroke-linecap="round"/></svg>');
+    const alienPinImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="150" viewBox="0 0 120 150"><defs><filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M60 142 C48 118 16 91 16 57 A44 44 0 1 1 104 57 C104 91 72 118 60 142Z" fill="#f12635" stroke="#ff8c91" stroke-width="4" filter="url(#glow)"/><circle cx="60" cy="56" r="31" fill="#171014" stroke="#ffb2b7" stroke-width="2"/><text x="60" y="69" text-anchor="middle" font-size="38">👽</text><circle cx="60" cy="56" r="42" fill="none" stroke="#ff3748" stroke-width="2" opacity=".8"/></svg>');
+    const showImpactSequence = (latitude, longitude, startPosition) => {
+      removeLocationVisuals();
+      if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+      const target = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
+      const fireballImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><radialGradient id="f"><stop stop-color="#fff"/><stop offset=".22" stop-color="#fff3bd"/><stop offset=".5" stop-color="#ff6a25"/><stop offset="1" stop-color="#ff2b19" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#f)"/><path d="M14 70 Q-5 48 15 24 Q11 49 37 54Z" fill="#ff9b32"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>');
+      const fireball = viewer.entities.add({ position: startPosition || viewer.camera.positionWC.clone(), billboard: { image: fireballImage, width: 54, height: 54, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
+      liveLocationVisualEntities.push(fireball);
+      const started = performance.now();
+      const duration = 1150;
+      const tick = now => {
+        if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+        const t = Math.min(1, (now - started) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        fireball.position = Cesium.Cartesian3.lerp(startPosition || viewer.camera.positionWC, target, eased, new Cesium.Cartesian3());
+        viewer.scene.requestRender();
+        if (t < 1) liveLocationAnimationFrame = window.requestAnimationFrame(tick);
+        else {
+          viewer.entities.remove(fireball);
+          liveLocationVisualEntities = liveLocationVisualEntities.filter(entity => entity !== fireball);
+          const crater = viewer.entities.add({ position: target, billboard: { image: craterImage, width: 92, height: 92, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: 0 } });
+          liveLocationVisualEntities.push(crater);
+          viewer.scene.requestRender();
+          liveLocationVisualTimer = window.setTimeout(() => {
+            if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+            viewer.entities.remove(crater);
+            liveLocationVisualEntities = liveLocationVisualEntities.filter(entity => entity !== crater);
+            const alien = viewer.entities.add({ position: target, billboard: { image: alienPinImage, width: 42, height: 54, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: 0 } });
+            liveLocationVisualEntities.push(alien);
+            viewer.scene.requestRender();
+            liveLocationVisualTimer = null;
+          }, 3600);
+        }
+      };
+      liveLocationAnimationFrame = window.requestAnimationFrame(tick);
+    };
     const moveToLocation = position => {
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
       const { latitude, longitude } = position.coords;
@@ -530,6 +584,7 @@
       // on the user's coordinates. Do not change adaptive framing or zoom settings.
       const current = viewer.camera.positionCartographic;
       const height = Math.max(1000, current.height || calculateCameraHeight(profiles[activeProfile]));
+      const startPosition = viewer.camera.positionWC.clone();
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
         orientation: {
@@ -538,7 +593,8 @@
           roll: viewer.camera.roll
         },
         duration: 2.0,
-        maximumHeight: height
+        maximumHeight: height,
+        complete: () => showImpactSequence(latitude, longitude, startPosition)
       });
     };
 
@@ -551,6 +607,7 @@
         stopWatching();
         setActive(false);
         lastKnownLocation = null;
+        removeLocationVisuals();
         return;
       }
       if (!navigator.geolocation) {
