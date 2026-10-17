@@ -183,7 +183,7 @@
     const provider = new Cesium.UrlTemplateImageryProvider({
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
       minimumLevel: 0,
-      maximumLevel: 19,
+      maximumLevel: 14,
       credit: new Cesium.Credit("Hillshade © Esri", true)
     });
     hdHillshadeLayer = viewer.imageryLayers.addImageryProvider(provider);
