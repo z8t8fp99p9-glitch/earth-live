@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "1.5.55-curved-meteor-alien-path";
+window.EARTH_LIVE_VERSION = "1.5.56-pointer-studio-red-p1-p8";

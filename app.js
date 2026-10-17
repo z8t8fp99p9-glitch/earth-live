@@ -539,7 +539,18 @@
     };
     const svgData = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     const craterImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><defs><radialGradient id="g"><stop stop-color="#ffb36b" stop-opacity=".9"/><stop offset=".42" stop-color="#ff4828" stop-opacity=".72"/><stop offset="1" stop-color="#ff2518" stop-opacity="0"/></radialGradient></defs><circle cx="80" cy="80" r="78" fill="url(#g)"/><ellipse cx="80" cy="83" rx="40" ry="27" fill="#17110f" stroke="#ff5836" stroke-width="5"/><ellipse cx="80" cy="76" rx="30" ry="17" fill="#4a211b" stroke="#ffb078" stroke-width="3"/><path d="M48 87 Q80 111 112 87" fill="none" stroke="#ff7a42" stroke-width="4" stroke-linecap="round"/></svg>');
-    const alienPinImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="150" viewBox="0 0 120 150"><defs><filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M60 142 C48 118 16 91 16 57 A44 44 0 1 1 104 57 C104 91 72 118 60 142Z" fill="#f12635" stroke="#ff8c91" stroke-width="4" filter="url(#glow)"/><circle cx="60" cy="56" r="31" fill="#171014" stroke="#ffb2b7" stroke-width="2"/><text x="60" y="69" text-anchor="middle" font-size="38">👽</text><circle cx="60" cy="56" r="42" fill="none" stroke="#ff3748" stroke-width="2" opacity=".8"/></svg>');
+    const pointerAssets = {
+      P1: "./P1_Alien_Pin_Classic.svg", P2: "./P2_Alien_Glow.svg",
+      P3: "./P3_Alien_Hologram.svg", P4: "./P4_Alien_Plus_Ring.svg",
+      P5: "./P5_Red_Pin.svg", P6: "./P6_Neon_Outline.svg",
+      P7: "./P7_Pulse_Ring.svg", P8: "./P8_Alien_Icon.svg"
+    };
+    const getSelectedPointer = () => {
+      try {
+        const saved = localStorage.getItem("earthLiveLocationPointer") || "P1";
+        return Object.prototype.hasOwnProperty.call(pointerAssets, saved) ? saved : "P1";
+      } catch (_) { return "P1"; }
+    };
     const showImpactSequence = (latitude, longitude, button) => {
       removeLocationVisuals();
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
@@ -622,7 +633,7 @@
             overlay.remove();
             liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
             liveLocationVisualEntities = [];
-            const alien = viewer.entities.add({ position: target, billboard: { image: alienPinImage, width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
+            const alien = viewer.entities.add({ position: target, billboard: { image: pointerAssets[getSelectedPointer()], width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
             liveLocationVisualEntities.push(alien);
             viewer.scene.requestRender();
             liveLocationVisualTimer = null;
@@ -656,6 +667,23 @@
         complete: () => showImpactSequence(latitude, longitude, button)
       });
     };
+
+    window.addEventListener("earthlive:pointer-selected", event => {
+      if (!liveLocationEnabled || !lastKnownLocation || !viewer || viewer.isDestroyed()) return;
+      if (liveLocationVisualTimer) window.clearTimeout(liveLocationVisualTimer);
+      liveLocationVisualTimer = null;
+      if (liveLocationAnimationFrame) window.cancelAnimationFrame(liveLocationAnimationFrame);
+      liveLocationAnimationFrame = 0;
+      const flight = document.getElementById("location-fireball-flight");
+      if (flight) flight.remove();
+      liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+      liveLocationVisualEntities = [];
+      const target = Cesium.Cartesian3.fromDegrees(lastKnownLocation.longitude, lastKnownLocation.latitude, 18);
+      const id = event.detail && event.detail.id;
+      const safeId = Object.prototype.hasOwnProperty.call(pointerAssets, id) ? id : getSelectedPointer();
+      liveLocationVisualEntities.push(viewer.entities.add({ position: target, billboard: { image: pointerAssets[safeId], width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } }));
+      viewer.scene.requestRender();
+    });
 
     button.addEventListener("click", event => {
       // The main Orb handler below owns all other Orb interactions. Handle location
@@ -718,9 +746,31 @@
         if (button.getAttribute("aria-pressed") === "true") triggerOrbPersonality(button);
       }, 0);
     }, { passive: true }));
+    const getSavedPointerChoice = () => {
+      try { return localStorage.getItem("earthLiveLocationPointer") || "P1"; } catch (_) { return "P1"; }
+    };
+    const updatePointerStudioChoices = selected => {
+      document.querySelectorAll("[data-pointer-id]").forEach(choice => {
+        const isSelected = choice.dataset.pointerId === selected;
+        choice.classList.toggle("selected", isSelected);
+        choice.setAttribute("aria-pressed", String(isSelected));
+      });
+      const status = document.getElementById("pointerStudioStatus");
+      const choice = document.querySelector(`[data-pointer-id="${selected}"] strong`);
+      if (status) status.textContent = `${choice ? choice.textContent : selected} selected`;
+    };
+    document.querySelectorAll("[data-pointer-id]").forEach(choice => choice.addEventListener("click", () => {
+      const id = choice.dataset.pointerId;
+      try { localStorage.setItem("earthLiveLocationPointer", id); } catch (_) {}
+      updatePointerStudioChoices(id);
+      window.dispatchEvent(new CustomEvent("earthlive:pointer-selected", { detail: { id } }));
+      const status = document.getElementById("pointerStudioStatus");
+      if (status) status.textContent += " · used on next location landing";
+    }));
     const stacksPanel = document.getElementById("stacksPanel");
     const stacksHome = document.getElementById("stacksHome");
     const customiseView = document.getElementById("customiseView");
+    const pointerStudioView = document.getElementById("pointerStudioView");
     const stackNotice = document.getElementById("stackNotice");
     const closeStacks = document.getElementById("closeStacks");
     const backToStacks = document.getElementById("backToStacks");
@@ -731,6 +781,7 @@
       stacksPanel.hidden = false;
       stacksHome.hidden = false;
       customiseView.hidden = true;
+      if (pointerStudioView) pointerStudioView.hidden = true;
       stackNotice.hidden = true;
       const stackButton = buttons.find(item => item.dataset.orb === "stacks");
       if (stackButton) stackButton.setAttribute("aria-pressed", "true");
@@ -757,13 +808,28 @@
     closeStacks?.addEventListener("click", closeStacksPanel);
     backToStacks?.addEventListener("click", () => {
       customiseView.hidden = true;
+      if (pointerStudioView) pointerStudioView.hidden = true;
+      stacksHome.hidden = false;
+      stackNotice.hidden = true;
+    });
+    document.getElementById("backFromPointerStudio")?.addEventListener("click", () => {
+      if (pointerStudioView) pointerStudioView.hidden = true;
       stacksHome.hidden = false;
       stackNotice.hidden = true;
     });
     document.querySelectorAll('[data-stack-view="customise"]').forEach(button => button.addEventListener("click", () => {
       stacksHome.hidden = true;
+      if (pointerStudioView) pointerStudioView.hidden = true;
       customiseView.hidden = false;
       stackNotice.hidden = true;
+    }));
+    document.querySelectorAll('[data-stack-view="pointers"]').forEach(button => button.addEventListener("click", () => {
+      stacksHome.hidden = true;
+      customiseView.hidden = true;
+      if (pointerStudioView) pointerStudioView.hidden = false;
+      stackNotice.hidden = true;
+      const selected = getSavedPointerChoice();
+      updatePointerStudioChoices(selected);
     }));
     document.querySelectorAll("[data-stack-feature]").forEach(button => button.addEventListener("click", () => {
       const labels = { weather: "Weather & Clouds", "air-traffic": "Air Traffic", "road-traffic": "Road Traffic", imagery: "Imagery" };
