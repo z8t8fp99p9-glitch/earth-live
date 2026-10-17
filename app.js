@@ -19,8 +19,6 @@
   let liveLocationRequestId = 0;
   let lastKnownLocation = null;
   let liveLocationVisualEntities = [];
-  let liveLocationVisualTimer = null;
-  let liveLocationAnimationFrame = 0;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -506,133 +504,176 @@
   function setupLiveLocationOrb(button) {
     if (!button) return;
 
+    const pointerAssets = {
+      P1: "./P1_Alien_Pin_Classic.svg",
+      P2: "./P2_Alien_Glow.svg",
+      P3: "./P3_Alien_Hologram.svg",
+      P4: "./P4_Alien_Plus_Ring.svg",
+      P5: "./P5_Red_Pin.svg",
+      P6: "./P6_Neon_Outline.svg",
+      P7: "./P7_Pulse_Ring.svg",
+      P8: "./P8_Alien_Icon.svg"
+    };
+    let requestPending = false;
+    let firstFixReceived = false;
+    let flightId = 0;
+
+    const selectedPointerId = () => {
+      try {
+        const id = localStorage.getItem("earthLiveLocationPointer") || "P1";
+        return Object.prototype.hasOwnProperty.call(pointerAssets, id) ? id : "P1";
+      } catch (_) {
+        return "P1";
+      }
+    };
+
     const setActive = active => {
       liveLocationEnabled = active;
       button.setAttribute("aria-pressed", String(active));
     };
-    const stopWatching = () => {
-      if (liveLocationWatchId !== null && navigator.geolocation) {
-        navigator.geolocation.clearWatch(liveLocationWatchId);
-      }
-      liveLocationWatchId = null;
-    };
+
     const showLocationError = message => {
       console.warn("EARTH // LIVE location:", message);
-      // Keep the existing UI and Orb artwork untouched; communicate failure accessibly.
       button.setAttribute("aria-label", `Live Location — ${message}`);
       window.setTimeout(() => {
         if (button.isConnected) button.setAttribute("aria-label", "Live Location");
       }, 4000);
     };
-    const removeLocationVisuals = () => {
-      if (liveLocationVisualTimer) window.clearTimeout(liveLocationVisualTimer);
-      liveLocationVisualTimer = null;
-      if (liveLocationAnimationFrame) window.cancelAnimationFrame(liveLocationAnimationFrame);
-      liveLocationAnimationFrame = 0;
-      if (viewer && !viewer.isDestroyed()) {
-        liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+
+    const removePointer = () => {
+      if (!viewer || viewer.isDestroyed()) {
         liveLocationVisualEntities = [];
-        viewer.scene.requestRender();
+        return;
       }
-      const flight = document.getElementById("location-fireball-flight");
-      if (flight) flight.remove();
-    };
-    const pointerAssets = {
-      P1: "./P1_Alien_Pin_Classic.svg", P2: "./P2_Alien_Glow.svg",
-      P3: "./P3_Alien_Hologram.svg", P4: "./P4_Alien_Plus_Ring.svg",
-      P5: "./P5_Red_Pin.svg", P6: "./P6_Neon_Outline.svg",
-      P7: "./P7_Pulse_Ring.svg", P8: "./P8_Alien_Icon.svg"
-    };
-    const getSelectedPointer = () => {
-      try {
-        const saved = localStorage.getItem("earthLiveLocationPointer") || "P1";
-        return Object.prototype.hasOwnProperty.call(pointerAssets, saved) ? saved : "P1";
-      } catch (_) { return "P1"; }
-    };
-    const showLocationPointer = (latitude, longitude, pointerId = getSelectedPointer()) => {
-      if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
-      const safeId = Object.prototype.hasOwnProperty.call(pointerAssets, pointerId) ? pointerId : "P1";
-      const target = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
-      // Keep exactly one marker at the received GPS coordinate. No launcher,
-      // trail, impact flash, crater, delay, or full-screen effect is used.
       liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
-      liveLocationVisualEntities = [viewer.entities.add({
-        position: target,
-        billboard: {
-          image: pointerAssets[safeId],
-          width: 48,
-          height: 60,
-          verticalOrigin: safeId === "P8" ? Cesium.VerticalOrigin.CENTER : Cesium.VerticalOrigin.BOTTOM,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY
-        }
-      })];
+      liveLocationVisualEntities = [];
       viewer.scene.requestRender();
     };
 
-    const moveToLocation = position => {
+    const renderPointer = (latitude, longitude, pointerId = selectedPointerId()) => {
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
-      const { latitude, longitude } = position.coords;
-      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
-      lastKnownLocation = { latitude, longitude, timestamp: position.timestamp };
-      // Keep the existing default viewing distance; only smoothly center the globe
-      // on the user's coordinates. Do not change adaptive framing or zoom settings.
-      const current = viewer.camera.positionCartographic;
-      const height = Math.max(1000, current.height || calculateCameraHeight(profiles[activeProfile]));
-      showLocationPointer(latitude, longitude);
+      const safeId = Object.prototype.hasOwnProperty.call(pointerAssets, pointerId) ? pointerId : "P1";
+      const position = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
+      let entity = liveLocationVisualEntities.find(item => viewer.entities.contains(item));
+
+      if (!entity) {
+        entity = viewer.entities.add({
+          position,
+          billboard: {
+            image: pointerAssets[safeId],
+            width: 48,
+            height: 60,
+            verticalOrigin: safeId === "P8" ? Cesium.VerticalOrigin.CENTER : Cesium.VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            heightReference: Cesium.HeightReference.NONE
+          }
+        });
+        liveLocationVisualEntities = [entity];
+      } else {
+        entity.position = position;
+        entity.billboard.image = pointerAssets[safeId];
+        entity.billboard.verticalOrigin = safeId === "P8" ? Cesium.VerticalOrigin.CENTER : Cesium.VerticalOrigin.BOTTOM;
+      }
+      viewer.scene.requestRender();
+    };
+
+    const centreOnLocation = (latitude, longitude) => {
+      if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+      const currentHeight = viewer.camera.positionCartographic?.height;
+      const fallbackHeight = calculateCameraHeight(profiles[activeProfile]);
+      const height = Math.max(1000, Number.isFinite(currentHeight) && currentHeight > 0 ? currentHeight : fallbackHeight);
+      const thisFlight = ++flightId;
+
+      // Face the GPS point directly so the marker lands in the visible centre of
+      // the globe, rather than carrying forward an old pitch that can hide it.
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
         orientation: {
-          heading: viewer.camera.heading,
-          pitch: viewer.camera.pitch,
-          roll: viewer.camera.roll
+          heading: 0,
+          pitch: -Cesium.Math.PI_OVER_TWO,
+          roll: 0
         },
-        duration: 2.0,
+        duration: 1.8,
         maximumHeight: height,
-        complete: () => showLocationPointer(latitude, longitude)
+        complete: () => {
+          if (thisFlight !== flightId || !liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+          if (lastKnownLocation) renderPointer(lastKnownLocation.latitude, lastKnownLocation.longitude);
+          viewer.scene.requestRender();
+        },
+        cancel: () => {
+          if (thisFlight === flightId && liveLocationEnabled && lastKnownLocation) {
+            renderPointer(lastKnownLocation.latitude, lastKnownLocation.longitude);
+          }
+        }
       });
+      renderPointer(latitude, longitude);
+    };
+
+    const stopTracking = () => {
+      liveLocationRequestId++;
+      requestPending = false;
+      firstFixReceived = false;
+      flightId++;
+      if (liveLocationWatchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(liveLocationWatchId);
+      }
+      liveLocationWatchId = null;
+      setActive(false);
+      lastKnownLocation = null;
+      removePointer();
+      // Deliberately do not move the camera when tracking is stopped.
     };
 
     window.addEventListener("earthlive:pointer-selected", event => {
-      if (!liveLocationEnabled || !lastKnownLocation || !viewer || viewer.isDestroyed()) return;
+      if (!liveLocationEnabled || !lastKnownLocation) return;
       const id = event.detail && event.detail.id;
-      showLocationPointer(lastKnownLocation.latitude, lastKnownLocation.longitude, id || getSelectedPointer());
+      renderPointer(lastKnownLocation.latitude, lastKnownLocation.longitude, id || selectedPointerId());
     });
 
     button.addEventListener("click", event => {
-      // The main Orb handler below owns all other Orb interactions. Handle location
-      // here and stop the generic toggle from switching it ON before permission/fix.
+      // This dedicated handler owns the location Orb toggle; prevent the generic
+      // Orb handler from changing its state before a valid location fix arrives.
       event.stopImmediatePropagation();
+
       if (liveLocationEnabled) {
-        liveLocationRequestId++;
-        stopWatching();
-        setActive(false);
-        lastKnownLocation = null;
-        removeLocationVisuals();
+        stopTracking();
         return;
       }
+      if (requestPending) return;
       if (!navigator.geolocation) {
         setActive(false);
         showLocationError("geolocation is unavailable in this browser");
         return;
       }
 
+      requestPending = true;
+      firstFixReceived = false;
       const requestId = ++liveLocationRequestId;
-      let firstFix = true;
       liveLocationWatchId = navigator.geolocation.watchPosition(position => {
-        if (requestId !== liveLocationRequestId) return;
-        const wasActive = liveLocationEnabled;
-        // A successful position confirms both permission and a usable location.
-        setActive(true);
-        if (firstFix) {
-          firstFix = false;
-          moveToLocation(position);
-          // Live Location is intentionally simple: show the selected pointer only.
-          // No launcher, impact, crater, or full-screen Orb effect on activation.
+        if (requestId !== liveLocationRequestId || !requestPending && !liveLocationEnabled) return;
+        const latitude = position.coords && position.coords.latitude;
+        const longitude = position.coords && position.coords.longitude;
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return;
+
+        lastKnownLocation = { latitude, longitude, timestamp: position.timestamp };
+        if (!firstFixReceived) {
+          firstFixReceived = true;
+          requestPending = false;
+          setActive(true);
+          centreOnLocation(latitude, longitude);
+        } else {
+          // Keep the single marker synced to fresh GPS readings without repeatedly
+          // moving the camera or interrupting the user's gestures.
+          renderPointer(latitude, longitude);
         }
       }, error => {
         if (requestId !== liveLocationRequestId) return;
-        stopWatching();
-        setActive(false);
+        if (!firstFixReceived) {
+          if (liveLocationWatchId !== null) navigator.geolocation.clearWatch(liveLocationWatchId);
+          liveLocationWatchId = null;
+          requestPending = false;
+          setActive(false);
+        }
         const messages = {
           1: "location permission denied",
           2: "current location unavailable",
@@ -641,8 +682,8 @@
         showLocationError(messages[error.code] || "location request failed");
       }, {
         enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 20000
+        maximumAge: 5000,
+        timeout: 25000
       });
     });
   }
