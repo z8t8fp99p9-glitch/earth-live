@@ -531,14 +531,12 @@
       liveLocationAnimationFrame = 0;
       if (viewer && !viewer.isDestroyed()) {
         liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+        liveLocationVisualEntities = [];
         viewer.scene.requestRender();
       }
-      liveLocationVisualEntities = [];
       const flight = document.getElementById("location-fireball-flight");
       if (flight) flight.remove();
     };
-    const svgData = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-    const craterImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><defs><radialGradient id="g"><stop stop-color="#ffb36b" stop-opacity=".9"/><stop offset=".42" stop-color="#ff4828" stop-opacity=".72"/><stop offset="1" stop-color="#ff2518" stop-opacity="0"/></radialGradient></defs><circle cx="80" cy="80" r="78" fill="url(#g)"/><ellipse cx="80" cy="83" rx="40" ry="27" fill="#17110f" stroke="#ff5836" stroke-width="5"/><ellipse cx="80" cy="76" rx="30" ry="17" fill="#4a211b" stroke="#ffb078" stroke-width="3"/><path d="M48 87 Q80 111 112 87" fill="none" stroke="#ff7a42" stroke-width="4" stroke-linecap="round"/></svg>');
     const pointerAssets = {
       P1: "./P1_Alien_Pin_Classic.svg", P2: "./P2_Alien_Glow.svg",
       P3: "./P3_Alien_Hologram.svg", P4: "./P4_Alien_Plus_Ring.svg",
@@ -551,101 +549,26 @@
         return Object.prototype.hasOwnProperty.call(pointerAssets, saved) ? saved : "P1";
       } catch (_) { return "P1"; }
     };
-    const showImpactSequence = (latitude, longitude, button) => {
-      removeLocationVisuals();
+    const showLocationPointer = (latitude, longitude, pointerId = getSelectedPointer()) => {
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+      const safeId = Object.prototype.hasOwnProperty.call(pointerAssets, pointerId) ? pointerId : "P1";
       const target = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
-      const targetCanvas = viewer.scene.cartesianToCanvasCoordinates(target);
-      const canvasRect = viewer.scene.canvas.getBoundingClientRect();
-      const targetX = targetCanvas ? canvasRect.left + targetCanvas.x : window.innerWidth * 0.5;
-      const targetY = targetCanvas ? canvasRect.top + targetCanvas.y : window.innerHeight * 0.5;
-      const orbRect = button ? button.getBoundingClientRect() : { left: 24, top: 24, width: 48, height: 48 };
-      const startX = orbRect.left + orbRect.width / 2;
-      const startY = orbRect.top + orbRect.height / 2;
-      const dx = targetX - startX;
-      const dy = targetY - startY;
-      const arcLift = Math.min(170, Math.max(58, Math.hypot(dx, dy) * 0.22));
-      const controlX = startX + dx * 0.5;
-      const controlY = startY + dy * 0.5 - arcLift;
-      const pointAt = t => ({
-        x: (1-t)*(1-t)*startX + 2*(1-t)*t*controlX + t*t*targetX,
-        y: (1-t)*(1-t)*startY + 2*(1-t)*t*controlY + t*t*targetY
-      });
-      const svgNS = 'http://www.w3.org/2000/svg';
-      const overlay = document.createElementNS(svgNS, 'svg');
-      overlay.setAttribute('id', 'location-fireball-flight');
-      overlay.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
-      overlay.setAttribute('width', String(window.innerWidth));
-      overlay.setAttribute('height', String(window.innerHeight));
-      overlay.setAttribute('aria-hidden', 'true');
-      Object.assign(overlay.style, { position:'fixed', inset:'0', width:'100vw', height:'100vh', overflow:'visible', pointerEvents:'none', zIndex:'9999' });
-      const addSvg = (tag, attrs, parent=overlay) => {
-        const node = document.createElementNS(svgNS, tag);
-        Object.entries(attrs).forEach(([key,value]) => node.setAttribute(key, String(value)));
-        parent.appendChild(node);
-        return node;
-      };
-      const defs = addSvg('defs', {});
-      const glow = addSvg('filter', { id:'el-meteor-glow', x:'-100%', y:'-100%', width:'300%', height:'300%' }, defs);
-      addSvg('feGaussianBlur', { stdDeviation:'5', result:'blur' }, glow);
-      const merge = addSvg('feMerge', {}, glow);
-      addSvg('feMergeNode', { in:'blur' }, merge);
-      addSvg('feMergeNode', { in:'SourceGraphic' }, merge);
-      const trailGlow = addSvg('path', { d:`M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`, fill:'none', stroke:'#ff5a22', 'stroke-width': '13', 'stroke-linecap':'round', opacity:'.42', filter:'url(#el-meteor-glow)' });
-      const trail = addSvg('path', { d:`M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`, fill:'none', stroke:'#ff9b43', 'stroke-width':'4', 'stroke-linecap':'round' });
-      const totalLength = trail.getTotalLength();
-      [trailGlow, trail].forEach(path => { path.style.strokeDasharray = String(totalLength); path.style.strokeDashoffset = String(totalLength); });
-      const meteor = addSvg('g', { filter:'url(#el-meteor-glow)' });
-      // A directional white-hot meteor core with layered orange plasma and fine sparks.
-      addSvg('path', { d:'M -104 0 Q -62 -24 -12 -9 L 22 -3 L 22 3 L -12 9 Q -62 24 -104 0Z', fill:'#ff3a16', opacity:'.8' }, meteor);
-      addSvg('path', { d:'M -95 0 Q -50 -10 -8 -4 L 19 -2 L 19 2 L -8 4 Q -50 10 -95 0Z', fill:'#ffb13d' }, meteor);
-      addSvg('path', { d:'M -76 0 L 20 -1 L 20 1Z', fill:'#fff7d4' }, meteor);
-      addSvg('circle', { cx:'17', cy:'0', r:'15', fill:'#ff7a25', opacity:'.72' }, meteor);
-      addSvg('circle', { cx:'20', cy:'0', r:'9', fill:'#fff0b5' }, meteor);
-      addSvg('circle', { cx:'22', cy:'0', r:'4.5', fill:'#ffffff' }, meteor);
-      [[-46,-11,2],[-60,8,1.7],[-28,14,1.5],[-72,-5,1.3],[-14,-12,1.4]].forEach(([x,y,r]) => addSvg('circle', {cx:x,cy:y,r,fill:'#fff0b1'},meteor));
-      const impact = addSvg('g', { opacity:'0' });
-      addSvg('circle', { cx:targetX, cy:targetY, r:'12', fill:'#fff6cf', opacity:'.96' }, impact);
-      addSvg('circle', { cx:targetX, cy:targetY, r:'26', fill:'none', stroke:'#ffb14c', 'stroke-width':'5', opacity:'.9' }, impact);
-      addSvg('circle', { cx:targetX, cy:targetY, r:'44', fill:'none', stroke:'#ff572b', 'stroke-width':'3', opacity:'.65' }, impact);
-      document.body.appendChild(overlay);
-      const started = performance.now();
-      const duration = 1350;
-      const tick = now => {
-        if (!liveLocationEnabled || !viewer || viewer.isDestroyed() || !overlay.isConnected) return;
-        const t = Math.min(1, (now-started)/duration);
-        const eased = 1 - Math.pow(1-t, 2.15);
-        const point = pointAt(eased);
-        const next = pointAt(Math.min(1, eased + 0.01));
-        const angle = Math.atan2(next.y-point.y, next.x-point.x) * 180 / Math.PI;
-        meteor.setAttribute('transform', `translate(${point.x} ${point.y}) rotate(${angle})`);
-        [trailGlow,trail].forEach(path => path.style.strokeDashoffset = String(totalLength*(1-eased)));
-        if (t >= 1) {
-          meteor.remove();
-          impact.setAttribute('opacity','1');
-          impact.style.transformBox = 'fill-box';
-          impact.style.transformOrigin = `${targetX}px ${targetY}px`;
-          impact.animate([{opacity:1, transform:'scale(.25)'},{opacity:0, transform:'scale(1.65)'}], {duration:320, easing:'ease-out'});
-          liveLocationVisualEntities.push(viewer.entities.add({ position: target, billboard: { image: craterImage, width: 92, height: 92, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } }));
-          viewer.scene.requestRender();
-          liveLocationVisualTimer = window.setTimeout(() => {
-            if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
-            overlay.remove();
-            liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
-            liveLocationVisualEntities = [];
-            const alien = viewer.entities.add({ position: target, billboard: { image: pointerAssets[getSelectedPointer()], width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
-            liveLocationVisualEntities.push(alien);
-            viewer.scene.requestRender();
-            liveLocationVisualTimer = null;
-          }, 1500);
-          liveLocationAnimationFrame = 0;
-          return;
+      // Keep exactly one marker at the received GPS coordinate. No launcher,
+      // trail, impact flash, crater, delay, or full-screen effect is used.
+      liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+      liveLocationVisualEntities = [viewer.entities.add({
+        position: target,
+        billboard: {
+          image: pointerAssets[safeId],
+          width: 48,
+          height: 60,
+          verticalOrigin: safeId === "P8" ? Cesium.VerticalOrigin.CENTER : Cesium.VerticalOrigin.BOTTOM,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
-        viewer.scene.requestRender();
-        liveLocationAnimationFrame = window.requestAnimationFrame(tick);
-      };
-      liveLocationAnimationFrame = window.requestAnimationFrame(tick);
+      })];
+      viewer.scene.requestRender();
     };
+
     const moveToLocation = position => {
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
       const { latitude, longitude } = position.coords;
@@ -655,6 +578,7 @@
       // on the user's coordinates. Do not change adaptive framing or zoom settings.
       const current = viewer.camera.positionCartographic;
       const height = Math.max(1000, current.height || calculateCameraHeight(profiles[activeProfile]));
+      showLocationPointer(latitude, longitude);
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
         orientation: {
@@ -664,25 +588,14 @@
         },
         duration: 2.0,
         maximumHeight: height,
-        complete: () => showImpactSequence(latitude, longitude, button)
+        complete: () => showLocationPointer(latitude, longitude)
       });
     };
 
     window.addEventListener("earthlive:pointer-selected", event => {
       if (!liveLocationEnabled || !lastKnownLocation || !viewer || viewer.isDestroyed()) return;
-      if (liveLocationVisualTimer) window.clearTimeout(liveLocationVisualTimer);
-      liveLocationVisualTimer = null;
-      if (liveLocationAnimationFrame) window.cancelAnimationFrame(liveLocationAnimationFrame);
-      liveLocationAnimationFrame = 0;
-      const flight = document.getElementById("location-fireball-flight");
-      if (flight) flight.remove();
-      liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
-      liveLocationVisualEntities = [];
-      const target = Cesium.Cartesian3.fromDegrees(lastKnownLocation.longitude, lastKnownLocation.latitude, 18);
       const id = event.detail && event.detail.id;
-      const safeId = Object.prototype.hasOwnProperty.call(pointerAssets, id) ? id : getSelectedPointer();
-      liveLocationVisualEntities.push(viewer.entities.add({ position: target, billboard: { image: pointerAssets[safeId], width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } }));
-      viewer.scene.requestRender();
+      showLocationPointer(lastKnownLocation.latitude, lastKnownLocation.longitude, id || getSelectedPointer());
     });
 
     button.addEventListener("click", event => {
@@ -713,9 +626,8 @@
         if (firstFix) {
           firstFix = false;
           moveToLocation(position);
-          // Preserve the existing user-configured location Orb effect; no settings
-          // or effect intensity values are changed by location tracking.
-          if (!wasActive) triggerOrbPersonality(button);
+          // Live Location is intentionally simple: show the selected pointer only.
+          // No launcher, impact, crater, or full-screen Orb effect on activation.
         }
       }, error => {
         if (requestId !== liveLocationRequestId) return;
@@ -743,7 +655,7 @@
     setupLiveLocationOrb(buttons.find(button => button.dataset.orb === "location"));
     buttons.forEach(button => button.addEventListener("click", () => {
       window.setTimeout(() => {
-        if (button.getAttribute("aria-pressed") === "true") triggerOrbPersonality(button);
+        if (button.dataset.orb !== "location" && button.getAttribute("aria-pressed") === "true") triggerOrbPersonality(button);
       }, 0);
     }, { passive: true }));
     const getSavedPointerChoice = () => {
