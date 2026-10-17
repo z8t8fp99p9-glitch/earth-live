@@ -540,54 +540,98 @@
     const svgData = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     const craterImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><defs><radialGradient id="g"><stop stop-color="#ffb36b" stop-opacity=".9"/><stop offset=".42" stop-color="#ff4828" stop-opacity=".72"/><stop offset="1" stop-color="#ff2518" stop-opacity="0"/></radialGradient></defs><circle cx="80" cy="80" r="78" fill="url(#g)"/><ellipse cx="80" cy="83" rx="40" ry="27" fill="#17110f" stroke="#ff5836" stroke-width="5"/><ellipse cx="80" cy="76" rx="30" ry="17" fill="#4a211b" stroke="#ffb078" stroke-width="3"/><path d="M48 87 Q80 111 112 87" fill="none" stroke="#ff7a42" stroke-width="4" stroke-linecap="round"/></svg>');
     const alienPinImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="150" viewBox="0 0 120 150"><defs><filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M60 142 C48 118 16 91 16 57 A44 44 0 1 1 104 57 C104 91 72 118 60 142Z" fill="#f12635" stroke="#ff8c91" stroke-width="4" filter="url(#glow)"/><circle cx="60" cy="56" r="31" fill="#171014" stroke="#ffb2b7" stroke-width="2"/><text x="60" y="69" text-anchor="middle" font-size="38">👽</text><circle cx="60" cy="56" r="42" fill="none" stroke="#ff3748" stroke-width="2" opacity=".8"/></svg>');
-    const showImpactSequence = (latitude, longitude, startPosition) => {
+    const showImpactSequence = (latitude, longitude, button) => {
       removeLocationVisuals();
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
       const target = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
-      // Wide, directional meteor artwork: a white-hot core with layered plasma tail.
-      const fireballImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="112" viewBox="0 0 240 112"><defs><linearGradient id="tail" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff2418" stop-opacity="0"/><stop offset=".34" stop-color="#ff3a1c" stop-opacity=".38"/><stop offset=".67" stop-color="#ff7828" stop-opacity=".9"/><stop offset=".9" stop-color="#fff0b5"/></linearGradient><radialGradient id="core"><stop stop-color="#fff"/><stop offset=".28" stop-color="#fffbe0"/><stop offset=".58" stop-color="#ffb13b" stop-opacity=".95"/><stop offset="1" stop-color="#ff3a1d" stop-opacity="0"/></radialGradient><filter id="blur"><feGaussianBlur stdDeviation="5"/></filter></defs><path d="M8 56 Q50 18 116 42 Q153 48 190 49 Q153 67 112 68 Q48 93 8 56Z" fill="#ff321b" opacity=".6" filter="url(#blur)"/><path d="M2 56 Q52 31 130 48 L205 51 Q143 65 76 73Z" fill="url(#tail)"/><path d="M18 55 Q65 44 143 51 L205 52 Q143 58 72 65Z" fill="#fff0b5" opacity=".82"/><path d="M40 36 L90 47 L133 48 L75 53Z" fill="#ff9a2d"/><path d="M34 77 L94 62 L138 59 L79 70Z" fill="#ff5725"/><circle cx="194" cy="53" r="44" fill="url(#core)"/><circle cx="204" cy="52" r="19" fill="#ffb23c"/><circle cx="210" cy="50" r="11" fill="#fff5c9"/><circle cx="214" cy="49" r="5" fill="#fff"/><g fill="#fff0b1"><circle cx="144" cy="35" r="2.5"/><circle cx="123" cy="77" r="2"/><circle cx="86" cy="39" r="1.8"/><circle cx="65" cy="72" r="2.2"/></g></svg>');
-      const initialPosition = startPosition || viewer.camera.positionWC.clone();
-      const fireball = viewer.entities.add({ position: initialPosition, billboard: { image: fireballImage, width: 132, height: 62, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY, alignedAxis: Cesium.Cartesian3.ZERO } });
-      // Glowing embers trail behind the meteor and follow its flight path.
-      const emberImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><radialGradient id="e"><stop stop-color="#fff8c7"/><stop offset=".28" stop-color="#ff9b32" stop-opacity=".9"/><stop offset="1" stop-color="#ff3218" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#e)"/></svg>');
-      const embers = [0,1,2,3].map(i => {
-        const entity = viewer.entities.add({ position: initialPosition, billboard: { image: emberImage, width: 25 - i*3, height: 25 - i*3, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
-        liveLocationVisualEntities.push(entity);
-        return entity;
+      const targetCanvas = viewer.scene.cartesianToCanvasCoordinates(target);
+      const canvasRect = viewer.scene.canvas.getBoundingClientRect();
+      const targetX = targetCanvas ? canvasRect.left + targetCanvas.x : window.innerWidth * 0.5;
+      const targetY = targetCanvas ? canvasRect.top + targetCanvas.y : window.innerHeight * 0.5;
+      const orbRect = button ? button.getBoundingClientRect() : { left: 24, top: 24, width: 48, height: 48 };
+      const startX = orbRect.left + orbRect.width / 2;
+      const startY = orbRect.top + orbRect.height / 2;
+      const dx = targetX - startX;
+      const dy = targetY - startY;
+      const arcLift = Math.min(170, Math.max(58, Math.hypot(dx, dy) * 0.22));
+      const controlX = startX + dx * 0.5;
+      const controlY = startY + dy * 0.5 - arcLift;
+      const pointAt = t => ({
+        x: (1-t)*(1-t)*startX + 2*(1-t)*t*controlX + t*t*targetX,
+        y: (1-t)*(1-t)*startY + 2*(1-t)*t*controlY + t*t*targetY
       });
-      liveLocationVisualEntities.push(fireball);
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const overlay = document.createElementNS(svgNS, 'svg');
+      overlay.setAttribute('id', 'location-fireball-flight');
+      overlay.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+      overlay.setAttribute('width', String(window.innerWidth));
+      overlay.setAttribute('height', String(window.innerHeight));
+      overlay.setAttribute('aria-hidden', 'true');
+      Object.assign(overlay.style, { position:'fixed', inset:'0', width:'100vw', height:'100vh', overflow:'visible', pointerEvents:'none', zIndex:'9999' });
+      const addSvg = (tag, attrs, parent=overlay) => {
+        const node = document.createElementNS(svgNS, tag);
+        Object.entries(attrs).forEach(([key,value]) => node.setAttribute(key, String(value)));
+        parent.appendChild(node);
+        return node;
+      };
+      const defs = addSvg('defs', {});
+      const glow = addSvg('filter', { id:'el-meteor-glow', x:'-100%', y:'-100%', width:'300%', height:'300%' }, defs);
+      addSvg('feGaussianBlur', { stdDeviation:'5', result:'blur' }, glow);
+      const merge = addSvg('feMerge', {}, glow);
+      addSvg('feMergeNode', { in:'blur' }, merge);
+      addSvg('feMergeNode', { in:'SourceGraphic' }, merge);
+      const trailGlow = addSvg('path', { d:`M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`, fill:'none', stroke:'#ff5a22', 'stroke-width': '13', 'stroke-linecap':'round', opacity:'.42', filter:'url(#el-meteor-glow)' });
+      const trail = addSvg('path', { d:`M ${startX} ${startY} Q ${controlX} ${controlY} ${targetX} ${targetY}`, fill:'none', stroke:'#ff9b43', 'stroke-width':'4', 'stroke-linecap':'round' });
+      const totalLength = trail.getTotalLength();
+      [trailGlow, trail].forEach(path => { path.style.strokeDasharray = String(totalLength); path.style.strokeDashoffset = String(totalLength); });
+      const meteor = addSvg('g', { filter:'url(#el-meteor-glow)' });
+      // A directional white-hot meteor core with layered orange plasma and fine sparks.
+      addSvg('path', { d:'M -104 0 Q -62 -24 -12 -9 L 22 -3 L 22 3 L -12 9 Q -62 24 -104 0Z', fill:'#ff3a16', opacity:'.8' }, meteor);
+      addSvg('path', { d:'M -95 0 Q -50 -10 -8 -4 L 19 -2 L 19 2 L -8 4 Q -50 10 -95 0Z', fill:'#ffb13d' }, meteor);
+      addSvg('path', { d:'M -76 0 L 20 -1 L 20 1Z', fill:'#fff7d4' }, meteor);
+      addSvg('circle', { cx:'17', cy:'0', r:'15', fill:'#ff7a25', opacity:'.72' }, meteor);
+      addSvg('circle', { cx:'20', cy:'0', r:'9', fill:'#fff0b5' }, meteor);
+      addSvg('circle', { cx:'22', cy:'0', r:'4.5', fill:'#ffffff' }, meteor);
+      [[-46,-11,2],[-60,8,1.7],[-28,14,1.5],[-72,-5,1.3],[-14,-12,1.4]].forEach(([x,y,r]) => addSvg('circle', {cx:x,cy:y,r,fill:'#fff0b1'},meteor));
+      const impact = addSvg('g', { opacity:'0' });
+      addSvg('circle', { cx:targetX, cy:targetY, r:'12', fill:'#fff6cf', opacity:'.96' }, impact);
+      addSvg('circle', { cx:targetX, cy:targetY, r:'26', fill:'none', stroke:'#ffb14c', 'stroke-width':'5', opacity:'.9' }, impact);
+      addSvg('circle', { cx:targetX, cy:targetY, r:'44', fill:'none', stroke:'#ff572b', 'stroke-width':'3', opacity:'.65' }, impact);
+      document.body.appendChild(overlay);
       const started = performance.now();
-      const duration = 1150;
+      const duration = 1350;
       const tick = now => {
-        if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
-        const t = Math.min(1, (now - started) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const from = startPosition || initialPosition;
-        fireball.position = Cesium.Cartesian3.lerp(from, target, eased, new Cesium.Cartesian3());
-        embers.forEach((ember, index) => {
-          const lag = (index + 1) * 0.045;
-          const trailT = Math.max(0, eased - lag);
-          ember.position = Cesium.Cartesian3.lerp(from, target, trailT, new Cesium.Cartesian3());
-          ember.billboard.scale = Math.max(0.25, 1 - index * 0.17) * (t > 0.88 ? Math.max(0.05, (1-t)/0.12) : 1);
-        });
-        viewer.scene.requestRender();
-        if (t < 1) liveLocationAnimationFrame = window.requestAnimationFrame(tick);
-        else {
-          viewer.entities.remove(fireball);
-          liveLocationVisualEntities = liveLocationVisualEntities.filter(entity => entity !== fireball);
-          const crater = viewer.entities.add({ position: target, billboard: { image: craterImage, width: 92, height: 92, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: 0 } });
-          liveLocationVisualEntities.push(crater);
+        if (!liveLocationEnabled || !viewer || viewer.isDestroyed() || !overlay.isConnected) return;
+        const t = Math.min(1, (now-started)/duration);
+        const eased = 1 - Math.pow(1-t, 2.15);
+        const point = pointAt(eased);
+        const next = pointAt(Math.min(1, eased + 0.01));
+        const angle = Math.atan2(next.y-point.y, next.x-point.x) * 180 / Math.PI;
+        meteor.setAttribute('transform', `translate(${point.x} ${point.y}) rotate(${angle})`);
+        [trailGlow,trail].forEach(path => path.style.strokeDashoffset = String(totalLength*(1-eased)));
+        if (t >= 1) {
+          meteor.remove();
+          impact.setAttribute('opacity','1');
+          impact.style.transformBox = 'fill-box';
+          impact.style.transformOrigin = `${targetX}px ${targetY}px`;
+          impact.animate([{opacity:1, transform:'scale(.25)'},{opacity:0, transform:'scale(1.65)'}], {duration:320, easing:'ease-out'});
+          liveLocationVisualEntities.push(viewer.entities.add({ position: target, billboard: { image: craterImage, width: 92, height: 92, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } }));
           viewer.scene.requestRender();
           liveLocationVisualTimer = window.setTimeout(() => {
             if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
-            viewer.entities.remove(crater);
-            liveLocationVisualEntities = liveLocationVisualEntities.filter(entity => entity !== crater);
-            const alien = viewer.entities.add({ position: target, billboard: { image: alienPinImage, width: 42, height: 54, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: 0 } });
+            overlay.remove();
+            liveLocationVisualEntities.forEach(entity => viewer.entities.remove(entity));
+            liveLocationVisualEntities = [];
+            const alien = viewer.entities.add({ position: target, billboard: { image: alienPinImage, width: 48, height: 60, verticalOrigin: Cesium.VerticalOrigin.BOTTOM, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
             liveLocationVisualEntities.push(alien);
             viewer.scene.requestRender();
             liveLocationVisualTimer = null;
-          }, 3600);
+          }, 1500);
+          liveLocationAnimationFrame = 0;
+          return;
         }
+        viewer.scene.requestRender();
+        liveLocationAnimationFrame = window.requestAnimationFrame(tick);
       };
       liveLocationAnimationFrame = window.requestAnimationFrame(tick);
     };
@@ -600,7 +644,6 @@
       // on the user's coordinates. Do not change adaptive framing or zoom settings.
       const current = viewer.camera.positionCartographic;
       const height = Math.max(1000, current.height || calculateCameraHeight(profiles[activeProfile]));
-      const startPosition = viewer.camera.positionWC.clone();
       viewer.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
         orientation: {
@@ -610,7 +653,7 @@
         },
         duration: 2.0,
         maximumHeight: height,
-        complete: () => showImpactSequence(latitude, longitude, startPosition)
+        complete: () => showImpactSequence(latitude, longitude, button)
       });
     };
 
