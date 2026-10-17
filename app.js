@@ -9,9 +9,7 @@
   let lastOrientation = null;
   // Single source of truth for the selected display rectangle and its live dimensions.
   window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
-  let customSkinLayer = null;
-  let customBumpLayer = null;
-  let hdHillshadeLayer = null;
+  let normalImageryLayer = null;
   let activeEarthView = "basic";
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
@@ -151,50 +149,18 @@
   }
 
   function addEarthImageryLayers() {
-    // Use the existing 8192x4096 global colour skin as the base imagery.
-    // The matching grayscale bump image is applied as a restrained overlay.
-    // This is an imagery-only change: no camera, gesture, terrain or layout edits.
-    const skinProvider = new Cesium.SingleTileImageryProvider({
-      url: "./earth-relief-skin.jpg",
-      rectangle: Cesium.Rectangle.MAX_VALUE,
-      credit: new Cesium.Credit("EARTH // LIVE custom global relief skin", true)
-    });
-    customSkinLayer = viewer.imageryLayers.addImageryProvider(skinProvider);
-    customSkinLayer.alpha = 1.0;
-
-    const bumpProvider = new Cesium.SingleTileImageryProvider({
-      url: "./earth-relief-bump.jpg",
-      rectangle: Cesium.Rectangle.MAX_VALUE,
-      credit: new Cesium.Credit("EARTH // LIVE relief texture", true)
-    });
-    customBumpLayer = viewer.imageryLayers.addImageryProvider(bumpProvider);
-    // The bump asset is grayscale, not a calibrated normal/height map; use a
-    // low-alpha overlay so its relief pattern is visible without washing out colour.
-    customBumpLayer.alpha = 0.12;
-
-    [skinProvider, bumpProvider].forEach((provider, index) => {
-      if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
-        provider.errorEvent.addEventListener(error => {
-          console.warn(index === 0 ? "Custom Earth skin failed to load:" : "Custom Earth bump overlay failed to load:", error);
-        });
-      }
-    });
-  }
-
-  function ensureHdHillshadeLayer() {
-    if (hdHillshadeLayer || !viewer || viewer.isDestroyed()) return;
+    // Restore the original single-layer Esri World Imagery globe.
+    // Basic/HD controls remain in the orb deck, but do not stack or swap imagery.
     const provider = new Cesium.UrlTemplateImageryProvider({
-      url: "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
+      url: esriImageryUrl,
       minimumLevel: 0,
-      maximumLevel: 14,
-      credit: new Cesium.Credit("Hillshade © Esri", true)
+      maximumLevel: 19,
+      credit: new Cesium.Credit("Imagery © Esri", true)
     });
-    hdHillshadeLayer = viewer.imageryLayers.addImageryProvider(provider);
-    hdHillshadeLayer.alpha = 0.26;
-    hdHillshadeLayer.show = false;
+    normalImageryLayer = viewer.imageryLayers.addImageryProvider(provider);
     if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
       provider.errorEvent.addEventListener(error => {
-        console.warn("Esri World Hillshade tile request failed:", error);
+        console.warn("Esri World Imagery tile request failed:", error);
       });
     }
   }
@@ -202,10 +168,7 @@
   function setEarthView(mode) {
     if (mode !== "basic" && mode !== "hd") return;
     activeEarthView = mode;
-    ensureHdHillshadeLayer();
-    if (customSkinLayer) customSkinLayer.show = true;
-    if (customBumpLayer) customBumpLayer.show = true;
-    if (hdHillshadeLayer) hdHillshadeLayer.show = mode === "hd";
+    // Keep the orb's selected state and effects without changing the globe imagery.
     document.querySelectorAll('.orb-button[data-orb="basic"], .orb-button[data-orb="hd"]').forEach(button => {
       button.setAttribute("aria-pressed", String(button.dataset.orb === mode));
     });
@@ -660,7 +623,6 @@
 
       viewer.imageryLayers.removeAll(false);
       addEarthImageryLayers();
-      ensureHdHillshadeLayer();
       setEarthView("basic");
 
       viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#030509");
@@ -694,7 +656,7 @@
       window.EarthLiveAdaptiveDisplay = {
         get profile() { return activeProfile; },
         get settings() { return { ...profiles[activeProfile] }; },
-        get imagery() { return "EARTH // LIVE custom skin + bump overlay"; },
+        get imagery() { return "Esri World Imagery"; },
         zoomMinimumMeters: 10,
         targets: { portraitWidth: 0.80, landscapeHeight: 0.60, portraitCentered: true, landscapeTopInset: 0.02, viewport: "window.EarthLiveDisplay.area; remeasured on orientation/mode changes; safe edges rotate in landscape" }
       };
