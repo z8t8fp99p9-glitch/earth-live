@@ -14,6 +14,10 @@
   let activeEarthView = "basic";
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
+  let liveLocationWatchId = null;
+  let liveLocationEnabled = false;
+  let liveLocationRequestId = 0;
+  let lastKnownLocation = null;
 
   const esriImageryUrl =
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -496,11 +500,103 @@
     }, duration);
   }
 
+  function setupLiveLocationOrb(button) {
+    if (!button) return;
+
+    const setActive = active => {
+      liveLocationEnabled = active;
+      button.setAttribute("aria-pressed", String(active));
+    };
+    const stopWatching = () => {
+      if (liveLocationWatchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(liveLocationWatchId);
+      }
+      liveLocationWatchId = null;
+    };
+    const showLocationError = message => {
+      console.warn("EARTH // LIVE location:", message);
+      // Keep the existing UI and Orb artwork untouched; communicate failure accessibly.
+      button.setAttribute("aria-label", `Live Location — ${message}`);
+      window.setTimeout(() => {
+        if (button.isConnected) button.setAttribute("aria-label", "Live Location");
+      }, 4000);
+    };
+    const moveToLocation = position => {
+      if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
+      const { latitude, longitude } = position.coords;
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+      lastKnownLocation = { latitude, longitude, timestamp: position.timestamp };
+      // Keep the existing default viewing distance; only smoothly center the globe
+      // on the user's coordinates. Do not change adaptive framing or zoom settings.
+      const current = viewer.camera.positionCartographic;
+      const height = Math.max(1000, current.height || calculateCameraHeight(profiles[activeProfile]));
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
+        orientation: {
+          heading: viewer.camera.heading,
+          pitch: viewer.camera.pitch,
+          roll: viewer.camera.roll
+        },
+        duration: 2.0,
+        maximumHeight: height
+      });
+    };
+
+    button.addEventListener("click", event => {
+      // The main Orb handler below owns all other Orb interactions. Handle location
+      // here and stop the generic toggle from switching it ON before permission/fix.
+      event.stopImmediatePropagation();
+      if (liveLocationEnabled) {
+        liveLocationRequestId++;
+        stopWatching();
+        setActive(false);
+        lastKnownLocation = null;
+        return;
+      }
+      if (!navigator.geolocation) {
+        setActive(false);
+        showLocationError("geolocation is unavailable in this browser");
+        return;
+      }
+
+      const requestId = ++liveLocationRequestId;
+      let firstFix = true;
+      liveLocationWatchId = navigator.geolocation.watchPosition(position => {
+        if (requestId !== liveLocationRequestId) return;
+        const wasActive = liveLocationEnabled;
+        // A successful position confirms both permission and a usable location.
+        setActive(true);
+        if (firstFix) {
+          firstFix = false;
+          moveToLocation(position);
+          // Preserve the existing user-configured location Orb effect; no settings
+          // or effect intensity values are changed by location tracking.
+          if (!wasActive) triggerOrbPersonality(button);
+        }
+      }, error => {
+        if (requestId !== liveLocationRequestId) return;
+        stopWatching();
+        setActive(false);
+        const messages = {
+          1: "location permission denied",
+          2: "current location unavailable",
+          3: "location request timed out"
+        };
+        showLocationError(messages[error.code] || "location request failed");
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 20000
+      });
+    });
+  }
+
   function setupOrbDeck() {
     setupOrbEffectPersonalisation();
     const dock = document.getElementById("primaryDock");
     if (!dock) return;
     const buttons = Array.from(dock.querySelectorAll(".orb-button"));
+    setupLiveLocationOrb(buttons.find(button => button.dataset.orb === "location"));
     buttons.forEach(button => button.addEventListener("click", () => {
       window.setTimeout(() => {
         if (button.getAttribute("aria-pressed") === "true") triggerOrbPersonality(button);
