@@ -544,8 +544,17 @@
       removeLocationVisuals();
       if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
       const target = Cesium.Cartesian3.fromDegrees(longitude, latitude, 18);
-      const fireballImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><radialGradient id="f"><stop stop-color="#fff"/><stop offset=".22" stop-color="#fff3bd"/><stop offset=".5" stop-color="#ff6a25"/><stop offset="1" stop-color="#ff2b19" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#f)"/><path d="M14 70 Q-5 48 15 24 Q11 49 37 54Z" fill="#ff9b32"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>');
-      const fireball = viewer.entities.add({ position: startPosition || viewer.camera.positionWC.clone(), billboard: { image: fireballImage, width: 54, height: 54, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
+      // Wide, directional meteor artwork: a white-hot core with layered plasma tail.
+      const fireballImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="112" viewBox="0 0 240 112"><defs><linearGradient id="tail" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff2418" stop-opacity="0"/><stop offset=".34" stop-color="#ff3a1c" stop-opacity=".38"/><stop offset=".67" stop-color="#ff7828" stop-opacity=".9"/><stop offset=".9" stop-color="#fff0b5"/></linearGradient><radialGradient id="core"><stop stop-color="#fff"/><stop offset=".28" stop-color="#fffbe0"/><stop offset=".58" stop-color="#ffb13b" stop-opacity=".95"/><stop offset="1" stop-color="#ff3a1d" stop-opacity="0"/></radialGradient><filter id="blur"><feGaussianBlur stdDeviation="5"/></filter></defs><path d="M8 56 Q50 18 116 42 Q153 48 190 49 Q153 67 112 68 Q48 93 8 56Z" fill="#ff321b" opacity=".6" filter="url(#blur)"/><path d="M2 56 Q52 31 130 48 L205 51 Q143 65 76 73Z" fill="url(#tail)"/><path d="M18 55 Q65 44 143 51 L205 52 Q143 58 72 65Z" fill="#fff0b5" opacity=".82"/><path d="M40 36 L90 47 L133 48 L75 53Z" fill="#ff9a2d"/><path d="M34 77 L94 62 L138 59 L79 70Z" fill="#ff5725"/><circle cx="194" cy="53" r="44" fill="url(#core)"/><circle cx="204" cy="52" r="19" fill="#ffb23c"/><circle cx="210" cy="50" r="11" fill="#fff5c9"/><circle cx="214" cy="49" r="5" fill="#fff"/><g fill="#fff0b1"><circle cx="144" cy="35" r="2.5"/><circle cx="123" cy="77" r="2"/><circle cx="86" cy="39" r="1.8"/><circle cx="65" cy="72" r="2.2"/></g></svg>');
+      const initialPosition = startPosition || viewer.camera.positionWC.clone();
+      const fireball = viewer.entities.add({ position: initialPosition, billboard: { image: fireballImage, width: 132, height: 62, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY, alignedAxis: Cesium.Cartesian3.ZERO } });
+      // Glowing embers trail behind the meteor and follow its flight path.
+      const emberImage = svgData('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><defs><radialGradient id="e"><stop stop-color="#fff8c7"/><stop offset=".28" stop-color="#ff9b32" stop-opacity=".9"/><stop offset="1" stop-color="#ff3218" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#e)"/></svg>');
+      const embers = [0,1,2,3].map(i => {
+        const entity = viewer.entities.add({ position: initialPosition, billboard: { image: emberImage, width: 25 - i*3, height: 25 - i*3, verticalOrigin: Cesium.VerticalOrigin.CENTER, disableDepthTestDistance: Number.POSITIVE_INFINITY } });
+        liveLocationVisualEntities.push(entity);
+        return entity;
+      });
       liveLocationVisualEntities.push(fireball);
       const started = performance.now();
       const duration = 1150;
@@ -553,7 +562,14 @@
         if (!liveLocationEnabled || !viewer || viewer.isDestroyed()) return;
         const t = Math.min(1, (now - started) / duration);
         const eased = 1 - Math.pow(1 - t, 3);
-        fireball.position = Cesium.Cartesian3.lerp(startPosition || viewer.camera.positionWC, target, eased, new Cesium.Cartesian3());
+        const from = startPosition || initialPosition;
+        fireball.position = Cesium.Cartesian3.lerp(from, target, eased, new Cesium.Cartesian3());
+        embers.forEach((ember, index) => {
+          const lag = (index + 1) * 0.045;
+          const trailT = Math.max(0, eased - lag);
+          ember.position = Cesium.Cartesian3.lerp(from, target, trailT, new Cesium.Cartesian3());
+          ember.billboard.scale = Math.max(0.25, 1 - index * 0.17) * (t > 0.88 ? Math.max(0.05, (1-t)/0.12) : 1);
+        });
         viewer.scene.requestRender();
         if (t < 1) liveLocationAnimationFrame = window.requestAnimationFrame(tick);
         else {
