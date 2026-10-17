@@ -9,7 +9,8 @@
   let lastOrientation = null;
   // Single source of truth for the selected display rectangle and its live dimensions.
   window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
-  let normalImageryLayer = null;
+  let basicImageryLayer = null;
+  let hdImageryLayer = null;
   let activeEarthView = "basic";
   let hasUserInteracted = false;
   let lastAppliedProfile = null;
@@ -149,26 +150,40 @@
   }
 
   function addEarthImageryLayers() {
-    // Restore the original single-layer Esri World Imagery globe.
-    // Basic/HD controls remain in the orb deck, but do not stack or swap imagery.
-    const provider = new Cesium.UrlTemplateImageryProvider({
+    // Both modes use the original Esri World Imagery. Basic requests a lower
+    // tile level for a lighter view; HD requests higher-detail tiles. Only one
+    // imagery layer is visible at a time. No custom skin, bump, or hillshade.
+    const basicProvider = new Cesium.UrlTemplateImageryProvider({
+      url: esriImageryUrl,
+      minimumLevel: 0,
+      maximumLevel: 3,
+      credit: new Cesium.Credit("Imagery © Esri", true)
+    });
+    basicImageryLayer = viewer.imageryLayers.addImageryProvider(basicProvider);
+
+    const hdProvider = new Cesium.UrlTemplateImageryProvider({
       url: esriImageryUrl,
       minimumLevel: 0,
       maximumLevel: 19,
       credit: new Cesium.Credit("Imagery © Esri", true)
     });
-    normalImageryLayer = viewer.imageryLayers.addImageryProvider(provider);
-    if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
-      provider.errorEvent.addEventListener(error => {
-        console.warn("Esri World Imagery tile request failed:", error);
-      });
-    }
+    hdImageryLayer = viewer.imageryLayers.addImageryProvider(hdProvider);
+    hdImageryLayer.show = false;
+
+    [basicProvider, hdProvider].forEach(provider => {
+      if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
+        provider.errorEvent.addEventListener(error => {
+          console.warn("Esri World Imagery tile request failed:", error);
+        });
+      }
+    });
   }
 
   function setEarthView(mode) {
     if (mode !== "basic" && mode !== "hd") return;
     activeEarthView = mode;
-    // Keep the orb's selected state and effects without changing the globe imagery.
+    if (basicImageryLayer) basicImageryLayer.show = mode === "basic";
+    if (hdImageryLayer) hdImageryLayer.show = mode === "hd";
     document.querySelectorAll('.orb-button[data-orb="basic"], .orb-button[data-orb="hd"]').forEach(button => {
       button.setAttribute("aria-pressed", String(button.dataset.orb === mode));
     });

@@ -1,1 +1,1 @@
-window.EARTH_LIVE_VERSION = "1.5.50-normal-globe-reset";
+window.EARTH_LIVE_VERSION = "1.5.51-basic-hd-imagery-only";
