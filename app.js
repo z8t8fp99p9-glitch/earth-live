@@ -9,7 +9,8 @@
   let lastOrientation = null;
   // Single source of truth for the selected display rectangle and its live dimensions.
   window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
-  let esriLayer = null;
+  let basicImageryLayer = null;
+  let hdImageryLayer = null;
   let hdHillshadeLayer = null;
   let activeEarthView = "basic";
   let hasUserInteracted = false;
@@ -149,19 +150,32 @@
     document.documentElement.dataset.displayProfile = nextProfile;
   }
 
-  function addEsriImagery() {
-    const provider = new Cesium.UrlTemplateImageryProvider({
+  function addEarthImageryLayers() {
+    // Basic deliberately stops at zoom level 3; HD can request imagery through level 19.
+    const basicProvider = new Cesium.UrlTemplateImageryProvider({
+      url: esriImageryUrl,
+      minimumLevel: 0,
+      maximumLevel: 3,
+      credit: new Cesium.Credit("Imagery © Esri", true)
+    });
+    basicImageryLayer = viewer.imageryLayers.addImageryProvider(basicProvider);
+
+    const hdProvider = new Cesium.UrlTemplateImageryProvider({
       url: esriImageryUrl,
       minimumLevel: 0,
       maximumLevel: 19,
       credit: new Cesium.Credit("Imagery © Esri", true)
     });
-    esriLayer = viewer.imageryLayers.addImageryProvider(provider);
-    if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
-      provider.errorEvent.addEventListener(error => {
-        console.warn("Esri World Imagery tile request failed:", error);
-      });
-    }
+    hdImageryLayer = viewer.imageryLayers.addImageryProvider(hdProvider);
+    hdImageryLayer.show = false;
+
+    [basicProvider, hdProvider].forEach(provider => {
+      if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
+        provider.errorEvent.addEventListener(error => {
+          console.warn("Esri World Imagery tile request failed:", error);
+        });
+      }
+    });
   }
 
   function ensureHdHillshadeLayer() {
@@ -169,7 +183,7 @@
     const provider = new Cesium.UrlTemplateImageryProvider({
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
       minimumLevel: 0,
-      maximumLevel: 13,
+      maximumLevel: 19,
       credit: new Cesium.Credit("Hillshade © Esri", true)
     });
     hdHillshadeLayer = viewer.imageryLayers.addImageryProvider(provider);
@@ -186,6 +200,8 @@
     if (mode !== "basic" && mode !== "hd") return;
     activeEarthView = mode;
     ensureHdHillshadeLayer();
+    if (basicImageryLayer) basicImageryLayer.show = mode === "basic";
+    if (hdImageryLayer) hdImageryLayer.show = mode === "hd";
     if (hdHillshadeLayer) hdHillshadeLayer.show = mode === "hd";
     document.querySelectorAll('.orb-button[data-orb="basic"], .orb-button[data-orb="hd"]').forEach(button => {
       button.setAttribute("aria-pressed", String(button.dataset.orb === mode));
@@ -640,7 +656,7 @@
       });
 
       viewer.imageryLayers.removeAll(false);
-      addEsriImagery();
+      addEarthImageryLayers();
       ensureHdHillshadeLayer();
       setEarthView("basic");
 
