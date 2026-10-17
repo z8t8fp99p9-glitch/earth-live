@@ -1,0 +1,17 @@
+EARTH // LIVE — v1.5.50 Basic/HD Custom Relief Texture
+
+Base source: freshly supplied GitHub main archive (commit 859cf540c85f81c8101cf2153dd41db56d439913).
+
+Changes in this candidate:
+- Uses earth-relief-skin.jpg as the full-globe base imagery for both Basic and HD views.
+- Adds earth-relief-bump.jpg as a restrained grayscale overlay at 12% opacity. This is a visual overlay, not true terrain displacement or a calibrated normal map.
+- Preserves the existing HD-only Esri World Hillshade layer at 26% opacity and maximum level 14.
+- Updates the service-worker cache name and includes both texture assets in its shell list.
+- Aligns index.html cache-busting references and app-version.js to v1.5.50.
+
+Scope protection:
+- No intended changes to camera, zoom, drag/pinch gestures, responsive layout/orientation, approved UI/artwork, or data-store.js.
+- No GitHub commit/push performed.
+
+Validation performed locally: ZIP integrity, required texture asset presence, JavaScript syntax, service-worker shell file existence, and diff scope checks.
+Not verified: browser runtime, live GitHub Pages deployment, or iPhone PWA appearance. This is a test candidate, not a confirmed release.

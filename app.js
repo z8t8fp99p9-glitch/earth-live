@@ -9,8 +9,8 @@
   let lastOrientation = null;
   // Single source of truth for the selected display rectangle and its live dimensions.
   window.EarthLiveDisplay = window.EarthLiveDisplay || { mode: "full", orientation: "portrait", viewport: { width: 0, height: 0 }, area: { x: 0, y: 0, width: 0, height: 0 } };
-  let basicImageryLayer = null;
-  let hdImageryLayer = null;
+  let customSkinLayer = null;
+  let customBumpLayer = null;
   let hdHillshadeLayer = null;
   let activeEarthView = "basic";
   let hasUserInteracted = false;
@@ -151,28 +151,31 @@
   }
 
   function addEarthImageryLayers() {
-    // Basic deliberately stops at zoom level 3; HD can request imagery through level 19.
-    const basicProvider = new Cesium.UrlTemplateImageryProvider({
-      url: esriImageryUrl,
-      minimumLevel: 0,
-      maximumLevel: 3,
-      credit: new Cesium.Credit("Imagery © Esri", true)
+    // Use the existing 8192x4096 global colour skin as the base imagery.
+    // The matching grayscale bump image is applied as a restrained overlay.
+    // This is an imagery-only change: no camera, gesture, terrain or layout edits.
+    const skinProvider = new Cesium.SingleTileImageryProvider({
+      url: "./earth-relief-skin.jpg",
+      rectangle: Cesium.Rectangle.MAX_VALUE,
+      credit: new Cesium.Credit("EARTH // LIVE custom global relief skin", true)
     });
-    basicImageryLayer = viewer.imageryLayers.addImageryProvider(basicProvider);
+    customSkinLayer = viewer.imageryLayers.addImageryProvider(skinProvider);
+    customSkinLayer.alpha = 1.0;
 
-    const hdProvider = new Cesium.UrlTemplateImageryProvider({
-      url: esriImageryUrl,
-      minimumLevel: 0,
-      maximumLevel: 19,
-      credit: new Cesium.Credit("Imagery © Esri", true)
+    const bumpProvider = new Cesium.SingleTileImageryProvider({
+      url: "./earth-relief-bump.jpg",
+      rectangle: Cesium.Rectangle.MAX_VALUE,
+      credit: new Cesium.Credit("EARTH // LIVE relief texture", true)
     });
-    hdImageryLayer = viewer.imageryLayers.addImageryProvider(hdProvider);
-    hdImageryLayer.show = false;
+    customBumpLayer = viewer.imageryLayers.addImageryProvider(bumpProvider);
+    // The bump asset is grayscale, not a calibrated normal/height map; use a
+    // low-alpha overlay so its relief pattern is visible without washing out colour.
+    customBumpLayer.alpha = 0.12;
 
-    [basicProvider, hdProvider].forEach(provider => {
+    [skinProvider, bumpProvider].forEach((provider, index) => {
       if (provider.errorEvent && typeof provider.errorEvent.addEventListener === "function") {
         provider.errorEvent.addEventListener(error => {
-          console.warn("Esri World Imagery tile request failed:", error);
+          console.warn(index === 0 ? "Custom Earth skin failed to load:" : "Custom Earth bump overlay failed to load:", error);
         });
       }
     });
@@ -200,8 +203,8 @@
     if (mode !== "basic" && mode !== "hd") return;
     activeEarthView = mode;
     ensureHdHillshadeLayer();
-    if (basicImageryLayer) basicImageryLayer.show = mode === "basic";
-    if (hdImageryLayer) hdImageryLayer.show = mode === "hd";
+    if (customSkinLayer) customSkinLayer.show = true;
+    if (customBumpLayer) customBumpLayer.show = true;
     if (hdHillshadeLayer) hdHillshadeLayer.show = mode === "hd";
     document.querySelectorAll('.orb-button[data-orb="basic"], .orb-button[data-orb="hd"]').forEach(button => {
       button.setAttribute("aria-pressed", String(button.dataset.orb === mode));
@@ -691,7 +694,7 @@
       window.EarthLiveAdaptiveDisplay = {
         get profile() { return activeProfile; },
         get settings() { return { ...profiles[activeProfile] }; },
-        get imagery() { return "Esri World Imagery"; },
+        get imagery() { return "EARTH // LIVE custom skin + bump overlay"; },
         zoomMinimumMeters: 10,
         targets: { portraitWidth: 0.80, landscapeHeight: 0.60, portraitCentered: true, landscapeTopInset: 0.02, viewport: "window.EarthLiveDisplay.area; remeasured on orientation/mode changes; safe edges rotate in landscape" }
       };

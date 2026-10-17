@@ -1,14 +1,14 @@
 {
   "project": "EARTH // LIVE",
-  "package": "Celestial Dock",
-  "version": "1.45",
-  "filename": "EARTH-LIVE-Celestial-Dock-v1.42.zip",
-  "base": "EARTH-LIVE-Map-Restored-v1.41.zip and current main source",
+  "package": "Basic/HD Custom Relief Texture",
+  "version": "1.5.50",
+  "filename": "EARTH-LIVE-Basic-HD-Custom-Relief-v1.5.50-ROOT-UPLOAD.zip",
+  "base": "Freshly supplied GitHub main source archive earth-live-main 12.zip (archive commit 859cf540c85f81c8101cf2153dd41db56d439913), with the custom skin/bump imagery implementation from the prior v1.5.50 candidate merged into the current source.",
   "github_changes": false,
   "runtime_tested_in_iphone_pwa": false,
   "astronomy_validated": false,
-  "ui_scope": "Approved Basic/HD dock selector, Live Location refresh with 20-second auto-off, Sun day/night shading and 24-hour local-time scroller, Moon Sky View with locally calculated Moonrise/Moonset timeline, future-feed Stacks, and static app icon assets.",
-  "performance": "No pulsing or continuous decorative animations; static generated WebP button artwork and SVG scroller handles.",
-  "title": "EARTH // LIVE — Celestial Dock v1.42",
-  "description": "Adds the approved glass-style celestial dock, Basic/HD selector, on-demand Live Location, Sun and Moon time controls, and future-feed Stacks. Candidate for manual upload and iPhone verification."
+  "ui_scope": "Restores the custom 8192x4096 Earth relief skin as the shared Basic/HD base imagery, adds the grayscale bump overlay at 12% opacity, and preserves the existing HD-only Esri World Hillshade layer at 26% opacity and maximum level 14. No camera, gesture, terrain, responsive layout, UI, data-store.js, or unrelated feature changes intended.",
+  "performance": "Static texture imagery; no new animation or database writes.",
+  "title": "EARTH // LIVE \u2014 Basic/HD Custom Relief Texture v1.5.50",
+  "description": "Review candidate based on current GitHub main source. Texture integration and archive/syntax checks are performed locally; browser, live Pages and iPhone PWA runtime testing are not performed. Do not mark deployed/verified until tested on device."
 }
